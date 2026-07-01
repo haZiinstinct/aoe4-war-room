@@ -1,5 +1,4 @@
 import {
-  Anchor,
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
@@ -17,15 +16,9 @@ import {
   Swords,
   Target,
 } from "lucide-react";
-import { useDeferredValue, useMemo, useState } from "react";
-import {
-  CATEGORY_LABELS,
-  ageLabel,
-  civName,
-  roleLabel,
-  shortDescription,
-  unitName,
-} from "../data/localization";
+import { memo, useDeferredValue, useMemo, useState } from "react";
+import { CATEGORY_ORDER, romanAge } from "../data/localization";
+import { useI18n } from "../i18n/LanguageProvider.jsx";
 import {
   DEFAULT_SETTINGS,
   getFavoredTargets,
@@ -33,48 +26,61 @@ import {
 } from "../lib/matchup";
 import UnitAvatar from "./UnitAvatar";
 
-function Stat({ icon: Icon, label, value }) {
-  return (
-    <div className="dossier-stat">
-      <Icon size={16} />
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
+const Stat = memo(
+  /**
+   * @param {{ icon: import("lucide-react").LucideIcon, label: string, value: import("react").ReactNode }} props
+   */
+  function Stat({ icon: Icon, label, value }) {
+    return (
+      <div className="dossier-stat">
+        <Icon size={16} />
+        <span>{label}</span>
+        <strong>{value}</strong>
+      </div>
+    );
+  },
+);
 
-function MatchupRow({ entry, type, onOpen }) {
-  const isStrong = type === "strong";
-  const ratio = isStrong ? entry.result.ratio : entry.result.ratio;
-  const meter = Math.min(100, Math.round((Math.abs(Math.log2(ratio)) + 0.2) * 52));
-  return (
-    <button
-      type="button"
-      className="dossier-matchup-row"
-      onClick={() => onOpen(entry.unit)}
-    >
-      <UnitAvatar unit={entry.unit} size="small" />
-      <span className="dossier-matchup-row__name">
-        <strong>{unitName(entry.unit)}</strong>
-        <small>{roleLabel(entry.unit)}</small>
-      </span>
-      <span
-        className={`effect-meter ${
-          isStrong ? "effect-meter--good" : "effect-meter--bad"
-        }`}
+const MatchupRow = memo(
+  /**
+   * @param {{ entry: import("../types.js").CounterCandidate, type: string, onOpen: (unit: import("../types.js").Unit) => void }} props
+   */
+  function MatchupRow({ entry, type, onOpen }) {
+    const { unitName, roleLabel } = useI18n();
+    const isStrong = type === "strong";
+    const ratio = entry.result.ratio;
+    const meter = Math.min(
+      100,
+      Math.round((Math.abs(Math.log2(ratio)) + 0.2) * 52),
+    );
+    return (
+      <button
+        type="button"
+        className="dossier-matchup-row"
+        onClick={() => onOpen(entry.unit)}
       >
-        <i>
-          <b style={{ width: `${meter}%` }} />
-        </i>
-        <small>{isStrong ? "Gutes Ziel" : "Gefahr"}</small>
-      </span>
-      <span className="dossier-matchup-row__reason">
-        {entry.result.reasons[0]?.text}
-      </span>
-      <ChevronRight size={16} />
-    </button>
-  );
-}
+        <UnitAvatar unit={entry.unit} size="small" />
+        <span className="dossier-matchup-row__name">
+          <strong>{unitName(entry.unit)}</strong>
+          <small>{roleLabel(entry.unit)}</small>
+        </span>
+        <span
+          className={`effect-meter ${
+            isStrong ? "effect-meter--good" : "effect-meter--bad"
+          }`}
+        >
+          <i>
+            <b style={{ width: `${meter}%` }} />
+          </i>
+        </span>
+        <span className="dossier-matchup-row__reason">
+          {entry.result.reasons[0]?.text}
+        </span>
+        <ChevronRight size={16} />
+      </button>
+    );
+  },
+);
 
 export default function UnitExplorer({
   units,
@@ -83,6 +89,16 @@ export default function UnitExplorer({
   onSelect,
   onOpenLab,
 }) {
+  const {
+    t,
+    lang,
+    unitName,
+    roleLabel,
+    civName,
+    ageLabel,
+    shortDescription,
+    categoryLabel,
+  } = useI18n();
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
   const [civ, setCiv] = useState("all");
@@ -103,35 +119,45 @@ export default function UnitExplorer({
         .toLocaleLowerCase("de")
         .includes(needle);
     });
-  }, [age, category, civ, deferredQuery, uniqueOnly, units]);
+  }, [
+    age,
+    category,
+    civ,
+    deferredQuery,
+    uniqueOnly,
+    units,
+    unitName,
+    roleLabel,
+  ]);
 
-  const matchupSettings = useMemo(
-    () => ({ ...DEFAULT_SETTINGS, age: 4 }),
-    [],
-  );
+  const matchupSettings = useMemo(() => ({ ...DEFAULT_SETTINGS, age: 4 }), []);
   const favored = useMemo(
-    () => getFavoredTargets(units, selected, matchupSettings, 5),
-    [matchupSettings, selected, units],
+    () => getFavoredTargets(units, selected, matchupSettings, 5, lang),
+    [matchupSettings, selected, units, lang],
   );
   const threats = useMemo(
-    () => getThreats(units, selected, matchupSettings, 5),
-    [matchupSettings, selected, units],
+    () => getThreats(units, selected, matchupSettings, 5, lang),
+    [matchupSettings, selected, units, lang],
   );
 
   const mainWeapon = selected.weapons[0];
   const civsText =
     selected.civs.length > 3
-      ? `${selected.civs.length} Zivilisationen`
-      : selected.civs.map(civName).join(", ") || "Spezialformation";
+      ? t("explorer.civsCount", { n: selected.civs.length })
+      : selected.civs.map((code) => civName(code)).join(", ") ||
+        t("explorer.specialFormation");
 
   return (
     <div className="explorer-page">
       <section className="explorer-browser">
         <header className="section-header">
           <div>
-            <h1>Alle Einheiten</h1>
+            <h1>{t("nav.units")}</h1>
             <p>
-              {units.length} militärische Einträge · {civilizations.length} Zivilisationen
+              {t("explorer.subtitle", {
+                units: units.length,
+                civs: civilizations.length,
+              })}
             </p>
           </div>
           <ListFilter size={20} />
@@ -140,26 +166,26 @@ export default function UnitExplorer({
         <div className="explorer-filters">
           <label className="search-field search-field--large">
             <Search size={16} />
-            <span className="sr-only">Einheit suchen</span>
+            <span className="sr-only">{t("picker.searchUnit")}</span>
             <input
               value={query}
               type="search"
               name="explorer-unit-search"
               autoComplete="off"
               spellCheck={false}
-              placeholder="Einheit suchen …"
+              placeholder={t("picker.searchPlaceholder")}
               onChange={(event) => setQuery(event.target.value)}
             />
           </label>
           <div className="filter-row">
             <label>
-              <span className="sr-only">Zivilisation</span>
+              <span className="sr-only">{t("picker.civ")}</span>
               <select
                 name="explorer-civilization"
                 value={civ}
                 onChange={(event) => setCiv(event.target.value)}
               >
-                <option value="all">Alle Zivilisationen</option>
+                <option value="all">{t("picker.allCivs")}</option>
                 {civilizations.map((civilization) => (
                   <option key={civilization.code} value={civilization.code}>
                     {civName(civilization.code)}
@@ -168,27 +194,27 @@ export default function UnitExplorer({
               </select>
             </label>
             <label>
-              <span className="sr-only">Kategorie</span>
+              <span className="sr-only">{t("explorer.category")}</span>
               <select
                 name="explorer-category"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
               >
-                {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
+                {CATEGORY_ORDER.map((value) => (
                   <option key={value} value={value}>
-                    {label}
+                    {categoryLabel(value)}
                   </option>
                 ))}
               </select>
             </label>
             <label>
-              <span className="sr-only">Zeitalter</span>
+              <span className="sr-only">{t("lab.age")}</span>
               <select
                 name="explorer-age"
                 value={age}
                 onChange={(event) => setAge(event.target.value)}
               >
-                <option value="all">Alle Zeitalter</option>
+                <option value="all">{t("explorer.allAges")}</option>
                 {[1, 2, 3, 4].map((value) => (
                   <option value={value} key={value}>
                     {ageLabel(value)}
@@ -198,19 +224,21 @@ export default function UnitExplorer({
             </label>
             <button
               type="button"
-              className={uniqueOnly ? "toggle-button is-active" : "toggle-button"}
+              className={
+                uniqueOnly ? "toggle-button is-active" : "toggle-button"
+              }
               onClick={() => setUniqueOnly((value) => !value)}
             >
-              <Sparkles size={14} /> Nur einzigartig
+              <Sparkles size={14} /> {t("explorer.uniqueOnly")}
             </button>
           </div>
         </div>
 
         <div className="unit-table">
           <div className="unit-table__head">
-            <span>Einheit</span>
-            <span>Rolle</span>
-            <span>Alter</span>
+            <span>{t("explorer.colUnit")}</span>
+            <span>{t("explorer.colRole")}</span>
+            <span>{t("explorer.colAge")}</span>
           </div>
           <div className="unit-table__body">
             {filtered.map((unit) => (
@@ -227,20 +255,20 @@ export default function UnitExplorer({
                     {unit.unique && unit.civs[0]
                       ? civName(unit.civs[0])
                       : unit.unique
-                        ? "Einzigartig"
-                        : "Standard"}
+                        ? t("explorer.unique")
+                        : t("explorer.standard")}
                   </small>
                 </span>
                 <span>{roleLabel(unit)}</span>
-                <span>{["I", "II", "III", "IV"][unit.minAge - 1]}</span>
+                <span>{romanAge(unit.minAge)}</span>
                 <ChevronRight size={14} />
               </button>
             ))}
           </div>
           <footer aria-live="polite">
-            <span>{filtered.length} Ergebnisse</span>
+            <span>{t("explorer.results", { n: filtered.length })}</span>
             <span>
-              <Filter size={13} /> Filter wirken sofort
+              <Filter size={13} /> {t("explorer.filtersInstant")}
             </span>
           </footer>
         </div>
@@ -250,7 +278,7 @@ export default function UnitExplorer({
         <div className="unit-dossier__hero">
           <div className="dossier-portrait">
             <UnitAvatar unit={selected} size="dossier" />
-            {selected.unique ? <span>Einzigartige Einheit</span> : null}
+            {selected.unique ? <span>{t("explorer.uniqueUnit")}</span> : null}
           </div>
           <div className="dossier-summary">
             <span className="dossier-summary__meta">
@@ -260,26 +288,30 @@ export default function UnitExplorer({
             <strong>{roleLabel(selected)}</strong>
             <p>{shortDescription(selected)}</p>
             <div className="dossier-stats">
-              <Stat icon={Heart} label="Leben" value={selected.hp || "–"} />
+              <Stat
+                icon={Heart}
+                label={t("stat.life")}
+                value={selected.hp || "–"}
+              />
               <Stat
                 icon={Swords}
-                label="Angriff"
+                label={t("stat.attack")}
                 value={mainWeapon?.damage || "–"}
               />
               <Stat
                 icon={Shield}
-                label="Rüstung"
+                label={t("stat.armor")}
                 value={`${selected.armor.melee}/${selected.armor.ranged}`}
               />
               <Stat
                 icon={Footprints}
-                label="Tempo"
+                label={t("stat.speed")}
                 value={selected.movement?.toFixed(2) || "–"}
               />
               <Stat
                 icon={Coins}
-                label="Kosten"
-                value={selected.costs.total || "Spez."}
+                label={t("stat.cost")}
+                value={selected.costs.total || t("lab.special")}
               />
             </div>
             <button
@@ -287,51 +319,53 @@ export default function UnitExplorer({
               type="button"
               onClick={() => onOpenLab(selected)}
             >
-              Im Counter-Lab öffnen <ArrowRight size={16} />
+              {t("explorer.openInLab")} <ArrowRight size={16} />
             </button>
           </div>
           <div className="effect-triangle">
-            <span>Effektivitäts-Logik</span>
+            <span>{t("explorer.effectLogic")}</span>
             <div>
               <i className="effect-triangle__strong">
                 <ArrowUpRight />
-                <b>Stark gegen</b>
+                <b>{t("explorer.strongAgainst")}</b>
               </i>
               <Swords />
               <i className="effect-triangle__weak">
                 <ArrowDownRight />
-                <b>Schwach gegen</b>
+                <b>{t("explorer.weakAgainst")}</b>
               </i>
             </div>
-            <p>Klassenbonus schlägt Rohwert. Positionierung schlägt Theorie.</p>
+            <p>{t("explorer.effectNote")}</p>
           </div>
         </div>
 
         <div className="dossier-tabs" role="tablist">
-          {[
-            ["matchups", "Matchups", Target],
-            ["stats", "Werte", BarChart3],
-            ["usage", "Einsatz", Crosshair],
-          ].map(([id, label, Icon]) => (
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === id}
-              className={tab === id ? "is-active" : ""}
-              key={id}
-              onClick={() => setTab(id)}
-            >
-              <Icon size={15} /> {label}
-            </button>
-          ))}
+          {
+            /** @type {[string, string, import("lucide-react").LucideIcon][]} */ ([
+              ["matchups", t("explorer.tabMatchups"), Target],
+              ["stats", t("explorer.tabStats"), BarChart3],
+              ["usage", t("explorer.tabUsage"), Crosshair],
+            ]).map(([id, label, Icon]) => (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === id}
+                className={tab === id ? "is-active" : ""}
+                key={id}
+                onClick={() => setTab(id)}
+              >
+                <Icon size={15} /> {label}
+              </button>
+            ))
+          }
         </div>
 
         {tab === "matchups" ? (
           <div className="dossier-matchups">
             <div className="dossier-matchups__section">
               <header>
-                <span>Stark gegen</span>
-                <small>Gute Ziele bei gleichem Ressourcenwert</small>
+                <span>{t("explorer.strongAgainst")}</span>
+                <small>{t("explorer.strongHint")}</small>
               </header>
               {favored.map((entry) => (
                 <MatchupRow
@@ -344,8 +378,8 @@ export default function UnitExplorer({
             </div>
             <div className="dossier-matchups__section">
               <header>
-                <span>Schwach gegen</span>
-                <small>Diese Einheiten bestrafen den Einsatz</small>
+                <span>{t("explorer.weakAgainst")}</span>
+                <small>{t("explorer.weakHint")}</small>
               </header>
               {threats.map((entry) => (
                 <MatchupRow
@@ -362,57 +396,65 @@ export default function UnitExplorer({
         {tab === "stats" ? (
           <div className="stats-sheet">
             <div>
-              <span>Grundwerte</span>
+              <span>{t("explorer.baseStats")}</span>
               <dl>
-                <dt>Trefferpunkte</dt>
+                <dt>{t("explorer.hp")}</dt>
                 <dd>{selected.hp || "–"}</dd>
-                <dt>Nahkampfrüstung</dt>
+                <dt>{t("explorer.meleeArmor")}</dt>
                 <dd>{selected.armor.melee}</dd>
-                <dt>Fernkampfrüstung</dt>
+                <dt>{t("explorer.rangedArmor")}</dt>
                 <dd>{selected.armor.ranged}</dd>
-                <dt>Bewegung</dt>
-                <dd>{selected.movement?.toFixed(3) || "–"} Felder/s</dd>
-                <dt>Bevölkerung</dt>
+                <dt>{t("explorer.movement")}</dt>
+                <dd>
+                  {selected.movement?.toFixed(3) || "–"}{" "}
+                  {t("explorer.tilesPerSec")}
+                </dd>
+                <dt>{t("explorer.population")}</dt>
                 <dd>{selected.costs.popcap || "–"}</dd>
               </dl>
             </div>
             <div>
-              <span>Bewaffnung</span>
+              <span>{t("explorer.weapons")}</span>
               {selected.weapons.length ? (
                 selected.weapons.map((weapon) => (
                   <dl key={`${weapon.name}-${weapon.type}`}>
                     <dt>{weapon.name}</dt>
-                    <dd>{weapon.damage} Schaden</dd>
-                    <dt>Angriffstempo</dt>
+                    <dd>{t("explorer.damage", { d: weapon.damage })}</dd>
+                    <dt>{t("explorer.attackSpeed")}</dt>
                     <dd>{weapon.speed.toFixed(2)} s</dd>
-                    <dt>Reichweite</dt>
+                    <dt>{t("explorer.range")}</dt>
                     <dd>{weapon.range.toFixed(1)}</dd>
-                    <dt>Bonus-Gruppen</dt>
+                    <dt>{t("explorer.bonusGroups")}</dt>
                     <dd>
                       {weapon.modifiers.length
-                        ? weapon.modifiers.map((modifier) => `+${modifier.value}`).join(", ")
-                        : "Keine"}
+                        ? weapon.modifiers
+                            .map((modifier) => `+${modifier.value}`)
+                            .join(", ")
+                        : t("explorer.none")}
                     </dd>
                   </dl>
                 ))
               ) : (
-                <p>Keine direkte Angriffswaffe – diese Einheit gewinnt über Support.</p>
+                <p>{t("explorer.noWeapon")}</p>
               )}
             </div>
             <div>
-              <span>Ressourcen</span>
+              <span>{t("lab.resources")}</span>
               <dl>
                 {Object.entries(selected.costs)
-                  .filter(([key, value]) => value && !["total", "popcap", "time"].includes(key))
+                  .filter(
+                    ([key, value]) =>
+                      value && !["total", "popcap", "time"].includes(key),
+                  )
                   .map(([key, value]) => (
                     <span key={key}>
-                      <dt>{key}</dt>
+                      <dt>{t(`res.${key}`)}</dt>
                       <dd>{value}</dd>
                     </span>
                   ))}
-                <dt>Gesamtwert</dt>
-                <dd>{selected.costs.total || "Spezial"}</dd>
-                <dt>Produktionszeit</dt>
+                <dt>{t("explorer.totalValue")}</dt>
+                <dd>{selected.costs.total || t("lab.special")}</dd>
+                <dt>{t("explorer.productionTime")}</dt>
                 <dd>{selected.costs.time || "–"} s</dd>
               </dl>
             </div>
@@ -424,37 +466,30 @@ export default function UnitExplorer({
             <article>
               <span>01</span>
               <div>
-                <h3>Zielpriorität</h3>
-                <p>
-                  Greife zuerst Einheiten an, gegen deren Klasse ein echter
-                  Bonus hinterlegt ist. Überkill vermeiden, Feuer verteilen.
-                </p>
+                <h3>{t("explorer.usageTarget")}</h3>
+                <p>{t("explorer.usageTargetBody")}</p>
               </div>
             </article>
             <article>
               <span>02</span>
               <div>
-                <h3>Formation</h3>
+                <h3>{t("explorer.usageFormation")}</h3>
                 <p>
                   {selected.category === "fernkampf"
-                    ? "Breite Linie und Abstand. Die Frontlinie muss Kontakt verhindern."
+                    ? t("explorer.formRanged")
                     : selected.category === "kavallerie"
-                      ? "Seitlich ansetzen, nicht frontal in Speere oder Engpässe."
+                      ? t("explorer.formCav")
                       : selected.category === "belagerung"
-                        ? "Hinter der Armee parken, Sicht geben und nie ungeschützt rotieren."
-                        : "Kontaktfläche kontrollieren: nicht alle Einheiten gleichzeitig einkesseln lassen."}
+                        ? t("explorer.formSiege")
+                        : t("explorer.formMelee")}
                 </p>
               </div>
             </article>
             <article>
               <span>03</span>
               <div>
-                <h3>Abbruchregel</h3>
-                <p>
-                  Wenn der Gegner deinen natürlichen Counter in Masse zeigt,
-                  nicht „mehr vom Falschen“ bauen: Produktion wechseln, Zeit
-                  kaufen, erhaltene Armee mit einer zweiten Einheit ergänzen.
-                </p>
+                <h3>{t("explorer.usageBail")}</h3>
+                <p>{t("explorer.usageBailBody")}</p>
               </div>
             </article>
           </div>

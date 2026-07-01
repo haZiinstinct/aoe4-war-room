@@ -10,12 +10,8 @@ import {
   Target,
 } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
-import {
-  CATEGORY_LABELS,
-  civName,
-  roleLabel,
-  unitName,
-} from "../data/localization";
+import { CATEGORY_ORDER } from "../data/localization";
+import { useI18n } from "../i18n/LanguageProvider.jsx";
 import UnitAvatar from "./UnitAvatar";
 
 const CATEGORY_ICONS = {
@@ -37,6 +33,7 @@ export default function UnitPicker({
   compact = false,
   initialCategory = "alle",
 }) {
+  const { t, unitName, roleLabel, civName, categoryLabel } = useI18n();
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
   const [category, setCategory] = useState(initialCategory);
@@ -60,13 +57,16 @@ export default function UnitPicker({
         .toLocaleLowerCase("de")
         .includes(needle);
     });
-  }, [category, civ, deferredQuery, units]);
+  }, [category, civ, deferredQuery, units, unitName]);
 
   return (
     <aside className={`unit-picker ${compact ? "unit-picker--compact" : ""}`}>
       <div className="unit-picker__controls">
-        <label className="field-label" htmlFor={`civ-${compact ? "compact" : "full"}`}>
-          Zivilisation
+        <label
+          className="field-label"
+          htmlFor={`civ-${compact ? "compact" : "full"}`}
+        >
+          {t("picker.civ")}
         </label>
         <select
           id={`civ-${compact ? "compact" : "full"}`}
@@ -74,7 +74,7 @@ export default function UnitPicker({
           value={civ}
           onChange={(event) => setCiv(event.target.value)}
         >
-          <option value="all">Alle Zivilisationen</option>
+          <option value="all">{t("picker.allCivs")}</option>
           {civilizations.map((civilization) => (
             <option key={civilization.code} value={civilization.code}>
               {civName(civilization.code)}
@@ -83,22 +83,22 @@ export default function UnitPicker({
         </select>
         <label className="search-field">
           <Search size={15} />
-          <span className="sr-only">Einheit suchen</span>
+          <span className="sr-only">{t("picker.searchUnit")}</span>
           <input
             type="search"
             name={`unit-search-${compact ? "compact" : "full"}`}
             autoComplete="off"
             spellCheck={false}
             value={query}
-            placeholder="Einheit suchen …"
+            placeholder={t("picker.searchPlaceholder")}
             onChange={(event) => setQuery(event.target.value)}
           />
-          <kbd>⌘ K</kbd>
+          <kbd>⌘&nbsp;K</kbd>
         </label>
       </div>
 
-      <div className="category-list" aria-label="Einheitenkategorien">
-        {Object.entries(CATEGORY_LABELS).map(([id, label]) => {
+      <div className="category-list" aria-label={t("picker.categories")}>
+        {CATEGORY_ORDER.map((id) => {
           if (!categoryCounts[id]) return null;
           const Icon = CATEGORY_ICONS[id];
           return (
@@ -109,7 +109,7 @@ export default function UnitPicker({
               onClick={() => setCategory(id)}
             >
               <Icon size={15} />
-              <span>{label}</span>
+              <span>{categoryLabel(id)}</span>
               <small>{categoryCounts[id]}</small>
             </button>
           );
@@ -118,8 +118,12 @@ export default function UnitPicker({
 
       <div className="picker-results">
         <div className="picker-results__head" aria-live="polite">
-          <span>{filtered.length} Einheiten</span>
-          <span>{category === "alle" ? "Alle Rollen" : CATEGORY_LABELS[category]}</span>
+          <span>{t("picker.unitsCount", { n: filtered.length })}</span>
+          <span>
+            {category === "alle"
+              ? t("picker.allRoles")
+              : categoryLabel(category)}
+          </span>
         </div>
         <div className="picker-results__scroll">
           {filtered.map((unit) => (
@@ -139,9 +143,7 @@ export default function UnitPicker({
             </button>
           ))}
           {!filtered.length ? (
-            <div className="empty-list">
-              Keine Einheit passt zu diesen Filtern.
-            </div>
+            <div className="empty-list">{t("picker.empty")}</div>
           ) : null}
         </div>
       </div>

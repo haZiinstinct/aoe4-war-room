@@ -1,0 +1,6 @@
+node_modules
+dist
+work
+outputs
+src/data/units.generated.js
+package-lock.json

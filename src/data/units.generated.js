@@ -1,4 +1,4 @@
-// Auto-generated from aoe4world/data on 2026-06-30. Do not edit by hand.
+// Auto-generated from aoe4world/data @ b2cd382. Do not edit by hand.
 export const units = [
   {
     "id": "akinji",
@@ -48,7 +48,12 @@ export const units = [
         "range": 4.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "amir-warrior",
@@ -106,7 +111,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "arbaletrier",
@@ -166,7 +176,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "archer",
@@ -252,7 +267,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "atakebune",
@@ -313,7 +333,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "atgeirmadr",
@@ -393,7 +418,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "attack-ship",
@@ -490,7 +520,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "baghlah",
@@ -562,7 +597,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "ballista-elephant",
@@ -634,7 +674,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "baochuan",
@@ -698,7 +743,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "battering-ram",
@@ -774,7 +824,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "batu-khan",
@@ -841,7 +896,12 @@ export const units = [
         "range": 0,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "bed-crossbow",
@@ -907,7 +967,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "bedouin-skirmisher",
@@ -966,7 +1031,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "bedouin-swordsman",
@@ -1025,7 +1095,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "black-rider",
@@ -1078,7 +1153,12 @@ export const units = [
         "range": 4,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "bogmadr",
@@ -1150,7 +1230,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "bombard",
@@ -1249,7 +1334,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "buddhist-monk",
@@ -1285,7 +1375,12 @@ export const units = [
       "popcap": 1,
       "time": 30
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "camel-archer",
@@ -1359,7 +1454,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "camel-lancer",
@@ -1419,7 +1519,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "camel-rider",
@@ -1488,7 +1593,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "cannon",
@@ -1577,7 +1687,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "carrack",
@@ -1644,7 +1759,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "cataphract",
@@ -1705,7 +1825,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "cheirosiphon",
@@ -1761,7 +1886,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": true,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "chevalier-confrere",
@@ -1821,7 +1951,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "clocktower-battering-ram",
@@ -1876,7 +2011,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "clocktower-bombard",
@@ -1962,7 +2102,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "clocktower-counterweight-trebuchet",
@@ -2027,7 +2172,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "clocktower-nest-of-bees",
@@ -2094,7 +2244,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": true,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "clocktower-springald",
@@ -2160,7 +2315,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "condottiero",
@@ -2227,7 +2387,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "counterweight-trebuchet",
@@ -2311,7 +2476,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "crossbowman",
@@ -2385,7 +2555,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "culverin",
@@ -2475,7 +2650,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "daimyo",
@@ -2535,7 +2715,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "demolition-ship",
@@ -2611,7 +2796,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "dervish",
@@ -2649,7 +2839,12 @@ export const units = [
       "popcap": 1,
       "time": 40
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "desert-raider",
@@ -2717,7 +2912,12 @@ export const units = [
         "range": 4.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "dhow",
@@ -2780,7 +2980,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "donso",
@@ -2877,7 +3082,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "dromon",
@@ -2948,7 +3158,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "earls-guard",
@@ -3006,7 +3221,12 @@ export const units = [
         "range": 6.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "earls-retinue",
@@ -3044,7 +3264,12 @@ export const units = [
       "popcap": 8,
       "time": 50
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": true
+    }
   },
   {
     "id": "eruptor",
@@ -3093,7 +3318,12 @@ export const units = [
         "range": 3.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": true,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "explosive-dhow",
@@ -3162,7 +3392,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "explosive-junk",
@@ -3234,7 +3469,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "fire-lancer",
@@ -3310,7 +3550,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "fishing-boat",
@@ -3389,7 +3634,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "freeborn-warrior",
@@ -3446,7 +3696,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "galleass",
@@ -3496,7 +3751,12 @@ export const units = [
         "range": 8,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "galley",
@@ -3563,7 +3823,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "garrison-command",
@@ -3601,7 +3866,12 @@ export const units = [
       "popcap": 9,
       "time": 30
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": true
+    }
   },
   {
     "id": "genitour",
@@ -3661,7 +3931,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "genoese-crossbowman",
@@ -3720,7 +3995,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "ghazi-raider",
@@ -3797,7 +4077,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "ghulam",
@@ -3849,7 +4134,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "gilded-archer",
@@ -3921,7 +4211,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "gilded-crossbowman",
@@ -4006,7 +4301,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "gilded-handcannoneer",
@@ -4055,7 +4355,12 @@ export const units = [
         "range": 4.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "gilded-horseman",
@@ -4123,7 +4428,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "gilded-knight",
@@ -4183,7 +4493,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "gilded-landsknecht",
@@ -4241,7 +4556,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": true,
+      "formation": false
+    }
   },
   {
     "id": "gilded-man-at-arms",
@@ -4299,7 +4619,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "gilded-spearman",
@@ -4379,7 +4704,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "grand-galley",
@@ -4429,7 +4759,12 @@ export const units = [
         "range": 9.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "great-bombard",
@@ -4505,7 +4840,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": true,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "grenadier",
@@ -4566,7 +4906,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "gunpowder-contingent",
@@ -4604,7 +4949,12 @@ export const units = [
       "popcap": 9,
       "time": 65
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": true
+    }
   },
   {
     "id": "handcannon-ashigaru",
@@ -4653,7 +5003,12 @@ export const units = [
         "range": 4,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "handcannoneer",
@@ -4715,7 +5070,12 @@ export const units = [
         "range": 4,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "healer-elephant",
@@ -4776,7 +5136,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "heavy-spearman",
@@ -4883,7 +5248,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "hippodrome-horseman",
@@ -4951,7 +5321,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "hippodrome-riddari",
@@ -5019,7 +5394,12 @@ export const units = [
         "range": 3.25,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "hippodrome-scout",
@@ -5102,7 +5482,12 @@ export const units = [
         "range": 2.875,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "hobelar",
@@ -5197,7 +5582,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "horse-archer",
@@ -5248,7 +5638,12 @@ export const units = [
         "range": 4.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "horseman",
@@ -5331,7 +5726,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "hospitaller-knight",
@@ -5382,7 +5782,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "huihui-pao",
@@ -5478,7 +5883,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": true,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "hulk",
@@ -5552,7 +5962,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "hunting-canoe",
@@ -5611,7 +6026,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "ikko-ikki-monk",
@@ -5659,7 +6079,12 @@ export const units = [
         "range": 0.75,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "imam",
@@ -5707,7 +6132,12 @@ export const units = [
         "range": 7.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "imperial-guard",
@@ -5767,7 +6197,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "iron-pagoda",
@@ -5827,7 +6262,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "janissary",
@@ -5887,7 +6327,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "javelin-thrower",
@@ -5946,7 +6391,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "jeanne-darc-blast-cannon",
@@ -5968,7 +6418,6 @@ export const units = [
       "cavalry_armored",
       "gunpowder",
       "heavy",
-      "hero",
       "horse",
       "knight",
       "leader",
@@ -6011,7 +6460,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "jeanne-darc-hunter",
@@ -6029,7 +6483,6 @@ export const units = [
     ],
     "classes": [
       "archer",
-      "hero",
       "infantry",
       "infantry_light",
       "leader",
@@ -6123,7 +6576,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "jeanne-darc-knight",
@@ -6144,7 +6602,6 @@ export const units = [
       "cavalry",
       "cavalry_armored",
       "heavy",
-      "hero",
       "horse",
       "knight",
       "leader",
@@ -6208,7 +6665,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "jeanne-darc-markswoman",
@@ -6229,7 +6691,6 @@ export const units = [
       "cavalry",
       "cavalry_armored",
       "gunpowder",
-      "hero",
       "horse",
       "knight",
       "leader",
@@ -6282,7 +6743,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "jeanne-darc-mounted-archer",
@@ -6304,7 +6770,6 @@ export const units = [
       "cavalry",
       "cavalry_archer",
       "cavalry_armored",
-      "hero",
       "horse",
       "knight",
       "leader",
@@ -6399,7 +6864,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "jeanne-darc-woman-at-arms",
@@ -6418,7 +6888,6 @@ export const units = [
     "classes": [
       "armored",
       "heavy",
-      "hero",
       "infantry",
       "leader",
       "manatarms",
@@ -6463,7 +6932,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "jeannes-champion",
@@ -6523,7 +6997,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "jeannes-rider",
@@ -6591,7 +7070,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "junk",
@@ -6654,7 +7138,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "kanabo-samurai",
@@ -6703,7 +7192,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "katana-bannerman",
@@ -6752,7 +7246,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "keshik",
@@ -6814,7 +7313,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "khaganate-horse-archer",
@@ -6865,7 +7369,12 @@ export const units = [
         "range": 4.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "khaganate-knight",
@@ -6918,7 +7427,12 @@ export const units = [
         "range": 0.2875,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "khaganate-mangudai",
@@ -6968,7 +7482,12 @@ export const units = [
         "range": 3.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "khaganate-palace-guard",
@@ -7019,7 +7538,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "khaganate-nest-of-bees",
@@ -7087,7 +7611,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": true,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "khaganate-warrior-monk",
@@ -7136,7 +7665,12 @@ export const units = [
         "range": 0.75,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "khan",
@@ -7195,7 +7729,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "khans-hunter",
@@ -7244,7 +7783,12 @@ export const units = [
         "range": 4.25,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "kharash",
@@ -7292,7 +7836,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "king",
@@ -7312,7 +7861,6 @@ export const units = [
       "cavalry",
       "cavalry_armored",
       "heavy",
-      "hero",
       "horse",
       "knight",
       "leader",
@@ -7353,7 +7901,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "kipchak-archer",
@@ -7403,7 +7956,12 @@ export const units = [
         "range": 4.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "knight",
@@ -7458,7 +8016,12 @@ export const units = [
         "range": 0.2875,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "lancer",
@@ -7515,7 +8078,12 @@ export const units = [
         "range": 0.2875,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "landsknecht",
@@ -7566,7 +8134,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": true,
+      "formation": false
+    }
   },
   {
     "id": "light-junk",
@@ -7626,7 +8199,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "limitanei",
@@ -7705,7 +8283,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "lodya-attack-ship",
@@ -7774,7 +8357,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "lodya-demolition-ship",
@@ -7840,7 +8428,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "lodya-galley",
@@ -7899,7 +8492,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "longbowman",
@@ -7972,7 +8570,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "lord-of-lancaster",
@@ -7990,7 +8593,6 @@ export const units = [
     "classes": [
       "armored",
       "heavy",
-      "hero",
       "infantry",
       "leader",
       "manatarms",
@@ -8032,7 +8634,12 @@ export const units = [
         "range": 0.545,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "man-at-arms",
@@ -8101,7 +8708,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "mangonel",
@@ -8230,7 +8842,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": true,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "mangudai",
@@ -8280,7 +8897,12 @@ export const units = [
         "range": 3.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "manjaniq",
@@ -8391,7 +9013,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "mansa-javelineer",
@@ -8449,7 +9076,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "mansa-musofadi-warrior",
@@ -8508,7 +9140,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "mehter",
@@ -8554,7 +9191,12 @@ export const units = [
         "range": 4.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "militia",
@@ -8614,7 +9256,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "militia-halberdier",
@@ -8674,7 +9321,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "mohe-tribesman",
@@ -8755,7 +9407,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "monk",
@@ -8800,7 +9457,12 @@ export const units = [
       "popcap": 1,
       "time": 30
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "mounted-samurai",
@@ -8861,7 +9523,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "mounted-samurai-levy",
@@ -8939,7 +9606,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "musofadi-gunner",
@@ -8988,7 +9660,12 @@ export const units = [
         "range": 4,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "musofadi-warrior",
@@ -9048,7 +9725,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "naginata-samurai",
@@ -9097,7 +9779,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "naginata-samurai-levy",
@@ -9177,7 +9864,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "nest-of-bees",
@@ -9248,7 +9940,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": true,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "onna-bugeisha",
@@ -9296,7 +9993,12 @@ export const units = [
         "range": 1,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "onna-musha",
@@ -9373,7 +10075,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "ozutsu",
@@ -9433,7 +10140,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": true,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "palace-guard",
@@ -9484,7 +10196,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "prelate",
@@ -9521,7 +10238,12 @@ export const units = [
       "popcap": 1,
       "time": 20
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "raider-elephant",
@@ -9590,7 +10312,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "ribauldequin",
@@ -9641,7 +10368,12 @@ export const units = [
         "range": 3.75,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": true,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "riddari",
@@ -9709,7 +10441,12 @@ export const units = [
         "range": 3.25,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "royal-cannon",
@@ -9798,7 +10535,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "royal-culverin",
@@ -9885,7 +10627,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "royal-knight",
@@ -9939,7 +10686,12 @@ export const units = [
         "range": 0.2875,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "royal-ribauldequin",
@@ -9987,7 +10739,12 @@ export const units = [
         "range": 3.75,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": true,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "rus-tribute",
@@ -10046,7 +10803,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "samurai",
@@ -10113,7 +10875,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "scholar",
@@ -10149,7 +10916,12 @@ export const units = [
       "popcap": 1,
       "time": 30
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "scout",
@@ -10238,7 +11010,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "serjeant",
@@ -10287,7 +11064,12 @@ export const units = [
         "range": 4,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "shaman",
@@ -10324,7 +11106,12 @@ export const units = [
       "popcap": 1,
       "time": 30
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "shaolin-monk",
@@ -10371,7 +11158,12 @@ export const units = [
         "range": 0.3325,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "shinobi",
@@ -10429,7 +11221,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "shinto-priest",
@@ -10465,7 +11262,12 @@ export const units = [
       "popcap": 1,
       "time": 30
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "siege-tower",
@@ -10521,7 +11323,12 @@ export const units = [
       "popcap": 1,
       "time": 30
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "sipahi",
@@ -10589,7 +11396,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "sofa",
@@ -10648,7 +11460,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "spearman",
@@ -10746,7 +11563,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "spearman-levy",
@@ -10826,7 +11648,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "springald",
@@ -10912,7 +11739,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "streltsy",
@@ -10962,7 +11794,12 @@ export const units = [
         "range": 4,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "sultans-elite-tower-elephant",
@@ -11032,7 +11869,12 @@ export const units = [
         "range": 5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "szlachta-cavalry",
@@ -11114,7 +11956,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "tanegashima-ashigaru",
@@ -11173,7 +12020,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "tanegashima-ashigaru-levy",
@@ -11232,7 +12084,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "templar-brother",
@@ -11292,7 +12149,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "teutonic-knight",
@@ -11342,7 +12204,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "torguud",
@@ -11402,7 +12269,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "tower-elephant",
@@ -11490,7 +12362,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "tower-of-the-sultan",
@@ -11545,7 +12422,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "traction-trebuchet",
@@ -11612,7 +12494,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "uma-bannerman",
@@ -11672,7 +12559,12 @@ export const units = [
         "range": 1.0375,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "varangian-guard",
@@ -11732,7 +12624,12 @@ export const units = [
         "range": 0.295,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": true,
+      "formation": false
+    }
   },
   {
     "id": "venetian-galley",
@@ -11801,7 +12698,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "war-canoe",
@@ -11870,7 +12772,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "war-cog",
@@ -11968,7 +12875,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "war-elephant",
@@ -12077,7 +12989,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "war-junk",
@@ -12152,7 +13069,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "warrior-monk",
@@ -12200,7 +13122,12 @@ export const units = [
         "range": 0.75,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "warrior-scout",
@@ -12267,7 +13194,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "warship",
@@ -12345,7 +13277,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "wynguard-army",
@@ -12384,7 +13321,12 @@ export const units = [
       "popcap": 6,
       "time": 55
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": true
+    }
   },
   {
     "id": "wynguard-footman",
@@ -12444,7 +13386,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "wynguard-footmen",
@@ -12482,7 +13429,12 @@ export const units = [
       "popcap": 6,
       "time": 45
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": true
+    }
   },
   {
     "id": "wynguard-raiders",
@@ -12520,7 +13472,12 @@ export const units = [
       "popcap": 6,
       "time": 25
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": true
+    }
   },
   {
     "id": "wynguard-ranger",
@@ -12592,7 +13549,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "wynguard-rangers",
@@ -12630,7 +13592,12 @@ export const units = [
       "popcap": 6,
       "time": 45
     },
-    "weapons": []
+    "weapons": [],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": true
+    }
   },
   {
     "id": "xebec",
@@ -12693,7 +13660,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "yari-cavalry",
@@ -12770,7 +13742,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "yari-cavalry-levy",
@@ -12847,7 +13824,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "yeoman",
@@ -12919,7 +13901,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "yuan-raider",
@@ -12986,7 +13973,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "yumi-ashigaru",
@@ -13090,7 +14082,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "yumi-ashigaru-levy",
@@ -13201,7 +14198,12 @@ export const units = [
         "range": 5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "yumi-bannerman",
@@ -13306,7 +14308,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   },
   {
     "id": "zhanma-swordsman",
@@ -13366,7 +14373,12 @@ export const units = [
           }
         ]
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": true,
+      "formation": false
+    }
   },
   {
     "id": "zhuge-nu",
@@ -13415,7 +14427,12 @@ export const units = [
         "range": 4.5,
         "modifiers": []
       }
-    ]
+    ],
+    "flags": {
+      "splash": false,
+      "antiInfantryMelee": false,
+      "formation": false
+    }
   }
 ];
 

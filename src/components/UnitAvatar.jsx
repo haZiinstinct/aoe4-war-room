@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { unitName } from "../data/localization.js";
 
 const SIZE_DIMENSIONS = {
@@ -9,7 +9,10 @@ const SIZE_DIMENSIONS = {
   drill: [235, 270],
 };
 
-export default function UnitAvatar({
+// memo: das Avatar wird über Lab, Explorer, Picker und Drills dutzendfach
+// gerendert; bei stabilen Props sparen wir unnötige Re-Renders (inkl. Bild-
+// Ladezustand), wenn Elternkomponenten sich aktualisieren.
+function UnitAvatar({
   unit,
   size = "medium",
   className = "",
@@ -40,3 +43,5 @@ export default function UnitAvatar({
     </span>
   );
 }
+
+export default memo(UnitAvatar);

@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "checkJs": true,
+    "allowJs": true,
+    "noEmit": true,
+    // Bewusst kein "strict": der Bestandscode ist untypisiert. checkJs fängt
+    // echte Fehler (falsche Property-Zugriffe, Typos, falsche Argumentzahl) und
+    // validiert die JSDoc-Typen aus src/types.js — ohne jeden Parameter zu
+    // erzwingen (kein noImplicitAny-Rauschen über die gesamte UI).
+    "strict": false,
+    "noImplicitAny": false,
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    // Bibliotheks-JS in node_modules nicht mitprüfen (z. B. punycode).
+    "maxNodeModuleJsDepth": 0,
+    "types": ["node", "vite/client", "react", "react-dom"]
+  },
+  "include": ["src/**/*", "scripts/**/*", "test/**/*"],
+  "exclude": ["node_modules", "dist", "outputs", "work"]
+}

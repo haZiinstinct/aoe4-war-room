@@ -1,21 +1,23 @@
 import {
   BookOpen,
   BrainCircuit,
-  FlaskConical,
   GraduationCap,
   Info,
+  Languages,
   Menu,
   Search,
   Swords,
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { useI18n } from "../i18n/LanguageProvider.jsx";
 
-export const NAV_ITEMS = [
-  { id: "lab", label: "Counter-Lab", short: "Lab", icon: Swords },
-  { id: "units", label: "Alle Einheiten", short: "Einheiten", icon: Search },
-  { id: "drills", label: "Drills", short: "Drills", icon: GraduationCap },
-  { id: "iq", label: "Fight IQ", short: "Fight IQ", icon: BrainCircuit },
+// Reihenfolge + Icons der Navigation; die Labels kommen sprachabhängig aus t().
+const NAV_ITEMS = [
+  { id: "lab", icon: Swords },
+  { id: "units", icon: Search },
+  { id: "drills", icon: GraduationCap },
+  { id: "iq", icon: BrainCircuit },
 ];
 
 function BrandMark() {
@@ -30,6 +32,23 @@ function BrandMark() {
   );
 }
 
+function LanguageToggle() {
+  const { lang, setLang, t } = useI18n();
+  const next = lang === "de" ? "en" : "de";
+  return (
+    <button
+      className="lang-toggle"
+      type="button"
+      onClick={() => setLang(next)}
+      aria-label={`${t("lang.switch")} (${t(`lang.${next}`)})`}
+      title={t("lang.switch")}
+    >
+      <Languages size={16} aria-hidden="true" />
+      <span>{lang.toUpperCase()}</span>
+    </button>
+  );
+}
+
 export default function AppShell({
   activeView,
   onViewChange,
@@ -37,6 +56,7 @@ export default function AppShell({
   onOpenMethodology,
   children,
 }) {
+  const { t } = useI18n();
   const [menuOpen, setMenuOpen] = useState(false);
 
   function navigate(event, view) {
@@ -57,14 +77,14 @@ export default function AppShell({
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
-        Zum Inhalt springen
+        {t("app.skip")}
       </a>
       <header className="topbar">
         <a
           className="brand"
           href="#lab"
           onClick={(event) => navigate(event, "lab")}
-          aria-label="WAR ROOM Startseite"
+          aria-label={t("app.brandHome")}
           translate="no"
         >
           <BrandMark />
@@ -76,9 +96,9 @@ export default function AppShell({
 
         <nav
           className={`main-nav ${menuOpen ? "is-open" : ""}`}
-          aria-label="Hauptnavigation"
+          aria-label={t("nav.main")}
         >
-          {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
+          {NAV_ITEMS.map(({ id, icon: Icon }) => (
             <a
               key={id}
               href={`#${id}`}
@@ -87,7 +107,7 @@ export default function AppShell({
               onClick={(event) => navigate(event, id)}
             >
               <Icon size={16} aria-hidden="true" />
-              {label}
+              {t(`nav.${id}`)}
             </a>
           ))}
         </nav>
@@ -95,20 +115,21 @@ export default function AppShell({
         <div className="topbar__utility">
           <div
             className="progress-meter"
-            aria-label={`${progress}% Lernfortschritt`}
+            aria-label={t("shell.progressAria", { value: progress })}
             aria-live="polite"
           >
-            <span>Fortschritt</span>
+            <span>{t("shell.progress")}</span>
             <strong>{progress}%</strong>
             <i>
               <b style={{ width: `${progress}%` }} />
             </i>
           </div>
+          <LanguageToggle />
           <button
             className="icon-button"
             type="button"
-            aria-label="Methodik und Quellen"
-            title="Methodik und Quellen"
+            aria-label={t("shell.methodology")}
+            title={t("shell.methodology")}
             onClick={onOpenMethodology}
           >
             <BookOpen size={19} aria-hidden="true" />
@@ -116,28 +137,24 @@ export default function AppShell({
           <button
             className="menu-button"
             type="button"
-            aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
+            aria-label={menuOpen ? t("shell.menuClose") : t("shell.menuOpen")}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((open) => !open)}
           >
-            {menuOpen ? (
-              <X aria-hidden="true" />
-            ) : (
-              <Menu aria-hidden="true" />
-            )}
+            {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
           </button>
         </div>
       </header>
 
       <main id="main-content" tabIndex={-1}>
         {activeView === "lab" ? (
-          <h1 className="visually-hidden">Age of Empires IV Counter-Lab</h1>
+          <h1 className="visually-hidden">{t("app.title")}</h1>
         ) : null}
         {children}
       </main>
 
-      <nav className="mobile-nav" aria-label="Mobile Navigation">
-        {NAV_ITEMS.map(({ id, short, icon: Icon }) => (
+      <nav className="mobile-nav" aria-label={t("nav.mobile")}>
+        {NAV_ITEMS.map(({ id, icon: Icon }) => (
           <a
             key={id}
             href={`#${id}`}
@@ -146,18 +163,14 @@ export default function AppShell({
             onClick={(event) => navigate(event, id)}
           >
             <Icon size={19} aria-hidden="true" />
-            <span>{short}</span>
+            <span>{t(`nav.${id}.short`)}</span>
           </a>
         ))}
       </nav>
 
-      <button
-        className="source-fab"
-        type="button"
-        onClick={onOpenMethodology}
-      >
+      <button className="source-fab" type="button" onClick={onOpenMethodology}>
         <Info size={15} aria-hidden="true" />
-        Methodik
+        {t("shell.methodologyShort")}
       </button>
     </div>
   );

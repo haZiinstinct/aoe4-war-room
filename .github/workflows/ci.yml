@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build (Standalone)
+        run: npm run build
+
+      - name: Standalone ohne lokale Abhängigkeiten
+        run: npm run check:standalone
+
+      # Da outputs/index.html bewusst eingecheckt bleibt: sicherstellen, dass das
+      # committete Artefakt zum aktuellen Quellcode passt (sonst wurde vor dem
+      # Commit kein `npm run build` ausgeführt).
+      - name: Standalone-Artefakt ist aktuell
+        run: git diff --exit-code -- outputs/index.html

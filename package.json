@@ -1,14 +1,18 @@
 {
   "name": "aoe4-war-room",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/release-standalone.mjs",
     "preview": "vite preview",
-    "test": "node scripts/audit-matchups.mjs",
-    "audit": "npm run test && npm run build && npm run check:standalone",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -p jsconfig.json --noEmit",
+    "test": "vitest run",
+    "audit": "npm run lint && npm run typecheck && npm run test && npm run build && npm run check:standalone",
     "check:standalone": "node scripts/release-standalone.mjs --check-only",
     "generate:data": "node scripts/generate-units.mjs"
   },
@@ -18,8 +22,20 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@types/node": "^26.1.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.4",
+    "typescript": "^6.0.3",
     "vite": "^6.0.5",
-    "vite-plugin-singlefile": "^2.3.3"
+    "vite-plugin-singlefile": "^2.3.3",
+    "vitest": "^4.1.9"
   }
 }

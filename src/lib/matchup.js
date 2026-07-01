@@ -1,15 +1,22 @@
 import { roleLabel, unitName } from "../data/localization.js";
+import {
+  MICRO_BONUSES,
+  MICRO_RANGE_SCALE,
+  SPLASH,
+  TERRAIN_MULTIPLIERS,
+  TUNING,
+  VERDICT_THRESHOLDS,
+} from "./matchup.config.js";
 
-const FORMATION_IDS = new Set([
-  "earls-retinue",
-  "garrison-command",
-  "gunpowder-contingent",
-  "wynguard-army",
-  "wynguard-footmen",
-  "wynguard-raiders",
-  "wynguard-rangers",
-]);
+/** @typedef {import("../types.js").Unit} Unit */
+/** @typedef {import("../types.js").MatchupSettings} MatchupSettings */
+/** @typedef {import("../types.js").MatchupResult} MatchupResult */
+/** @typedef {import("../types.js").CounterCandidate} CounterCandidate */
 
+/**
+ * @param {Unit} unit
+ * @returns {Set<string>}
+ */
 function classSet(unit) {
   return new Set(unit.classes);
 }
@@ -18,8 +25,7 @@ function matchesTargetGroup(unit, group) {
   const classes = classSet(unit);
   const tokens = group.map((token) => token.replaceAll(" ", "_"));
   return (
-    tokens.every((token) => classes.has(token)) ||
-    classes.has(tokens.join("_"))
+    tokens.every((token) => classes.has(token)) || classes.has(tokens.join("_"))
   );
 }
 
@@ -38,16 +44,18 @@ function weaponProfile(attacker, defender) {
       ...weapon,
       bonus,
       armor,
-      dps: hit / Math.max(0.5, weapon.speed),
+      dps: hit / Math.max(TUNING.speedFloor, weapon.speed),
     };
   });
 
+  // Beste Waffe (höchste DPS) entscheidet. Fällt eine Einheit ohne (Nicht-Feuer-)
+  // Waffe an, liefert der Fallback einen kampflos schwachen Wert, statt zu werfen.
   return (
     profiles.sort((a, b) => b.dps - a.dps)[0] ?? {
       damage: 0,
       bonus: 0,
       armor: 0,
-      dps: 0.05,
+      dps: TUNING.emptyWeaponDps,
       range: 0,
       speed: 1,
       type: "melee",
@@ -57,60 +65,59 @@ function weaponProfile(attacker, defender) {
 }
 
 function unitCost(unit) {
-  return unit.costs.total > 0 ? unit.costs.total : 180;
+  return unit.costs.total > 0 ? unit.costs.total : TUNING.costFallback;
 }
 
 function terrainMultiplier(unit, terrain) {
+  const table = TERRAIN_MULTIPLIERS[terrain];
+  if (!table) return 1;
   const classes = classSet(unit);
   if (terrain === "engpass") {
-    if (unit.category === "belagerung") return 1.12;
-    if (classes.has("ranged")) return 1.08;
-    if (classes.has("cavalry")) return 0.88;
+    if (unit.category === "belagerung") return table.belagerung;
+    if (classes.has("ranged")) return table.ranged;
+    if (classes.has("cavalry")) return table.cavalry;
   }
   if (terrain === "offen") {
-    if (classes.has("cavalry")) return 1.08;
-    if (classes.has("ranged")) return 1.04;
+    if (classes.has("cavalry")) return table.cavalry;
+    if (classes.has("ranged")) return table.ranged;
   }
   if (terrain === "wald") {
-    if (classes.has("ranged")) return 0.93;
-    if (classes.has("infantry")) return 1.05;
+    if (classes.has("ranged")) return table.ranged;
+    if (classes.has("infantry")) return table.infantry;
   }
   return 1;
 }
 
 function microMultiplier(unit, opponent, micro) {
-  if (micro === "amove") return 1;
+  if (micro !== "stark" && micro !== "solide") return 1;
   const classes = classSet(unit);
   const opponentClasses = classSet(opponent);
   let multiplier = 1;
-  if (classes.has("ranged")) multiplier += micro === "stark" ? 0.14 : 0.07;
-  if (classes.has("cavalry")) multiplier += micro === "stark" ? 0.08 : 0.04;
+  if (classes.has("ranged")) multiplier += MICRO_BONUSES.ranged[micro];
+  if (classes.has("cavalry")) multiplier += MICRO_BONUSES.cavalry[micro];
   if (
     classes.has("ranged") &&
     unit.movement > opponent.movement &&
     !opponentClasses.has("ranged")
   ) {
-    multiplier += micro === "stark" ? 0.1 : 0.04;
+    multiplier += MICRO_BONUSES.kite[micro];
   }
   return multiplier;
 }
 
+// Flächenschaden/Spezialprofile lesen jetzt daten-getriebene Flags
+// (unit.flags), statt IDs zur Laufzeit per Regex zu erraten.
 function splashMultiplier(attacker, defender, mode) {
   if (mode !== "resources") return 1;
   const defenderClasses = classSet(defender);
-  const splashIds =
-    /mangonel|ribauldequin|nest-of-bees|great-bombard|huihui|ozutsu|cheirosiphon|eruptor/;
   if (
-    splashIds.test(attacker.id) &&
+    attacker.flags?.splash &&
     (defenderClasses.has("infantry") || defenderClasses.has("ranged"))
   ) {
-    return 1.22;
+    return SPLASH.siegeVsSoft;
   }
-  if (
-    /landsknecht|varangian|zhanma/.test(attacker.id) &&
-    defenderClasses.has("infantry")
-  ) {
-    return 1.8;
+  if (attacker.flags?.antiInfantryMelee && defenderClasses.has("infantry")) {
+    return SPLASH.antiInfantryMelee;
   }
   return 1;
 }
@@ -148,15 +155,15 @@ function isPreferredTarget(attacker, target) {
   );
 
   if (hasUnitBonus) return hasMatchingBonus(attacker, target);
-  if (/landsknecht|varangian|zhanma/.test(attacker.id))
-    return targetClasses.has("infantry");
+  if (attacker.flags?.antiInfantryMelee) return targetClasses.has("infantry");
   if (attackerClasses.has("gunpowder") && attackerClasses.has("ranged"))
     return targetClasses.has("heavy");
   if (attackerClasses.has("cavalry") && attackerClasses.has("melee"))
     return targetClasses.has("ranged") || target.category === "belagerung";
   if (attackerClasses.has("heavy") && attackerClasses.has("melee_infantry"))
     return (
-      targetClasses.has("infantry_light") || targetClasses.has("ranged_infantry")
+      targetClasses.has("infantry_light") ||
+      targetClasses.has("ranged_infantry")
     );
   if (attacker.category === "belagerung")
     return targetClasses.has("ranged") || targetClasses.has("infantry");
@@ -168,10 +175,10 @@ function sideStrength(unit, opponent, settings, upgradeDelta = 0) {
   const opponentWeapon = weaponProfile(opponent, unit);
   const count =
     settings.mode === "resources"
-      ? Math.max(0.35, settings.budget / unitCost(unit))
+      ? Math.max(TUNING.countFloor, settings.budget / unitCost(unit))
       : 1;
-  const hp = Math.max(20, unit.hp || 75);
-  const individual = Math.sqrt(Math.max(0.05, weapon.dps) * hp);
+  const hp = Math.max(TUNING.hpFloor, unit.hp || TUNING.fallbackHp);
+  const individual = Math.sqrt(Math.max(TUNING.dpsFloor, weapon.dps) * hp);
 
   let tactical = 1;
   // In AoE IV, explicit class bonuses are not merely extra raw DPS: they define
@@ -181,20 +188,21 @@ function sideStrength(unit, opponent, settings, upgradeDelta = 0) {
     tactical *=
       1 +
       Math.min(
-        1.6,
-        (weapon.bonus / Math.max(1, weapon.damage)) * 1.4,
+        TUNING.bonusCap,
+        (weapon.bonus / Math.max(1, weapon.damage)) * TUNING.bonusWeight,
       );
   }
   const rangeLead = weapon.range - opponentWeapon.range;
   if (rangeLead > 0) {
     const microScale =
-      settings.micro === "stark" ? 1.25 : settings.micro === "solide" ? 1 : 0.45;
-    tactical *= 1 + Math.min(0.22, rangeLead * 0.025 * microScale);
+      MICRO_RANGE_SCALE[settings.micro] ?? MICRO_RANGE_SCALE.amove;
+    tactical *=
+      1 + Math.min(TUNING.rangeCap, rangeLead * TUNING.rangeRate * microScale);
   }
   tactical *= terrainMultiplier(unit, settings.terrain);
   tactical *= microMultiplier(unit, opponent, settings.micro);
   tactical *= splashMultiplier(unit, opponent, settings.mode);
-  tactical *= 1 + upgradeDelta * 0.075;
+  tactical *= 1 + upgradeDelta * TUNING.upgradeStep;
 
   return {
     weapon,
@@ -204,94 +212,121 @@ function sideStrength(unit, opponent, settings, upgradeDelta = 0) {
   };
 }
 
+// Domänentrennung: nur "marine" gilt als Wasser; alles andere (inkl. fehlender/
+// unbekannter Kategorie) wird bewusst als Landeinheit behandelt.
 function domain(unit) {
   return unit.category === "marine" ? "water" : "land";
 }
 
-function verdict(ratio, sameUnit) {
-  if (sameUnit) {
-    return {
-      key: "mirror",
-      label: "Spiegelmatchup",
-      short: "Gleichstand",
-      tone: "neutral",
-    };
-  }
-  if (ratio >= 1.52)
-    return {
-      key: "hard",
-      label: "Klarer Counter",
-      short: "Stark",
-      tone: "positive",
-    };
-  if (ratio >= 1.16)
-    return {
-      key: "soft",
-      label: "Leichter Vorteil",
-      short: "Vorteil",
-      tone: "positive",
-    };
-  if (ratio > 0.86)
-    return {
-      key: "skill",
-      label: "Skill-Matchup",
-      short: "Situativ",
-      tone: "neutral",
-    };
-  if (ratio > 0.66)
-    return {
-      key: "soft-loss",
-      label: "Leichter Nachteil",
-      short: "Nachteil",
-      tone: "negative",
-    };
-  return {
-    key: "hard-loss",
-    label: "Harter Nachteil",
-    short: "Schwach",
-    tone: "negative",
-  };
+// Label + Kurzform je Verdict-Schlüssel und Sprache: [label, short].
+const VERDICT_LABELS = {
+  mirror: {
+    de: ["Spiegel-Matchup", "Gleichstand"],
+    en: ["Mirror matchup", "Even"],
+  },
+  hard: { de: ["Klarer Counter", "Stark"], en: ["Clear counter", "Strong"] },
+  soft: { de: ["Leichter Vorteil", "Vorteil"], en: ["Slight edge", "Edge"] },
+  skill: {
+    de: ["Skill-Matchup", "Situativ"],
+    en: ["Skill matchup", "Situational"],
+  },
+  "soft-loss": {
+    de: ["Leichter Nachteil", "Nachteil"],
+    en: ["Slight loss", "Behind"],
+  },
+  "hard-loss": {
+    de: ["Harter Nachteil", "Schwach"],
+    en: ["Hard loss", "Weak"],
+  },
+  invalid: {
+    de: ["Andere Domäne", "Land/Wasser"],
+    en: ["Not comparable", "Other domain"],
+  },
+};
+
+function makeVerdict(key, tone, lang) {
+  const [label, short] = VERDICT_LABELS[key][lang] ?? VERDICT_LABELS[key].de;
+  return { key, label, short, tone };
 }
 
-function matchupReasons(attacker, defender, a, b, ratio, settings) {
+function verdict(ratio, sameUnit, lang) {
+  if (sameUnit) return makeVerdict("mirror", "neutral", lang);
+  if (ratio >= VERDICT_THRESHOLDS.hard)
+    return makeVerdict("hard", "positive", lang);
+  if (ratio >= VERDICT_THRESHOLDS.soft)
+    return makeVerdict("soft", "positive", lang);
+  if (ratio > VERDICT_THRESHOLDS.skill)
+    return makeVerdict("skill", "neutral", lang);
+  if (ratio > VERDICT_THRESHOLDS.softLoss)
+    return makeVerdict("soft-loss", "negative", lang);
+  return makeVerdict("hard-loss", "negative", lang);
+}
+
+function matchupReasons(attacker, defender, a, b, ratio, settings, lang) {
+  const L = (de, en) => (lang === "en" ? en : de);
+  const nA = unitName(attacker, lang);
+  const nD = unitName(defender, lang);
   const reasons = [];
   if (a.weapon.bonus > 0) {
+    const bonus = Math.round(a.weapon.bonus);
     reasons.push({
-      title: `+${Math.round(a.weapon.bonus)} Bonusschaden`,
-      text: `${unitName(attacker)} trifft gezielt eine Klasse von ${unitName(defender)}.`,
+      title: L(`+${bonus} Bonusschaden`, `+${bonus} bonus damage`),
+      text: L(
+        `${nA} trifft gezielt eine Klasse von ${nD}.`,
+        `${nA} deals bonus damage to a class ${nD} belongs to.`,
+      ),
       good: true,
     });
   }
   if (b.weapon.bonus > 0) {
+    const bonus = Math.round(b.weapon.bonus);
+    const role = roleLabel(attacker, lang).toLowerCase();
     reasons.push({
-      title: `Gegner hat +${Math.round(b.weapon.bonus)}`,
-      text: `${unitName(defender)} besitzt passenden Bonusschaden gegen ${roleLabel(attacker).toLowerCase()}.`,
+      title: L(`Gegner hat +${bonus}`, `Enemy has +${bonus}`),
+      text: L(
+        `${nD} besitzt passenden Bonusschaden gegen ${role}.`,
+        `${nD} has matching bonus damage against ${role}.`,
+      ),
       good: false,
     });
   }
-  if (a.weapon.range - b.weapon.range >= 2) {
+  const rangeDiff = a.weapon.range - b.weapon.range;
+  if (rangeDiff >= 2) {
     reasons.push({
-      title: "Sicherer Abstand",
-      text: `+${(a.weapon.range - b.weapon.range).toFixed(1)} Felder Reichweite – nur wertvoll, wenn du den Abstand hältst.`,
+      title: L("Sicherer Abstand", "Safe distance"),
+      text: L(
+        `+${rangeDiff.toFixed(1)} Felder Reichweite – nur wertvoll, wenn du den Abstand hältst.`,
+        `+${rangeDiff.toFixed(1)} tiles of range – only worth it if you keep the distance.`,
+      ),
       good: true,
     });
-  } else if (b.weapon.range - a.weapon.range >= 2) {
+  } else if (-rangeDiff >= 2) {
     reasons.push({
-      title: "Reichweitenproblem",
-      text: `${unitName(attacker)} muss erst ${(
-        b.weapon.range - a.weapon.range
-      ).toFixed(1)} Felder überbrücken.`,
+      title: L("Reichweitenproblem", "Range problem"),
+      text: L(
+        `${nA} muss erst ${(-rangeDiff).toFixed(1)} Felder überbrücken.`,
+        `${nA} first has to close ${(-rangeDiff).toFixed(1)} tiles.`,
+      ),
       good: false,
     });
   }
   const costGap = unitCost(defender) - unitCost(attacker);
   if (settings.mode === "resources" && Math.abs(costGap) >= 45) {
     reasons.push({
-      title: costGap > 0 ? "Mehr Körper fürs Budget" : "Teure Antwort",
+      title:
+        costGap > 0
+          ? L("Mehr Körper fürs Budget", "More bodies per budget")
+          : L("Teure Antwort", "Expensive answer"),
       text:
         costGap > 0
-          ? `Bei ${settings.budget} Ressourcen stehen ungefähr ${a.count.toFixed(1)} gegen ${b.count.toFixed(1)} Einheiten.`
-          : `${unitName(attacker)} kostet deutlich mehr; jeder Verlust tut weh.`,
+          ? L(
+              `Bei ${settings.budget} Ressourcen stehen ungefähr ${a.count.toFixed(1)} gegen ${b.count.toFixed(1)} Einheiten.`,
+              `At ${settings.budget} resources that is roughly ${a.count.toFixed(1)} vs ${b.count.toFixed(1)} units.`,
+            )
+          : L(
+              `${nA} kostet deutlich mehr; jeder Verlust tut weh.`,
+              `${nA} costs noticeably more; every loss hurts.`,
+            ),
       good: costGap > 0,
     });
   }
@@ -300,29 +335,50 @@ function matchupReasons(attacker, defender, a, b, ratio, settings) {
     defender.armor.melee + defender.armor.ranged + 5
   ) {
     reasons.push({
-      title: "Rüstungsvorteil",
-      text: `${unitName(attacker)} kann Grundschaden besser abfangen.`,
+      title: L("Rüstungsvorteil", "Armour advantage"),
+      text: L(
+        `${nA} kann Grundschaden besser abfangen.`,
+        `${nA} absorbs base damage better.`,
+      ),
       good: true,
     });
   }
   if (reasons.length < 2) {
     reasons.push({
-      title: ratio > 1 ? "Besseres Gesamtpaket" : "Kein natürlicher Counter",
+      title:
+        ratio > 1
+          ? L("Besseres Gesamtpaket", "Better overall package")
+          : L("Kein natürlicher Counter", "No natural counter"),
       text:
         ratio > 1
-          ? "Schaden, Haltbarkeit und Kosten greifen in diesem Szenario besser ineinander."
-          : "Ohne Klassenbonus entscheiden Support, Zahl, Position und Fokusfeuer.",
+          ? L(
+              "Schaden, Haltbarkeit und Kosten greifen in diesem Szenario besser ineinander.",
+              "Damage, durability and cost mesh better in this scenario.",
+            )
+          : L(
+              "Ohne Klassenbonus entscheiden Support, Zahl, Position und Fokusfeuer.",
+              "Without a class bonus, support, numbers, position and focus fire decide.",
+            ),
       good: ratio > 1,
     });
   }
   if (reasons.length < 3) {
     const terrainText = {
-      offen: "Offenes Feld gibt mobilen Einheiten und Kiting mehr Raum.",
-      engpass: "Im Engpass zählen Frontbreite und Flächenschaden stärker.",
-      wald: "Waldwege verkürzen Sichtlinien und bremsen breite Formationen.",
+      offen: L(
+        "Offenes Feld gibt mobilen Einheiten und Kiting mehr Raum.",
+        "Open field gives mobile units and kiting more room.",
+      ),
+      engpass: L(
+        "Im Engpass zählen Frontbreite und Flächenschaden stärker.",
+        "In a choke, frontage and area damage matter more.",
+      ),
+      wald: L(
+        "Waldwege verkürzen Sichtlinien und bremsen breite Formationen.",
+        "Forest paths shorten sightlines and slow wide formations.",
+      ),
     };
     reasons.push({
-      title: "Gelände & Ausführung",
+      title: L("Gelände & Ausführung", "Terrain & execution"),
       text: terrainText[settings.terrain],
       good: settings.terrain !== "wald" || attacker.category === "infanterie",
     });
@@ -339,27 +395,40 @@ export const DEFAULT_SETTINGS = {
   age: 4,
 };
 
+/**
+ * Bewertet Angreifer gegen Verteidiger im erklärbaren Lernmodell.
+ * @param {Unit} attacker
+ * @param {Unit} defender
+ * @param {Partial<MatchupSettings>} [settings]
+ * @param {"de"|"en"} [lang]
+ * @returns {MatchupResult | null}
+ */
 export function calculateMatchup(
   attacker,
   defender,
   settings = DEFAULT_SETTINGS,
+  lang = "de",
 ) {
   if (!attacker || !defender) return null;
+  // Fehlende Felder gegen die Defaults auffüllen, damit einzelne undefinierte
+  // Einstellungen nicht zu NaN-Ergebnissen führen.
+  settings = { ...DEFAULT_SETTINGS, ...settings };
   if (domain(attacker) !== domain(defender)) {
     return {
       comparable: false,
-      verdict: {
-        key: "invalid",
-        label: "Nicht vergleichbar",
-        short: "Andere Domäne",
-        tone: "neutral",
-      },
+      verdict: makeVerdict("invalid", "neutral", lang),
       ratio: 1,
       confidence: 0,
       reasons: [
         {
-          title: "Land und Wasser getrennt",
-          text: "Marineeinheiten werden nur mit Marineeinheiten bewertet.",
+          title:
+            lang === "en"
+              ? "Land and water separated"
+              : "Land und Wasser getrennt",
+          text:
+            lang === "en"
+              ? "Naval units are only rated against other naval units."
+              : "Marineeinheiten werden nur mit Marineeinheiten bewertet.",
           good: false,
         },
       ],
@@ -373,24 +442,40 @@ export function calculateMatchup(
     Number(settings.upgrades ?? 0),
   );
   const b = sideStrength(defender, attacker, settings, 0);
-  const ratio = a.value / Math.max(0.01, b.value);
-  const resultVerdict = verdict(ratio, attacker.id === defender.id);
+  const ratio = a.value / Math.max(TUNING.ratioFloor, b.value);
+  const resultVerdict = verdict(ratio, attacker.id === defender.id, lang);
   return {
     comparable: true,
     verdict: resultVerdict,
     ratio,
-    confidence: Math.min(96, Math.round(56 + Math.abs(Math.log2(ratio)) * 24)),
+    confidence: Math.min(
+      TUNING.confidenceCap,
+      Math.round(
+        TUNING.confidenceBase +
+          Math.abs(Math.log2(ratio)) * TUNING.confidenceScale,
+      ),
+    ),
     attacker: a,
     defender: b,
-    reasons: matchupReasons(attacker, defender, a, b, ratio, settings),
+    reasons: matchupReasons(attacker, defender, a, b, ratio, settings, lang),
   };
 }
 
+/**
+ * Beste direkte Antworten auf eine Zieleinheit, absteigend nach Vorteil.
+ * @param {Unit[]} allUnits
+ * @param {Unit} target
+ * @param {Partial<MatchupSettings>} [settings]
+ * @param {number} [limit]
+ * @param {"de"|"en"} [lang]
+ * @returns {CounterCandidate[]}
+ */
 export function getCounterCandidates(
   allUnits,
   target,
   settings = DEFAULT_SETTINGS,
   limit = 5,
+  lang = "de",
 ) {
   return allUnits
     .filter(
@@ -401,31 +486,51 @@ export function getCounterCandidates(
         unit.weapons.length > 0 &&
         unit.costs.total > 0 &&
         unit.category !== "support" &&
-        !FORMATION_IDS.has(unit.id),
+        !unit.flags?.formation,
     )
     .map((unit) => ({
       unit,
-      result: calculateMatchup(unit, target, settings),
+      result: calculateMatchup(unit, target, settings, lang),
     }))
     .filter((entry) => entry.result.comparable)
     .sort((a, b) => b.result.ratio - a.result.ratio)
     .slice(0, limit);
 }
 
+/**
+ * Einheiten, die diese Einheit am stärksten bedrohen.
+ * @param {Unit[]} allUnits
+ * @param {Unit} unit
+ * @param {Partial<MatchupSettings>} [settings]
+ * @param {number} [limit]
+ * @param {"de"|"en"} [lang]
+ * @returns {CounterCandidate[]}
+ */
 export function getThreats(
   allUnits,
   unit,
   settings = DEFAULT_SETTINGS,
   limit = 4,
+  lang = "de",
 ) {
-  return getCounterCandidates(allUnits, unit, settings, limit);
+  return getCounterCandidates(allUnits, unit, settings, limit, lang);
 }
 
+/**
+ * Ziele, gegen die diese Einheit bevorzugt eingesetzt wird.
+ * @param {Unit[]} allUnits
+ * @param {Unit} unit
+ * @param {Partial<MatchupSettings>} [settings]
+ * @param {number} [limit]
+ * @param {"de"|"en"} [lang]
+ * @returns {CounterCandidate[]}
+ */
 export function getFavoredTargets(
   allUnits,
   unit,
   settings = DEFAULT_SETTINGS,
   limit = 4,
+  lang = "de",
 ) {
   return allUnits
     .filter(
@@ -440,11 +545,11 @@ export function getFavoredTargets(
         (target.category !== "belagerung" ||
           unit.category === "kavallerie" ||
           hasExplicitBonusAgainst(unit, "siege")) &&
-        !FORMATION_IDS.has(target.id),
+        !target.flags?.formation,
     )
     .map((target) => ({
       unit: target,
-      result: calculateMatchup(unit, target, settings),
+      result: calculateMatchup(unit, target, settings, lang),
     }))
     .filter((entry) => entry.result.comparable)
     .sort((a, b) => b.result.ratio - a.result.ratio)

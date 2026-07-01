@@ -11,12 +11,8 @@ import {
   X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { roleLabel, unitName } from "../data/localization";
-import {
-  calculateMatchup,
-  DEFAULT_SETTINGS,
-  getCounterCandidates,
-} from "../lib/matchup";
+import { useI18n } from "../i18n/LanguageProvider.jsx";
+import { calculateMatchup, DEFAULT_SETTINGS } from "../lib/matchup";
 import UnitAvatar from "./UnitAvatar";
 
 const TARGET_POOL = [
@@ -49,23 +45,27 @@ const ANSWER_POOL = [
   "ghulam",
 ];
 
-function createQuestion(units, index) {
+// Aus welchen Rang-Perzentilen die Falschantworten gezogen werden: ein guter,
+// ein mittelmäßiger und der schlechteste Vorschlag neben der besten Antwort.
+const DISTRACTOR_PERCENTILES = [0.35, 0.65];
+const MAX_CHOICES = 4;
+
+function createQuestion(units, index, lang) {
   const targetId = TARGET_POOL[index % TARGET_POOL.length];
   const target = units.find((unit) => unit.id === targetId) ?? units[0];
-  const pool = ANSWER_POOL.map((id) => units.find((unit) => unit.id === id)).filter(
-    Boolean,
-  );
+  const pool = ANSWER_POOL.map((id) =>
+    units.find((unit) => unit.id === id),
+  ).filter(Boolean);
   const ranked = pool
     .filter((unit) => unit.id !== target.id)
     .map((unit) => ({
       unit,
-      result: calculateMatchup(unit, target, DEFAULT_SETTINGS),
+      result: calculateMatchup(unit, target, DEFAULT_SETTINGS, lang),
     }))
     .sort((a, b) => b.result.ratio - a.result.ratio);
   const best = ranked[0];
   const distractors = [
-    ranked[Math.floor(ranked.length * 0.35)],
-    ranked[Math.floor(ranked.length * 0.65)],
+    ...DISTRACTOR_PERCENTILES.map((p) => ranked[Math.floor(ranked.length * p)]),
     ranked[ranked.length - 1],
   ].filter(Boolean);
   const choices = [best, ...distractors]
@@ -74,7 +74,7 @@ function createQuestion(units, index) {
         array.findIndex((candidate) => candidate.unit.id === entry.unit.id) ===
         position,
     )
-    .slice(0, 4)
+    .slice(0, MAX_CHOICES)
     .sort(
       (a, b) =>
         ((a.unit.id.charCodeAt(0) + index) % 7) -
@@ -84,13 +84,16 @@ function createQuestion(units, index) {
 }
 
 export default function DrillMode({ units, stats, onAnswered }) {
-  const [questionIndex, setQuestionIndex] = useState(stats.answered % TARGET_POOL.length);
+  const { t, lang, unitName, roleLabel } = useI18n();
+  const [questionIndex, setQuestionIndex] = useState(
+    stats.answered % TARGET_POOL.length,
+  );
   const [selectedId, setSelectedId] = useState(null);
   const [answered, setAnswered] = useState(false);
 
   const question = useMemo(
-    () => createQuestion(units, questionIndex),
-    [questionIndex, units],
+    () => createQuestion(units, questionIndex, lang),
+    [questionIndex, units, lang],
   );
   const selected = question.choices.find(
     (entry) => entry.unit.id === selectedId,
@@ -118,22 +121,19 @@ export default function DrillMode({ units, stats, onAnswered }) {
     <div className="drill-page">
       <header className="drill-header">
         <div>
-          <span>Entscheidungs-Drill</span>
-          <h1>Erkennen. Antworten. Kämpfen.</h1>
-          <p>
-            Nicht raten, sondern lesen: Klasse, Timing, Budget und Raum. Ein
-            echter Counter ist eine Entscheidungskette.
-          </p>
+          <span>{t("drill.kicker")}</span>
+          <h1>{t("drill.title")}</h1>
+          <p>{t("drill.intro")}</p>
         </div>
         <div className="drill-scoreboard">
           <span>
-            <Flame /> Serie <strong>{stats.streak}</strong>
+            <Flame /> {t("drill.streak")} <strong>{stats.streak}</strong>
           </span>
           <span>
-            <Trophy /> Richtig <strong>{stats.correct}</strong>
+            <Trophy /> {t("drill.correct")} <strong>{stats.correct}</strong>
           </span>
           <span>
-            <Swords /> Gespielt <strong>{stats.answered}</strong>
+            <Swords /> {t("drill.played")} <strong>{stats.answered}</strong>
           </span>
         </div>
       </header>
@@ -141,23 +141,27 @@ export default function DrillMode({ units, stats, onAnswered }) {
       <section className="drill-board">
         <div className="drill-board__scenario">
           <div className="scenario-topline">
-            <span>Situation {String(questionIndex + 1).padStart(2, "0")}</span>
             <span>
-              <Clock3 size={14} /> 12 Sekunden Zielzeit
+              {t("drill.situation", {
+                n: String(questionIndex + 1).padStart(2, "0"),
+              })}
+            </span>
+            <span>
+              <Clock3 size={14} /> {t("drill.targetTime")}
             </span>
           </div>
           <UnitAvatar unit={question.target} size="drill" />
-          <span className="scenario-kicker">Der Gegner massiert</span>
+          <span className="scenario-kicker">{t("drill.enemyMassing")}</span>
           <h2>{unitName(question.target)}</h2>
           <p>{roleLabel(question.target)}</p>
           <div className="scenario-conditions">
-            <span>720 Ressourcen</span>
-            <span>Offenes Feld</span>
-            <span>Gleiche Upgrades</span>
+            <span>{t("drill.condResources")}</span>
+            <span>{t("drill.condOpen")}</span>
+            <span>{t("drill.condUpgrades")}</span>
           </div>
           <div className="scenario-question">
             <ShieldQuestion />
-            <strong>Welche Antwort ist am zuverlässigsten?</strong>
+            <strong>{t("drill.question")}</strong>
           </div>
         </div>
 
@@ -199,7 +203,7 @@ export default function DrillMode({ units, stats, onAnswered }) {
               disabled={!selected}
               onClick={submit}
             >
-              Antwort festlegen <Swords size={17} />
+              {t("drill.lockIn")} <Swords size={17} />
             </button>
           ) : (
             <div
@@ -211,16 +215,20 @@ export default function DrillMode({ units, stats, onAnswered }) {
             >
               <span>{correct ? <Check /> : <X />}</span>
               <div>
-                <small>{correct ? "Saubere Entscheidung" : "Das wird teuer"}</small>
+                <small>
+                  {correct ? t("drill.cleanChoice") : t("drill.expensive")}
+                </small>
                 <h3>
                   {correct
-                    ? `${unitName(selected.unit)} ist hier die beste Antwort.`
-                    : `${unitName(question.best.unit)} wäre zuverlässiger.`}
+                    ? t("drill.bestHere", { name: unitName(selected.unit) })
+                    : t("drill.wouldBeBetter", {
+                        name: unitName(question.best.unit),
+                      })}
                 </h3>
                 <p>{question.best.result.reasons[0]?.text}</p>
               </div>
               <button type="button" onClick={next}>
-                Nächste Situation <ArrowRight size={15} />
+                {t("drill.nextSituation")} <ArrowRight size={15} />
               </button>
             </div>
           )}
@@ -230,12 +238,9 @@ export default function DrillMode({ units, stats, onAnswered }) {
       <section className="drill-principle">
         <Sparkles />
         <div>
-          <span>Merksatz</span>
-          <strong>Erst erkennen, dann produzieren.</strong>
-          <p>
-            Scoute die Produktionsgebäude, nicht erst die fertige Armee. Ein
-            Counter, der 90 Sekunden zu spät kommt, ist keiner.
-          </p>
+          <span>{t("drill.keyRule")}</span>
+          <strong>{t("drill.keyRuleTitle")}</strong>
+          <p>{t("drill.keyRuleBody")}</p>
         </div>
         <button
           type="button"
@@ -244,7 +249,7 @@ export default function DrillMode({ units, stats, onAnswered }) {
             setAnswered(false);
           }}
         >
-          <RotateCcw size={15} /> Neu versuchen
+          <RotateCcw size={15} /> {t("drill.retry")}
         </button>
       </section>
     </div>

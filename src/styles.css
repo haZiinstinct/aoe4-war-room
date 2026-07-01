@@ -1,24 +1,21 @@
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap");
+/* Webfonts werden nicht-render-blockierend via <link rel="preload"> in
+   index.html geladen (Swap zu stylesheet per onload). Kein @import hier — das
+   würde den First Paint blockieren. */
 
 :root {
   color-scheme: dark;
   --bg: #0b0e0d;
-  --bg-raised: #111514;
   --surface: #151917;
-  --surface-2: #1b1f1c;
   --surface-red: #26120f;
   --ink: #f0e7d6;
   --muted: #a49d90;
-  --faint: #6d6a62;
   --gold: #c89d4f;
   --gold-bright: #e0b665;
   --gold-dark: #6d5229;
   --line: #4c3b22;
   --line-soft: #292821;
   --red: #b84f3f;
-  --red-deep: #6f241e;
   --green: #78a16e;
-  --green-deep: #29442c;
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-condensed: "Barlow Condensed", "Arial Narrow", sans-serif;
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
@@ -43,7 +40,11 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 58% 0%, rgba(89, 43, 29, 0.09), transparent 34rem),
+    radial-gradient(
+      circle at 58% 0%,
+      rgba(89, 43, 29, 0.09),
+      transparent 34rem
+    ),
     var(--bg);
   color: var(--ink);
 }
@@ -95,6 +96,31 @@ h3 {
 p {
   margin-top: 0;
   text-wrap: pretty;
+}
+
+.app-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 32rem;
+  margin: 12vh auto;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.app-error h1 {
+  font: 600 26px/1.1 var(--font-serif);
+  color: var(--gold-bright);
+}
+
+.app-error button {
+  min-height: 42px;
+  padding: 0 22px;
+  border: 1px solid var(--gold-bright);
+  border-radius: 1px;
+  background: transparent;
+  color: var(--gold-bright);
 }
 
 .sr-only {
@@ -322,6 +348,25 @@ p {
   color: var(--gold-bright);
 }
 
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 1px;
+  background: transparent;
+  color: #b6aa93;
+  font: 600 12px/1 var(--font-condensed);
+  letter-spacing: 0.08em;
+}
+
+.lang-toggle:hover {
+  border-color: var(--gold-dark);
+  color: var(--gold-bright);
+}
+
 .menu-button,
 .mobile-nav,
 .source-fab {
@@ -373,9 +418,7 @@ p {
   overflow: hidden;
   place-items: center;
   border: 1px solid #3c3426;
-  background:
-    radial-gradient(circle at 50% 30%, #423422, #141614 68%),
-    #141614;
+  background: radial-gradient(circle at 50% 30%, #423422, #141614 68%), #141614;
 }
 
 .unit-avatar::after {
@@ -406,9 +449,7 @@ p {
   width: min(15vw, 220px);
   height: min(22vw, 304px);
   border-color: #584327;
-  background:
-    radial-gradient(circle at 50% 30%, #4f3824, #171816 68%),
-    #171816;
+  background: radial-gradient(circle at 50% 30%, #4f3824, #171816 68%), #171816;
 }
 
 .unit-avatar--hero img {
@@ -593,7 +634,11 @@ kbd {
 }
 
 .unit-row.is-selected {
-  background: linear-gradient(90deg, rgba(111, 36, 30, 0.58), rgba(51, 31, 22, 0.3));
+  background: linear-gradient(
+    90deg,
+    rgba(111, 36, 30, 0.58),
+    rgba(51, 31, 22, 0.3)
+  );
   color: var(--gold-bright);
   box-shadow: inset 2px 0 var(--gold);
 }
@@ -641,7 +686,11 @@ kbd {
 .counter-workspace {
   min-width: 0;
   background:
-    radial-gradient(circle at 50% 8%, rgba(98, 47, 28, 0.18), transparent 26rem),
+    radial-gradient(
+      circle at 50% 8%,
+      rgba(98, 47, 28, 0.18),
+      transparent 26rem
+    ),
     rgba(10, 13, 12, 0.88);
 }
 
@@ -849,10 +898,14 @@ kbd {
 
 .verdict > strong {
   max-width: 180px;
-  font: 700 27px/0.95 var(--font-serif);
+  font: 700 27px/0.98 var(--font-serif);
   letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--gold-bright);
+  /* Lange Labels („Nicht vergleichbar", „Hard disadvantage") brechen sauber
+     um statt aus dem schmalen Verdikt-Rahmen zu laufen. */
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .verdict > p {
@@ -1100,6 +1153,13 @@ kbd {
   text-transform: uppercase;
 }
 
+.variables-band__help {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+  color: #8a8478;
+  font: 500 11px/1.4 var(--font-sans);
+}
+
 .variables-band__title span,
 .variable-group > span {
   color: #7f7a70;
@@ -1186,8 +1246,7 @@ kbd {
   padding: 13px 22px;
   border-bottom: 1px solid var(--line);
   background:
-    linear-gradient(90deg, rgba(74, 24, 19, 0.34), transparent 42%),
-    #0c0f0e;
+    linear-gradient(90deg, rgba(74, 24, 19, 0.34), transparent 42%), #0c0f0e;
 }
 
 .drill-teaser__index {
@@ -1454,7 +1513,9 @@ kbd {
 .unit-table__head,
 .unit-table__body > button {
   display: grid;
-  grid-template-columns: auto minmax(130px, 1.1fr) minmax(105px, 0.8fr) 38px auto;
+  grid-template-columns:
+    auto minmax(130px, 1.1fr) minmax(105px, 0.8fr)
+    38px auto;
   align-items: center;
   gap: 10px;
 }
@@ -1494,7 +1555,11 @@ kbd {
 }
 
 .unit-table__body > button.is-selected {
-  background: linear-gradient(90deg, rgba(111, 36, 30, 0.72), rgba(39, 23, 18, 0.4));
+  background: linear-gradient(
+    90deg,
+    rgba(111, 36, 30, 0.72),
+    rgba(39, 23, 18, 0.4)
+  );
   box-shadow: inset 2px 0 var(--gold);
 }
 
@@ -1557,7 +1622,11 @@ kbd {
 .unit-dossier {
   min-width: 0;
   background:
-    radial-gradient(circle at 45% 0%, rgba(99, 44, 28, 0.12), transparent 30rem),
+    radial-gradient(
+      circle at 45% 0%,
+      rgba(99, 44, 28, 0.12),
+      transparent 30rem
+    ),
     rgba(11, 14, 13, 0.88);
 }
 
@@ -2049,7 +2118,11 @@ kbd {
   overflow: hidden;
   border-right: 1px solid var(--line);
   background:
-    radial-gradient(circle at 50% 45%, rgba(108, 47, 28, 0.22), transparent 20rem),
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(108, 47, 28, 0.22),
+      transparent 20rem
+    ),
     #101311;
   text-align: center;
 }
