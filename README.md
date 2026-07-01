@@ -1,110 +1,132 @@
-# WAR ROOM — AoE IV Counter Lab
+<div align="center">
 
-Interaktive, zweisprachige (Deutsch/Englisch) Lern-App für Age of Empires IV.
-Sie kombiniert einen vollständigen Einheiten-Browser mit einem erklärbaren
-Matchup-Modell, Entscheidungs-Drills und sechs praktischen Kampfregeln.
+<img src="docs/banner.svg" alt="WAR ROOM — Age of Empires IV Counter Lab" width="100%" />
 
-**Live-Demo:** <https://aoe4.hazii.org>
+<h1>WAR ROOM</h1>
 
-![WAR ROOM Desktop](outputs/audit-desktop.png)
+<p><b>An interactive counter lab for Age of Empires IV.</b><br />
+Learn which unit beats which — with an explainable matchup model, decision drills, and six practical combat rules.</p>
 
-## Enthalten
+<p>
+  <a href="https://aoe4.hazii.org"><img alt="Live demo" src="https://img.shields.io/badge/%E2%96%B6%20live%20demo-aoe4.hazii.org-e0b665?style=for-the-badge&labelColor=0b0e0d" /></a>
+</p>
 
-- 205 militärisch klassifizierte Einträge aus 23 Zivilisationen
-- 42.025 gerichtete Einheit-gegen-Einheit-Paarungen
-- getrennte Land- und Marinevergleiche
-- Kosten- oder 1:1-Vergleich
-- Variablen für Upgrades, Gelände und Micro
-- Such- und Filteroberfläche für Standard-, Spezial- und Unterstützungseinheiten
-- interaktive Counter-Drills mit lokal gespeichertem Fortschritt
-- vollständig zweisprachige Oberfläche (Deutsch/Englisch) mit Umschalter
-- responsive Desktop- und Mobile-Oberfläche
+<p>
+  <a href="https://github.com/haZiinstinct/aoe4-war-room/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/haZiinstinct/aoe4-war-room/actions/workflows/ci.yml/badge.svg" /></a>
+  <img alt="Version" src="https://img.shields.io/badge/version-1.1.0-c89d4f" />
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white" />
+  <img alt="Languages DE / EN" src="https://img.shields.io/badge/languages-DE%20%2F%20EN-78a16e" />
+  <img alt="Standalone single file" src="https://img.shields.io/badge/standalone-single%20file-6d5229" />
+</p>
 
-## Sofort benutzen oder hochladen
+<sub><a href="#-four-ways-to-get-better">Modes</a> · <a href="#-how-the-model-works">How it works</a> · <a href="#-use-it">Use it</a> · <a href="#-tech--development">Tech</a> · <a href="#-data--sources">Data</a></sub>
 
-Die fertige Datei liegt unter `outputs/index.html`.
+</div>
 
-- Per Doppelklick direkt im Browser öffnen.
-- Als einzelne `index.html` auf einen Webspace, Netlify Drop, GitHub Pages
-  oder einen beliebigen statischen Hoster hochladen.
-- An andere Personen schicken; es werden keine zusätzlichen JavaScript- oder
-  CSS-Dateien benötigt.
+---
 
-Die Einheitengrafiken und Webfonts werden online geladen. Die Oberfläche,
-Einheitendaten und komplette Counter-Logik stecken direkt in der HTML-Datei.
+WAR ROOM turns raw Age of Empires IV unit data into something you can actually
+**learn from**. Instead of a static counter chart, it explains _why_ a matchup
+tips the way it does — bonus damage, range, cost efficiency, terrain and micro —
+and lets you change the fight and watch the answer change with it.
 
-## Entwicklung lokal starten
+It runs as a **single HTML file**: open it, host it anywhere, or use the live
+demo. No install, no account, no tracking.
 
-```powershell
-npm.cmd install
-npm.cmd run dev
+## ✨ Highlights
+
+- 🗡️ **205 units** across **23 civilizations**, **42,025** directed unit-vs-unit matchups
+- 🧠 **Explainable model** — every verdict comes with its reasoning and a confidence score, close fights are flagged as _skill matchups_
+- 🎚️ **Change the fight** — resources vs. 1-on-1, age, upgrades, terrain and micro; watch tight matchups flip
+- 🌍 **German & English** — full UI toggle, your choice is remembered
+- 🎯 **Real data** — pulled from [aoe4world/data](https://github.com/aoe4world/data), no made-up numbers
+- 📦 **Standalone** — one self-contained file, works offline (images/fonts load online), deploy on any static host
+- ♿ **Accessible & responsive** — keyboard-friendly, focus-managed, mobile-ready
+
+## 🎮 Four ways to get better
+
+|                      |                                                                                                                                                                                                                |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ⚔️ **Counter Lab**   | Pick your unit and the enemy. Get a clear verdict (from _clear counter_ to _hard loss_), a model-confidence %, and the reasons behind it. Ranked counter suggestions update as you tweak the combat variables. |
+| 🔎 **Unit Explorer** | Browse and filter every unit. Each dossier shows stats, weapons, _strong against / weak against_ lists and concrete usage tips.                                                                                |
+| ⏱️ **Drills**        | The enemy is massing something — pick the best affordable answer in 12 seconds. Your streak and progress are saved locally.                                                                                    |
+| 🧭 **Fight IQ**      | Six practical combat rules (scout production, compare resources, control the contact, play the space, target by value, switch before you must) plus a 10-second pre-fight checklist.                           |
+
+## 🖼️ Screenshots
+
+<div align="center">
+  <img src="outputs/audit-desktop.png" alt="Counter Lab on desktop" width="90%" />
+  <br /><br />
+  <img src="outputs/audit-mobile.png" alt="Counter Lab on mobile" width="34%" />
+</div>
+
+> The app itself is bilingual — switch between 🇩🇪 Deutsch and 🇬🇧 English with the
+> toggle in the top-right corner.
+
+## 🧠 How the model works
+
+The matchup score is a **learning model, not a frame-perfect combat simulator.**
+For each side it combines:
+
+- **class & bonus damage** against the opponent's classes,
+- **hit points, armour, attack speed and range**,
+- a **cost comparison** (equal resources) or a straight **1-on-1**,
+- and modifiers for **terrain, micro level and relative upgrade advantage**.
+
+The two sides are compared into a ratio, mapped to a verdict, and paired with a
+**model-confidence** value so you can tell a clear result from a coin-flip.
+
+**Deliberate limits** — civilization bonuses, activated abilities, landmark
+effects, formation depth, real pathfinding and patch special cases can flip a
+result. That's exactly why close matchups are marked as _skill matchups_ rather
+than pretending to be certain. All tuning constants are named and documented in
+[`src/lib/matchup.config.js`](src/lib/matchup.config.js).
+
+## 🚀 Use it
+
+- **▶ Live demo:** **<https://aoe4.hazii.org>**
+- **📥 Download:** grab `war-room.html` from the [latest release](https://github.com/haZiinstinct/aoe4-war-room/releases/latest) and open it by double-clicking.
+- **🌐 Self-host:** it's a single static file — drop it on any webspace, Netlify Drop, GitHub Pages, etc. See [`deploy/`](deploy) for a ready-made CSP and step-by-step notes.
+
+## 🛠️ Tech & development
+
+React 19 + Vite 6, bundled into one file via `vite-plugin-singlefile`. Quality is
+guarded by ESLint, Prettier, JSDoc type-checking, a Vitest suite and GitHub
+Actions CI.
+
+```bash
+npm install
+npm run dev        # local dev server on http://127.0.0.1:5173
+npm run build      # production build → outputs/index.html (standalone)
+npm run audit      # lint · typecheck · test · build · standalone check
 ```
 
-Danach `http://127.0.0.1:5173/` öffnen.
+Updating the game data:
 
-Produktions-Build und neue Standalone-Datei erzeugen:
-
-```powershell
-npm.cmd run build
-```
-
-Der Build prüft automatisch, dass keine lokalen `/assets`-Abhängigkeiten in
-der fertigen Datei verbleiben.
-
-## Qualitätssicherung
-
-Die Codebasis ist mit ESLint, Prettier, JSDoc-Typprüfung (`tsc --checkJs`) und
-einer Vitest-Suite abgesichert; eine GitHub-Actions-CI führt dieselben Schritte
-bei jedem Push und Pull Request aus.
-
-```powershell
-npm.cmd run lint        # ESLint
-npm.cmd run format      # Prettier schreiben
-npm.cmd run typecheck   # JSDoc-Typen via tsc --checkJs
-npm.cmd run test        # Vitest
-npm.cmd run audit       # lint + typecheck + test + build + Standalone-Prüfung
-```
-
-Der ausführliche Prüfbericht liegt in [AUDIT.md](AUDIT.md).
-
-## Daten aktualisieren
-
-Die generierte Datei `src/data/units.generated.js` basiert auf
-[aoe4world/data](https://github.com/aoe4world/data). Für ein Update:
-
-```powershell
+```bash
 git clone --depth 1 https://github.com/aoe4world/data.git work/aoe4world-data
-npm.cmd run generate:data
+npm run generate:data
 ```
 
-Der Generator schreibt den Upstream-Commit (statt eines Build-Datums) in den
-Kopf der generierten Datei – das hält Git-Diffs sauber und macht den Datenstand
-reproduzierbar. Er validiert außerdem das Upstream-Schema und **warnt sichtbar**,
-wenn gelistete Spezialeinheiten (Belagerung, Anti-Infanterie, Formationen) nicht
-mehr existieren oder neue Klassen-Tokens auftauchen – so fallen Balance-Patches
-auf, statt still die Counter-Logik zu verfälschen. Die Kampf-Flags
-(`flags.splash`, `flags.antiInfantryMelee`, `flags.formation`) werden hier
-gesetzt und von der Laufzeitlogik nur noch gelesen.
+The generator bakes data-driven combat flags into `src/data/units.generated.js`
+and **warns** when listed special units disappear or new class tokens appear, so
+balance patches surface instead of silently breaking the logic.
 
-## Methodik
+## 📊 Data & sources
 
-Der Matchup-Score ist ein Lernmodell, kein frame-genauer Simulator. Er
-berücksichtigt Klassen- und Bonus-Schaden, Trefferpunkte, Rüstung,
-Angriffstempo, Reichweite, Kosten, Gelände, Micro und relativen
-Upgrade-Vorteil. Aktive Fähigkeiten, Landmark-Effekte, exakte Formationen und
-Patch-Sonderfälle können enge Ergebnisse drehen; solche Paarungen werden als
-Skill-Matchup gekennzeichnet.
+- [Official civilization directory](https://www.ageofempires.com/civilizations/)
+- [Official introduction to the counter principle](https://www.ageofempires.com/news/age-of-empires-iv-tips-to-help-you-get-started/)
+- [aoe4world/data](https://github.com/aoe4world/data) — unit values extracted from the game files
+- [aoe4world Explorer](https://aoe4world.com/explorer)
 
-Quellen:
+The exact upstream commit is recorded in the header of
+`src/data/units.generated.js`.
 
-- [Offizielles Zivilisationsverzeichnis](https://www.ageofempires.com/civilizations/)
-- [Offizielle Einführung in das Counter-Prinzip](https://www.ageofempires.com/news/age-of-empires-iv-tips-to-help-you-get-started/)
-- [AoE4 World Data](https://github.com/aoe4world/data)
-- [AoE4 World Explorer](https://aoe4world.com/explorer)
+## ⚖️ Disclaimer
 
-Die Einheitenwerte stammen aus den Spieldateien via
-[aoe4world/data](https://github.com/aoe4world/data); der genutzte Upstream-Commit
-steht im Kopf von `src/data/units.generated.js`.
+Age of Empires IV and related marks are property of their respective owners. This
+is an **independent, non-commercial fan learning project** and is **not affiliated
+with Microsoft or Relic Entertainment**. Not currently released under an
+open-source license.
 
-Age of Empires IV und zugehörige Bezeichnungen sind Eigentum ihrer jeweiligen
-Rechteinhaber. Dieses unabhängige Lernprojekt ist nicht mit Microsoft verbunden.
+<div align="center"><sub>Built by <a href="https://hazii.org">haZii</a> · <code>// webdesign: haZii.org</code></sub></div>
