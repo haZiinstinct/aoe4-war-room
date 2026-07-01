@@ -108,7 +108,7 @@ export default function UnitExplorer({
   const [tab, setTab] = useState("matchups");
 
   const filtered = useMemo(() => {
-    const needle = deferredQuery.toLocaleLowerCase("de").trim();
+    const needle = deferredQuery.toLocaleLowerCase(lang).trim();
     return units.filter((unit) => {
       if (civ !== "all" && !unit.civs.includes(civ)) return false;
       if (category !== "alle" && unit.category !== category) return false;
@@ -116,7 +116,7 @@ export default function UnitExplorer({
       if (uniqueOnly && !unit.unique) return false;
       if (!needle) return true;
       return `${unitName(unit)} ${unit.name} ${roleLabel(unit)}`
-        .toLocaleLowerCase("de")
+        .toLocaleLowerCase(lang)
         .includes(needle);
     });
   }, [
@@ -128,6 +128,7 @@ export default function UnitExplorer({
     units,
     unitName,
     roleLabel,
+    lang,
   ]);
 
   const matchupSettings = useMemo(() => ({ ...DEFAULT_SETTINGS, age: 4 }), []);

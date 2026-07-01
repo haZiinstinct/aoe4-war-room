@@ -3,14 +3,16 @@ import {
   Check,
   Clock3,
   Flame,
+  Play,
   RotateCcw,
   ShieldQuestion,
   Sparkles,
   Swords,
+  Timer,
   Trophy,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 import { calculateMatchup, DEFAULT_SETTINGS } from "../lib/matchup";
 import UnitAvatar from "./UnitAvatar";
@@ -49,6 +51,8 @@ const ANSWER_POOL = [
 // ein mittelmäßiger und der schlechteste Vorschlag neben der besten Antwort.
 const DISTRACTOR_PERCENTILES = [0.35, 0.65];
 const MAX_CHOICES = 4;
+// Bedenkzeit je Situation. Läuft der Countdown ab, wird automatisch aufgelöst.
+const DRILL_SECONDS = 12;
 
 function createQuestion(units, index, lang) {
   const targetId = TARGET_POOL[index % TARGET_POOL.length];
@@ -90,6 +94,9 @@ export default function DrillMode({ units, stats, onAnswered }) {
   );
   const [selectedId, setSelectedId] = useState(null);
   const [answered, setAnswered] = useState(false);
+  const [running, setRunning] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(DRILL_SECONDS);
+  const [timedOut, setTimedOut] = useState(false);
 
   const question = useMemo(
     () => createQuestion(units, questionIndex, lang),
@@ -100,22 +107,69 @@ export default function DrillMode({ units, stats, onAnswered }) {
   );
   const correct = selectedId === question.best.unit.id;
 
+  // Immer den aktuellen Stand für den Interval-Callback bereithalten, ohne den
+  // laufenden Timer bei jeder Auswahl/jedem Tick neu abonnieren zu müssen.
+  const latest = useRef({ secondsLeft, correct, onAnswered });
+  useEffect(() => {
+    latest.current = { secondsLeft, correct, onAnswered };
+  });
+
+  // Countdown: einmal beim Start abonniert, tickt zuverlässig 1×/Sekunde. Auf
+  // der letzten Sekunde löst er automatisch auf (die aktuelle Auswahl zählt).
+  useEffect(() => {
+    if (!running || answered) return undefined;
+    const id = setInterval(() => {
+      const { secondsLeft: s, correct: c, onAnswered: cb } = latest.current;
+      if (s <= 1) {
+        setSecondsLeft(0);
+        setRunning(false);
+        setTimedOut(true);
+        setAnswered(true);
+        cb(c);
+      } else {
+        setSecondsLeft(s - 1);
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [running, answered]);
+
+  function reset() {
+    setSelectedId(null);
+    setAnswered(false);
+    setTimedOut(false);
+    setRunning(false);
+    setSecondsLeft(DRILL_SECONDS);
+  }
+
+  function start() {
+    setSecondsLeft(DRILL_SECONDS);
+    setTimedOut(false);
+    setRunning(true);
+  }
+
   function choose(entry) {
-    if (answered) return;
+    if (!running || answered) return;
     setSelectedId(entry.unit.id);
   }
 
   function submit() {
     if (!selected || answered) return;
+    setRunning(false);
     setAnswered(true);
     onAnswered(correct);
   }
 
   function next() {
     setQuestionIndex((index) => index + 1);
-    setSelectedId(null);
-    setAnswered(false);
+    reset();
   }
+
+  function retry() {
+    reset();
+  }
+
+  const timeLow = running && secondsLeft <= 3;
+  const clock = `0:${String(Math.max(0, secondsLeft)).padStart(2, "0")}`;
 
   return (
     <div className="drill-page">
@@ -146,9 +200,24 @@ export default function DrillMode({ units, stats, onAnswered }) {
                 n: String(questionIndex + 1).padStart(2, "0"),
               })}
             </span>
-            <span>
-              <Clock3 size={14} /> {t("drill.targetTime")}
+            <span
+              className={`drill-clock ${timeLow ? "is-low" : ""}`}
+              role="timer"
+              aria-live={timeLow ? "assertive" : "off"}
+            >
+              {running ? <Timer size={14} /> : <Clock3 size={14} />}{" "}
+              {running || answered ? clock : t("drill.targetTime")}
             </span>
+          </div>
+          <div
+            className={`drill-timer ${timeLow ? "is-low" : ""}`}
+            aria-hidden="true"
+          >
+            <i
+              style={{
+                width: `${(Math.max(0, secondsLeft) / DRILL_SECONDS) * 100}%`,
+              }}
+            />
           </div>
           <UnitAvatar unit={question.target} size="drill" />
           <span className="scenario-kicker">{t("drill.enemyMassing")}</span>
@@ -181,6 +250,7 @@ export default function DrillMode({ units, stats, onAnswered }) {
                   showCorrect ? "is-correct" : "",
                   showWrong ? "is-wrong" : "",
                 ].join(" ")}
+                disabled={!running && !answered}
                 onClick={() => choose(entry)}
               >
                 <span className="answer-option__key">
@@ -196,7 +266,15 @@ export default function DrillMode({ units, stats, onAnswered }) {
             );
           })}
 
-          {!answered ? (
+          {!running && !answered ? (
+            <button
+              className="primary-button drill-submit"
+              type="button"
+              onClick={start}
+            >
+              <Play size={17} /> {t("drill.start")}
+            </button>
+          ) : !answered ? (
             <button
               className="primary-button drill-submit"
               type="button"
@@ -216,7 +294,11 @@ export default function DrillMode({ units, stats, onAnswered }) {
               <span>{correct ? <Check /> : <X />}</span>
               <div>
                 <small>
-                  {correct ? t("drill.cleanChoice") : t("drill.expensive")}
+                  {timedOut
+                    ? t("drill.timeUp")
+                    : correct
+                      ? t("drill.cleanChoice")
+                      : t("drill.expensive")}
                 </small>
                 <h3>
                   {correct
@@ -242,13 +324,7 @@ export default function DrillMode({ units, stats, onAnswered }) {
           <strong>{t("drill.keyRuleTitle")}</strong>
           <p>{t("drill.keyRuleBody")}</p>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setSelectedId(null);
-            setAnswered(false);
-          }}
-        >
+        <button type="button" onClick={retry}>
           <RotateCcw size={15} /> {t("drill.retry")}
         </button>
       </section>

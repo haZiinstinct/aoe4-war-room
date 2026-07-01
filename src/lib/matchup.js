@@ -29,7 +29,7 @@ function matchesTargetGroup(unit, group) {
   );
 }
 
-function weaponProfile(attacker, defender) {
+function computeWeaponProfile(attacker, defender) {
   const profiles = attacker.weapons.map((weapon) => {
     const bonus = weapon.modifiers.reduce((sum, modifier) => {
       const matches = modifier.groups.some((group) =>
@@ -62,6 +62,24 @@ function weaponProfile(attacker, defender) {
       modifiers: [],
     }
   );
+}
+
+// Das Waffenprofil eines (Angreifer, Verteidiger)-Paares ist rein von statischen
+// Einheitendaten bestimmt und wird über die Kandidatenlisten sehr oft mit den
+// gleichen Einheiten berechnet. Ein Cache (WeakMap je Angreifer → Verteidiger-ID)
+// spart die Wiederholung; die Einträge fallen mit dem Angreifer aus dem GC.
+const profileCache = new WeakMap();
+function weaponProfile(attacker, defender) {
+  let byDefender = profileCache.get(attacker);
+  if (!byDefender) {
+    byDefender = new Map();
+    profileCache.set(attacker, byDefender);
+  }
+  const cached = byDefender.get(defender.id);
+  if (cached) return cached;
+  const profile = computeWeaponProfile(attacker, defender);
+  byDefender.set(defender.id, profile);
+  return profile;
 }
 
 function unitCost(unit) {

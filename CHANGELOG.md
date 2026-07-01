@@ -4,6 +4,31 @@ Alle nennenswerten Änderungen an WAR ROOM. Format angelehnt an
 [Keep a Changelog](https://keepachangelog.com/de/1.1.0/); Versionierung nach
 [SemVer](https://semver.org/lang/de/).
 
+## [1.2.0] – 2026-07-01
+
+### Hinzugefügt
+
+- **Drill-Countdown**: Jede Situation hat jetzt einen echten 12-Sekunden-Timer,
+  den man startet, der sichtbar herunterläuft (Ziffer + Balken) und bei Ablauf
+  automatisch auflöst – die aktuelle Auswahl zählt.
+- **MIT-Lizenz** (`LICENSE`) für den Projekt-Quellcode.
+- Live-Demo unter <https://aoe4.hazii.org> (Standalone auf eigenem Webspace, mit
+  CSP- und Security-Header-Härtung) sowie eine gebrandete, englischsprachige
+  README mit Banner und Badges.
+
+### Geändert
+
+- `UnitAvatar` folgt jetzt der gewählten Sprache (Alt-Text und Fallback-Initialen).
+- Die Einheitensuche normalisiert in der aktiven Sprache statt fest auf Deutsch.
+- Effizienz: Waffenprofil-Cache spart Wiederholungen beim Aufbau der
+  Counter-Kandidatenlisten.
+
+### Sicherheit
+
+- Vollständiges Code-Audit (Sicherheit, Bugs, Effizienz): keine
+  Sicherheitslücken, 0 Dependency-Vulnerabilities.
+- Die Demo ist auf `noindex` gesetzt (Meta-Tag + `X-Robots-Tag`-Header).
+
 ## [1.1.0] – 2026-07-01
 
 ### Hinzugefügt

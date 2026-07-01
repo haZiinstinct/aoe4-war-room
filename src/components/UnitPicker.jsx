@@ -33,7 +33,7 @@ export default function UnitPicker({
   compact = false,
   initialCategory = "alle",
 }) {
-  const { t, unitName, roleLabel, civName, categoryLabel } = useI18n();
+  const { t, lang, unitName, roleLabel, civName, categoryLabel } = useI18n();
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
   const [category, setCategory] = useState(initialCategory);
@@ -48,16 +48,16 @@ export default function UnitPicker({
   }, [units]);
 
   const filtered = useMemo(() => {
-    const needle = deferredQuery.trim().toLocaleLowerCase("de");
+    const needle = deferredQuery.trim().toLocaleLowerCase(lang);
     return units.filter((unit) => {
       if (category !== "alle" && unit.category !== category) return false;
       if (civ !== "all" && !unit.civs.includes(civ)) return false;
       if (!needle) return true;
       return `${unitName(unit)} ${unit.name} ${unit.id}`
-        .toLocaleLowerCase("de")
+        .toLocaleLowerCase(lang)
         .includes(needle);
     });
-  }, [category, civ, deferredQuery, units, unitName]);
+  }, [category, civ, deferredQuery, units, unitName, lang]);
 
   return (
     <aside className={`unit-picker ${compact ? "unit-picker--compact" : ""}`}>

@@ -2241,6 +2241,35 @@ kbd {
   gap: 5px;
 }
 
+.drill-clock {
+  font-variant-numeric: tabular-nums;
+}
+
+.drill-clock.is-low {
+  color: var(--red);
+}
+
+.drill-timer {
+  width: 100%;
+  height: 4px;
+  margin-bottom: 14px;
+  border-radius: 2px;
+  background: #2a2620;
+  overflow: hidden;
+}
+
+.drill-timer > i {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--gold);
+  transition: width 1s linear;
+}
+
+.drill-timer.is-low > i {
+  background: var(--red);
+}
+
 .drill-board__scenario .unit-avatar {
   margin-bottom: -40px;
 }
