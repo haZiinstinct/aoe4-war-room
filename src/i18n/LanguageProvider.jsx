@@ -31,10 +31,13 @@ function buildValue(lang, setLang) {
     const entry = STRINGS[lang]?.[key] ?? STRINGS.de[key] ?? key;
     return typeof entry === "function" ? entry(params ?? {}) : entry;
   };
+  const numberFormat = new Intl.NumberFormat(lang === "en" ? "en" : "de");
   return {
     lang,
     setLang,
     t,
+    /** Zahl mit locale-korrekten Tausendertrennzeichen (42025 → 42.025 / 42,025). */
+    formatNumber: (value) => numberFormat.format(value),
     // An die aktuelle Sprache gebundene Daten-Helfer (bequem in Komponenten).
     unitName: (unit) => unitName(unit, lang),
     roleLabel: (unit) => roleLabel(unit, lang),

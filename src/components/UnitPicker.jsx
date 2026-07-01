@@ -93,7 +93,7 @@ export default function UnitPicker({
             placeholder={t("picker.searchPlaceholder")}
             onChange={(event) => setQuery(event.target.value)}
           />
-          <kbd>⌘ K</kbd>
+          <kbd>⌘&nbsp;K</kbd>
         </label>
       </div>
 

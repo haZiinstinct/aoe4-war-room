@@ -15,7 +15,7 @@ export default function MethodologyDrawer({
   unitCount,
   civCount,
 }) {
-  const { t } = useI18n();
+  const { t, formatNumber } = useI18n();
   const drawerRef = useRef(null);
   const closeButtonRef = useRef(null);
 
@@ -110,7 +110,7 @@ export default function MethodologyDrawer({
               <dd>{t("meth.civs")}</dd>
             </div>
             <div>
-              <dt>{unitCount * unitCount}</dt>
+              <dt>{formatNumber(unitCount * unitCount)}</dt>
               <dd>{t("meth.pairings")}</dd>
             </div>
           </dl>
