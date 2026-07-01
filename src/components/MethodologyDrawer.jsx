@@ -7,6 +7,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { dataCommit } from "../data/units.generated.js";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 
 export default function MethodologyDrawer({
@@ -178,7 +179,11 @@ export default function MethodologyDrawer({
             </a>
           </section>
 
+          <p className="methodology-stamp">
+            {t("meth.dataStamp", { commit: dataCommit })}
+          </p>
           <small>{t("meth.disclaimer")}</small>
+          <small>{t("meth.privacy")}</small>
         </div>
       </aside>
     </div>

@@ -16,10 +16,6 @@ if (!fs.existsSync(builtFile)) {
 const html = fs.readFileSync(builtFile, "utf8");
 const forbidden = [
   {
-    pattern: /<script\b[^>]*\bsrc\s*=/i,
-    message: "enthält ein externes JavaScript-Bundle",
-  },
-  {
     pattern: /<link\b[^>]*\brel=["']stylesheet["'][^>]*\bhref\s*=/i,
     message: "enthält eine externe CSS-Datei",
   },
@@ -32,6 +28,18 @@ const forbidden = [
 const violations = forbidden
   .filter(({ pattern }) => pattern.test(html))
   .map(({ message }) => message);
+
+// Externe <script src>: erlaubt ist einzig das cookielose GoatCounter-Script
+// (bewusst extern, kein Teil des App-Bundles). Jeder andere externe Verweis
+// bedeutet, dass das App-Bundle nicht eingebettet wurde — der /assets/-Guard
+// oben fängt den Standardfall zusätzlich ab.
+const ALLOWED_SCRIPT_SRC = "https://gc.zgo.at/count.js";
+const externalScriptSrcs = [
+  ...html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/gi),
+].map((match) => match[1]);
+if (externalScriptSrcs.some((src) => src !== ALLOWED_SCRIPT_SRC)) {
+  violations.push("enthält ein externes JavaScript-Bundle");
+}
 
 if (
   !/<style\b/i.test(html) ||

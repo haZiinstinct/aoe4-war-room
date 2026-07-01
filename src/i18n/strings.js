@@ -290,6 +290,10 @@ export const STRINGS = {
     "meth.src4": "AoE4 World Explorer",
     "meth.disclaimer":
       "Einheitenwerte stammen aus den Spieldateien via aoe4world/data. Age of Empires IV und zugehörige Bezeichnungen sind Eigentum ihrer jeweiligen Rechteinhaber. Dieses unabhängige Lernprojekt ist nicht mit Microsoft verbunden.",
+    "meth.dataStamp": ({ commit }) =>
+      `Datenstand: aoe4world/data @ ${commit}`,
+    "meth.privacy":
+      "Anonyme, cookielose Statistik via GoatCounter – keine Cookies, keine seitenübergreifende Verfolgung.",
   },
   en: {
     "lang.switch": "Switch language",
@@ -565,5 +569,8 @@ export const STRINGS = {
     "meth.src4": "AoE4 World Explorer",
     "meth.disclaimer":
       "Unit values come from the game files via aoe4world/data. Age of Empires IV and related marks are property of their respective owners. This independent learning project is not affiliated with Microsoft.",
+    "meth.dataStamp": ({ commit }) => `Data snapshot: aoe4world/data @ ${commit}`,
+    "meth.privacy":
+      "Anonymous, cookieless stats via GoatCounter – no cookies, no cross-site tracking.",
   },
 };

@@ -97,6 +97,7 @@ export default function FightIQ() {
             const Icon = principle.icon;
             const isOpen = open === principle.id;
             const isChecked = checked.includes(principle.id);
+            const detailId = `principle-detail-${principle.id}`;
             return (
               <article
                 key={principle.id}
@@ -109,6 +110,7 @@ export default function FightIQ() {
                   className="principle-toggle"
                   onClick={() => setOpen(isOpen ? null : principle.id)}
                   aria-expanded={isOpen}
+                  aria-controls={detailId}
                 >
                   <span>{principle.number}</span>
                   <Icon />
@@ -119,7 +121,7 @@ export default function FightIQ() {
                   <ChevronDown />
                 </button>
                 {isOpen ? (
-                  <div className="principle-detail">
+                  <div className="principle-detail" id={detailId}>
                     <p>{t(`iq.${principle.id}.body`)}</p>
                     <div>
                       <CircleDot />

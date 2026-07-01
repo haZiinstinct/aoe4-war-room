@@ -16,7 +16,32 @@ const LanguageContext = createContext(
   /** @type {null | ReturnType<typeof buildValue>} */ (null),
 );
 
+/**
+ * @param {unknown} value
+ * @returns {value is Lang}
+ */
 const isLang = (value) => value === "de" || value === "en";
+
+/**
+ * Startsprache beim allerersten Besuch aus den Browser-Sprachen ableiten
+ * (erste unterstützte gewinnt), sonst Deutsch. Eine später gespeicherte Wahl
+ * hat über usePersistedState immer Vorrang – Rückkehrer bleiben bei ihrer
+ * Sprache. In Nicht-Browser-Umgebungen (Tests) fällt es auf "de" zurück.
+ * @returns {Lang}
+ */
+function detectLang() {
+  if (typeof navigator === "undefined") return "de";
+  const candidates = navigator.languages?.length
+    ? navigator.languages
+    : [navigator.language];
+  for (const entry of candidates) {
+    const base = String(entry ?? "")
+      .slice(0, 2)
+      .toLowerCase();
+    if (isLang(base)) return base;
+  }
+  return "de";
+}
 
 function buildValue(lang, setLang) {
   /**
@@ -52,7 +77,11 @@ function buildValue(lang, setLang) {
 }
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = usePersistedState("war-room-lang-v1", "de", isLang);
+  const [lang, setLang] = usePersistedState(
+    "war-room-lang-v1",
+    detectLang(),
+    isLang,
+  );
 
   useEffect(() => {
     document.documentElement.lang = lang;

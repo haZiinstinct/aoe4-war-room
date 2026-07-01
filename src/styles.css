@@ -1,6 +1,6 @@
-/* Webfonts werden nicht-render-blockierend via <link rel="preload"> in
-   index.html geladen (Swap zu stylesheet per onload). Kein @import hier — das
-   würde den First Paint blockieren. */
+/* Webfonts werden selbst gehostet und beim Build in die Single-File eingebettet
+   (import in src/fonts.js, nur genutzte Gewichte, Latin-Subset, font-display:swap).
+   Kein externer Google-Fonts-Request — DSGVO-konform, kein @import nötig. */
 
 :root {
   color-scheme: dark;
@@ -81,6 +81,9 @@ select:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--gold-bright);
   outline-offset: 2px;
+  /* Dunkler Trennring, damit der goldene Fokus auch auf goldenen bzw. hellen
+     Flächen (aktive Buttons, Hover) klar sichtbar bleibt. */
+  box-shadow: 0 0 0 4px rgba(8, 11, 10, 0.9);
 }
 
 button:disabled {
@@ -640,11 +643,11 @@ select {
 }
 
 .search-field input::placeholder {
-  color: #777267;
+  color: #857f73;
 }
 
 kbd {
-  color: #68645d;
+  color: #8a8478;
   font: 500 9px/1 var(--font-sans);
 }
 
@@ -2105,7 +2108,7 @@ kbd {
 }
 
 .usage-sheet article > span {
-  color: var(--gold-dark);
+  color: var(--gold);
   font: 600 34px/1 var(--font-serif);
 }
 
@@ -2969,9 +2972,16 @@ kbd {
   width: 14px;
 }
 
+.methodology-stamp {
+  margin-top: 16px;
+  color: #8a8478;
+  font: 500 9px/1.4 var(--font-sans);
+  letter-spacing: 0.4px;
+}
+
 .methodology-drawer__body > small {
-  color: #6e6a62;
-  font: 400 8px/1.5 var(--font-sans);
+  color: #8a8478;
+  font: 400 8px/1.6 var(--font-sans);
 }
 
 @keyframes fade-in {
@@ -3895,10 +3905,17 @@ select:hover,
   .category-list button {
     flex: 0 0 auto;
     grid-template-columns: auto auto;
+    min-height: 44px;
   }
 
   .category-list small {
     display: none;
+  }
+
+  /* Größere Antipp-Flächen auf Touch (WCAG 2.5.5). */
+  .age-switcher button {
+    height: 44px;
+    min-width: 40px;
   }
 
   .picker-results__head {

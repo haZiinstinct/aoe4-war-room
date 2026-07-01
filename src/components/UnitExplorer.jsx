@@ -59,7 +59,7 @@ const MatchupRow = memo(
         className="dossier-matchup-row"
         onClick={() => onOpen(entry.unit)}
       >
-        <UnitAvatar unit={entry.unit} size="small" />
+        <UnitAvatar unit={entry.unit} size="small" decorative />
         <span className="dossier-matchup-row__name">
           <strong>{unitName(entry.unit)}</strong>
           <small>{roleLabel(entry.unit)}</small>
@@ -249,7 +249,7 @@ export default function UnitExplorer({
                 className={selected.id === unit.id ? "is-selected" : ""}
                 onClick={() => onSelect(unit)}
               >
-                <UnitAvatar unit={unit} size="small" />
+                <UnitAvatar unit={unit} size="small" decorative />
                 <span>
                   <strong>{unitName(unit)}</strong>
                   <small>
@@ -278,7 +278,7 @@ export default function UnitExplorer({
       <section className="unit-dossier">
         <div className="unit-dossier__hero">
           <div className="dossier-portrait">
-            <UnitAvatar unit={selected} size="dossier" />
+            <UnitAvatar unit={selected} size="dossier" decorative />
             {selected.unique ? <span>{t("explorer.uniqueUnit")}</span> : null}
           </div>
           <div className="dossier-summary">

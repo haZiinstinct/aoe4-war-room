@@ -219,7 +219,7 @@ export default function DrillMode({ units, stats, onAnswered }) {
               }}
             />
           </div>
-          <UnitAvatar unit={question.target} size="drill" />
+          <UnitAvatar unit={question.target} size="drill" decorative />
           <span className="scenario-kicker">{t("drill.enemyMassing")}</span>
           <h2>{unitName(question.target)}</h2>
           <p>{roleLabel(question.target)}</p>
@@ -256,7 +256,7 @@ export default function DrillMode({ units, stats, onAnswered }) {
                 <span className="answer-option__key">
                   {String.fromCharCode(65 + index)}
                 </span>
-                <UnitAvatar unit={entry.unit} size="medium" />
+                <UnitAvatar unit={entry.unit} size="medium" decorative />
                 <span>
                   <strong>{unitName(entry.unit)}</strong>
                   <small>{roleLabel(entry.unit)}</small>

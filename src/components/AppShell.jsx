@@ -9,7 +9,7 @@ import {
   Swords,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 
 // Reihenfolge + Icons der Navigation; die Labels kommen sprachabhängig aus t().
@@ -58,6 +58,33 @@ export default function AppShell({
 }) {
   const { t } = useI18n();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // ⌘/Strg+K fokussiert das sichtbare Einheiten-Suchfeld (macht den kbd-Hinweis
+  // real). Greift nur, wenn gerade eines im DOM ist – sonst normaler Browser-Kurzbefehl.
+  useEffect(() => {
+    function onKey(event) {
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "k") {
+        return;
+      }
+      const inputs = /** @type {NodeListOf<HTMLInputElement>} */ (
+        document.querySelectorAll("input[type='search'][data-search-input]")
+      );
+      let target = null;
+      for (const input of inputs) {
+        if (input.offsetParent !== null) {
+          target = input;
+          break;
+        }
+      }
+      target = target ?? inputs[0];
+      if (!target) return;
+      event.preventDefault();
+      target.focus();
+      target.select?.();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   function navigate(event, view) {
     if (

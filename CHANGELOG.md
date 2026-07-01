@@ -4,6 +4,33 @@ Alle nennenswerten Änderungen an WAR ROOM. Format angelehnt an
 [Keep a Changelog](https://keepachangelog.com/de/1.1.0/); Versionierung nach
 [SemVer](https://semver.org/lang/de/).
 
+## [1.3.0] – 2026-07-02
+
+### Hinzugefügt
+
+- **Selbst gehostete Webfonts** (`@fontsource`, nur genutzte Gewichte,
+  Latin-Subset): beim Build in die Single-File eingebettet – kein
+  Google-Fonts-Request mehr, DSGVO-konform. Die CSP ist entsprechend verschärft
+  (`font-src 'self' data:`, keine googleapis/gstatic), gzip/brotli für Text in
+  `.htaccess`/nginx.
+- **Social-Sharing**: gerendertes `og-image.png` (1200×630) und
+  `apple-touch-icon.png` (180×180) im Brand-Look, plus OpenGraph-/Twitter-Meta
+  (`summary_large_image`) und `canonical`.
+- **Cookielose Statistik** via GoatCounter (optional, Platzhalter-Code) mit
+  Transparenz-Hinweis im Methodik-Dialog.
+- **Sprach-Autoerkennung** beim ersten Besuch (`navigator.language`); die
+  gespeicherte Wahl behält Vorrang.
+- **⌘/Strg + K** fokussiert das Einheiten-Suchfeld.
+- **Datenstand-Anzeige** (aoe4world-Commit) im Methodik-Dialog.
+- Test für i18n-Schlüssel (DE/EN-Parität + jeder statische `t()`-Schlüssel
+  existiert) im CI-Gate.
+
+### Geändert
+
+- **Barrierefreiheit**: bessere Kontraste (WCAG), deutlich sichtbarer
+  Fokus-Ring, größere Antipp-Flächen auf Touch (≥ 44 px), `aria-controls` an den
+  Fight-IQ-Toggles, redundante Einheiten-Icons als dekorativ ausgezeichnet.
+
 ## [1.2.0] – 2026-07-01
 
 ### Hinzugefügt
