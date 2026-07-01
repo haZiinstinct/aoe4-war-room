@@ -202,6 +202,8 @@ export const STRINGS = {
     "drill.keyRuleBody":
       "Scoute die Produktionsgebäude, nicht erst die fertige Armee. Ein Counter, der 90 Sekunden zu spät kommt, ist keiner.",
     "drill.retry": "Neu versuchen",
+    "drill.start": "Countdown starten",
+    "drill.timeUp": "Zeit abgelaufen",
 
     // Fight IQ
     "iq.heroTitle": "Der Counter ist nur der Anfang.",
@@ -479,6 +481,8 @@ export const STRINGS = {
     "drill.keyRuleBody":
       "Scout the production buildings, not the finished army. A counter that arrives 90 seconds too late isn't one.",
     "drill.retry": "Try again",
+    "drill.start": "Start countdown",
+    "drill.timeUp": "Time's up",
 
     "iq.heroTitle": "The counter is only the beginning.",
     "iq.heroIntro":

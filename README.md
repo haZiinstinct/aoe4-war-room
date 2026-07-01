@@ -13,7 +13,8 @@ Learn which unit beats which — with an explainable matchup model, decision dri
 
 <p>
   <a href="https://github.com/haZiinstinct/aoe4-war-room/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/haZiinstinct/aoe4-war-room/actions/workflows/ci.yml/badge.svg" /></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.1.0-c89d4f" />
+  <img alt="Version" src="https://img.shields.io/badge/version-1.2.0-c89d4f" />
+  <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-blue" />
   <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white" />
   <img alt="Languages DE / EN" src="https://img.shields.io/badge/languages-DE%20%2F%20EN-78a16e" />
   <img alt="Standalone single file" src="https://img.shields.io/badge/standalone-single%20file-6d5229" />
@@ -126,7 +127,13 @@ The exact upstream commit is recorded in the header of
 
 Age of Empires IV and related marks are property of their respective owners. This
 is an **independent, non-commercial fan learning project** and is **not affiliated
-with Microsoft or Relic Entertainment**. Not currently released under an
-open-source license.
+with Microsoft or Relic Entertainment**. Unit values are derived from the
+community dataset [aoe4world/data](https://github.com/aoe4world/data); unit
+artwork and fonts load from their original sources and are not redistributed here.
+
+## 📄 License
+
+The project's own source code is released under the [MIT License](LICENSE). The
+disclaimer above covers third-party names, marks and data.
 
 <div align="center"><sub>Built by <a href="https://hazii.org">haZii</a> · <code>// webdesign: haZii.org</code></sub></div>

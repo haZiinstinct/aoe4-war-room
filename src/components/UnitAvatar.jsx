@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { unitName } from "../data/localization.js";
+import { useI18n } from "../i18n/LanguageProvider.jsx";
 
 const SIZE_DIMENSIONS = {
   small: [38, 38],
@@ -18,6 +18,7 @@ function UnitAvatar({
   className = "",
   decorative = false,
 }) {
+  const { unitName } = useI18n();
   const [failed, setFailed] = useState(false);
   const name = unitName(unit);
   const [width, height] = SIZE_DIMENSIONS[size] ?? SIZE_DIMENSIONS.medium;
