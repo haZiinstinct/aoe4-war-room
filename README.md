@@ -48,10 +48,18 @@ npm.cmd run build
 Der Build prüft automatisch, dass keine lokalen `/assets`-Abhängigkeiten in
 der fertigen Datei verbleiben.
 
-Kompletten automatisierten Audit ausführen:
+## Qualitätssicherung
+
+Die Codebasis ist mit ESLint, Prettier, JSDoc-Typprüfung (`tsc --checkJs`) und
+einer Vitest-Suite abgesichert; eine GitHub-Actions-CI führt dieselben Schritte
+bei jedem Push und Pull Request aus.
 
 ```powershell
-npm.cmd run audit
+npm.cmd run lint        # ESLint
+npm.cmd run format      # Prettier schreiben
+npm.cmd run typecheck   # JSDoc-Typen via tsc --checkJs
+npm.cmd run test        # Vitest
+npm.cmd run audit       # lint + typecheck + test + build + Standalone-Prüfung
 ```
 
 Der ausführliche Prüfbericht liegt in [AUDIT.md](AUDIT.md).
@@ -65,6 +73,15 @@ Die generierte Datei `src/data/units.generated.js` basiert auf
 git clone --depth 1 https://github.com/aoe4world/data.git work/aoe4world-data
 npm.cmd run generate:data
 ```
+
+Der Generator schreibt den Upstream-Commit (statt eines Build-Datums) in den
+Kopf der generierten Datei – das hält Git-Diffs sauber und macht den Datenstand
+reproduzierbar. Er validiert außerdem das Upstream-Schema und **warnt sichtbar**,
+wenn gelistete Spezialeinheiten (Belagerung, Anti-Infanterie, Formationen) nicht
+mehr existieren oder neue Klassen-Tokens auftauchen – so fallen Balance-Patches
+auf, statt still die Counter-Logik zu verfälschen. Die Kampf-Flags
+(`flags.splash`, `flags.antiInfantryMelee`, `flags.formation`) werden hier
+gesetzt und von der Laufzeitlogik nur noch gelesen.
 
 ## Methodik
 

@@ -19,13 +19,19 @@ keine lokalen JavaScript-, CSS- oder Bildabhängigkeiten.
 
 ## Automatisierte Prüfungen
 
-`npm.cmd run audit` führt drei Stufen aus:
+`npm.cmd run audit` führt fünf Stufen aus (identisch zur GitHub-Actions-CI):
 
-1. Matchup-Regressionen für die Kernlogik
-2. optimierten Vite-Produktions-Build
-3. Standalone-Prüfung auf lokale Abhängigkeiten
+1. ESLint (React/Hooks, keine ungenutzten Symbole, strikte Gleichheit)
+2. JSDoc-Typprüfung (`tsc --checkJs`, ohne Emit)
+3. Vitest-Suite (Kernlogik, Waffenprofil, Gelände/Micro/Splash, verdict-Schwellen,
+   Counter-Kandidaten, Datensatz-Integrität, persistierte State-Validierung)
+4. optimierter Vite-Produktions-Build
+5. Standalone-Prüfung auf lokale Abhängigkeiten
 
-Geprüfte Kernregeln:
+Zusätzlich prüft die CI, dass das eingecheckte `outputs/index.html` zum aktuellen
+Quellcode passt (Frische-Check).
+
+Geprüfte Kernregeln (Auszug):
 
 - Bogenschütze schlägt Speerträger
 - Speerträger schlägt Reiter
@@ -33,9 +39,24 @@ Geprüfte Kernregeln:
 - Armbrustschütze schlägt Men-at-Arms
 - Land- und Marineeinheiten werden nicht irreführend gegeneinander bewertet
 - Upgrade-Vorteile verändern das Ergebnis
-- Counter-Vorschläge schließen reine Support-Einheiten aus und bleiben sortiert
+- Bonusschaden und Rüstung wirken richtungssicher
+- Gelände-, Micro- und Splash-Variablen verschieben enge Matchups
+- Counter-Vorschläge schließen Support- und Formations-Einheiten aus und bleiben
+  sortiert
 
-Ergebnis: alle Prüfungen bestanden. Build-Größe: rund 469 KB, rund 115 KB gzip.
+Ergebnis: alle Prüfungen bestanden (31 Tests). Build-Größe: rund 481 KB, rund
+116 KB gzip.
+
+## Wartbarkeit und Robustheit
+
+- Kampf-Heuristiken (Belagerungs-Splash, Anti-Infanterie-Nahkampf, Formationen)
+  sind daten-getriebene Flags aus der Generierungspipeline statt Laufzeit-Regexe;
+  sie brechen bei Balance-Patches nicht mehr still, sondern lösen Warnungen aus.
+- Alle Modell-Konstanten sind benannt und dokumentiert (`src/lib/matchup.config.js`).
+- Der Refactor wurde gegen die alte Implementierung verifiziert: 210.125 Matchups
+  über fünf Einstellungsprofile lieferten identische Ergebnisse.
+- localStorage-Daten werden gegen ihr Schema validiert (veraltete/kaputte Stände
+  werden verworfen statt falsch geladen).
 
 ## Browser- und Interaktionsaudit
 
