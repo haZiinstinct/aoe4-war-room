@@ -300,7 +300,9 @@ try {
 }
 
 const header = `// Auto-generated from aoe4world/data @ ${dataCommit}. Do not edit by hand.\n`;
-const file = `${header}export const units = ${JSON.stringify(
+const file = `${header}export const dataCommit = ${JSON.stringify(
+  dataCommit,
+)};\n\nexport const units = ${JSON.stringify(
   units,
   null,
   2,

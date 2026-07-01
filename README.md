@@ -13,7 +13,7 @@ Learn which unit beats which — with an explainable matchup model, decision dri
 
 <p>
   <a href="https://github.com/haZiinstinct/aoe4-war-room/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/haZiinstinct/aoe4-war-room/actions/workflows/ci.yml/badge.svg" /></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.2.0-c89d4f" />
+  <img alt="Version" src="https://img.shields.io/badge/version-1.3.0-c89d4f" />
   <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-blue" />
   <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white" />
   <img alt="Languages DE / EN" src="https://img.shields.io/badge/languages-DE%20%2F%20EN-78a16e" />

@@ -87,6 +87,7 @@ export default function UnitPicker({
           <input
             type="search"
             name={`unit-search-${compact ? "compact" : "full"}`}
+            data-search-input
             autoComplete="off"
             spellCheck={false}
             value={query}
@@ -133,7 +134,7 @@ export default function UnitPicker({
               className={`unit-row ${selected?.id === unit.id ? "is-selected" : ""}`}
               onClick={() => onSelect(unit)}
             >
-              <UnitAvatar unit={unit} size="small" />
+              <UnitAvatar unit={unit} size="small" decorative />
               <span className="unit-row__copy">
                 <strong>{unitName(unit)}</strong>
                 <small>{roleLabel(unit)}</small>

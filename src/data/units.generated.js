@@ -1,4 +1,6 @@
 // Auto-generated from aoe4world/data @ b2cd382. Do not edit by hand.
+export const dataCommit = "b2cd382";
+
 export const units = [
   {
     "id": "akinji",

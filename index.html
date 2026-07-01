@@ -13,28 +13,36 @@
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 58'%3E%3Crect width='48' height='58' fill='%230b0e0d'/%3E%3Cg fill='none' stroke='%23e0b665' stroke-width='3' stroke-linejoin='round'%3E%3Cpath d='M4 3h40v34L24 54 4 37Z'/%3E%3Cpath d='M24 8v38M10 15l14 9 14-9M12 34l12-10 12 10'/%3E%3C/g%3E%3Ccircle cx='24' cy='24' r='3' fill='%23e0b665'/%3E%3C/svg%3E"
     />
+    <link rel="canonical" href="https://aoe4.hazii.org/" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="WAR ROOM" />
+    <meta property="og:url" content="https://aoe4.hazii.org/" />
     <meta property="og:title" content="WAR ROOM — AoE IV Counter Lab" />
     <meta
       property="og:description"
       content="Interaktives Age of Empires IV Counter-Lab: Einheiten, Matchups und bessere Kämpfe. Deutsch und Englisch."
     />
-    <meta name="twitter:card" content="summary" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://data.aoe4world.com" />
-    <!-- Nicht-render-blockierendes Laden der Webfonts: als preload holen und
-         per onload zu einem echten Stylesheet umschalten. Ohne JS rendert die
-         App ohnehin nicht, daher genügt der System-Font-Fallback. -->
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
-      onload="
-        this.onload = null;
-        this.rel = 'stylesheet';
-      "
+    <meta property="og:image" content="https://aoe4.hazii.org/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="WAR ROOM — Age of Empires IV Counter Lab"
     />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="WAR ROOM — AoE IV Counter Lab" />
+    <meta
+      name="twitter:description"
+      content="Interaktives Age of Empires IV Counter-Lab: Einheiten, Matchups und bessere Kämpfe. Deutsch und Englisch."
+    />
+    <meta
+      name="twitter:image"
+      content="https://aoe4.hazii.org/og-image.png"
+    />
+    <!-- Webfonts werden selbst gehostet und beim Build in die Datei eingebettet
+         (siehe src/fonts.js) – kein externer Google-Fonts-Request, DSGVO-konform. -->
+    <link rel="preconnect" href="https://data.aoe4world.com" />
     <title>WAR ROOM — AoE IV Counter Lab</title>
   </head>
   <body>
@@ -58,5 +66,14 @@
       </p>
     </noscript>
     <script type="module" src="/src/main.jsx"></script>
+    <!-- Cookielose, anonyme Statistik via GoatCounter (DSGVO-freundlich, keine
+         Cookies, keine geräteübergreifende Verfolgung). Vor dem Upload den
+         Platzhalter DEIN-CODE durch deinen echten GoatCounter-Code ersetzen
+         (Konto anlegen auf goatcounter.com → Code = Subdomain). -->
+    <script
+      data-goatcounter="https://DEIN-CODE.goatcounter.com/count"
+      async
+      src="https://gc.zgo.at/count.js"
+    ></script>
   </body>
 </html>

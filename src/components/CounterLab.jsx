@@ -110,7 +110,7 @@ const Alternatives = memo(
               onClick={() => onSelect(unit)}
             >
               <span className="alternative-row__rank">0{index + 1}</span>
-              <UnitAvatar unit={unit} size="medium" />
+              <UnitAvatar unit={unit} size="medium" decorative />
               <span>
                 <strong>{unitName(unit)}</strong>
                 <small>{roleLabel(unit)}</small>
