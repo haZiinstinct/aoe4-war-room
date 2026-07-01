@@ -323,6 +323,25 @@ p {
   color: var(--gold-bright);
 }
 
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 1px;
+  background: transparent;
+  color: #b6aa93;
+  font: 600 12px/1 var(--font-condensed);
+  letter-spacing: 0.08em;
+}
+
+.lang-toggle:hover {
+  border-color: var(--gold-dark);
+  color: var(--gold-bright);
+}
+
 .menu-button,
 .mobile-nav,
 .source-fab {
@@ -854,10 +873,14 @@ kbd {
 
 .verdict > strong {
   max-width: 180px;
-  font: 700 27px/0.95 var(--font-serif);
+  font: 700 27px/0.98 var(--font-serif);
   letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--gold-bright);
+  /* Lange Labels („Nicht vergleichbar", „Hard disadvantage") brechen sauber
+     um statt aus dem schmalen Verdikt-Rahmen zu laufen. */
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .verdict > p {
@@ -1103,6 +1126,13 @@ kbd {
   font: 600 11px/1 var(--font-condensed);
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.variables-band__help {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+  color: #8a8478;
+  font: 500 11px/1.4 var(--font-sans);
 }
 
 .variables-band__title span,

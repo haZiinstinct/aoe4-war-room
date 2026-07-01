@@ -218,90 +218,115 @@ function domain(unit) {
   return unit.category === "marine" ? "water" : "land";
 }
 
-function verdict(ratio, sameUnit) {
-  if (sameUnit) {
-    return {
-      key: "mirror",
-      label: "Spiegelmatchup",
-      short: "Gleichstand",
-      tone: "neutral",
-    };
-  }
-  if (ratio >= VERDICT_THRESHOLDS.hard)
-    return {
-      key: "hard",
-      label: "Klarer Counter",
-      short: "Stark",
-      tone: "positive",
-    };
-  if (ratio >= VERDICT_THRESHOLDS.soft)
-    return {
-      key: "soft",
-      label: "Leichter Vorteil",
-      short: "Vorteil",
-      tone: "positive",
-    };
-  if (ratio > VERDICT_THRESHOLDS.skill)
-    return {
-      key: "skill",
-      label: "Skill-Matchup",
-      short: "Situativ",
-      tone: "neutral",
-    };
-  if (ratio > VERDICT_THRESHOLDS.softLoss)
-    return {
-      key: "soft-loss",
-      label: "Leichter Nachteil",
-      short: "Nachteil",
-      tone: "negative",
-    };
-  return {
-    key: "hard-loss",
-    label: "Harter Nachteil",
-    short: "Schwach",
-    tone: "negative",
-  };
+// Label + Kurzform je Verdict-Schlüssel und Sprache: [label, short].
+const VERDICT_LABELS = {
+  mirror: {
+    de: ["Spiegel-Matchup", "Gleichstand"],
+    en: ["Mirror matchup", "Even"],
+  },
+  hard: { de: ["Klarer Counter", "Stark"], en: ["Clear counter", "Strong"] },
+  soft: { de: ["Leichter Vorteil", "Vorteil"], en: ["Slight edge", "Edge"] },
+  skill: {
+    de: ["Skill-Matchup", "Situativ"],
+    en: ["Skill matchup", "Situational"],
+  },
+  "soft-loss": {
+    de: ["Leichter Nachteil", "Nachteil"],
+    en: ["Slight loss", "Behind"],
+  },
+  "hard-loss": {
+    de: ["Harter Nachteil", "Schwach"],
+    en: ["Hard loss", "Weak"],
+  },
+  invalid: {
+    de: ["Andere Domäne", "Land/Wasser"],
+    en: ["Not comparable", "Other domain"],
+  },
+};
+
+function makeVerdict(key, tone, lang) {
+  const [label, short] = VERDICT_LABELS[key][lang] ?? VERDICT_LABELS[key].de;
+  return { key, label, short, tone };
 }
 
-function matchupReasons(attacker, defender, a, b, ratio, settings) {
+function verdict(ratio, sameUnit, lang) {
+  if (sameUnit) return makeVerdict("mirror", "neutral", lang);
+  if (ratio >= VERDICT_THRESHOLDS.hard)
+    return makeVerdict("hard", "positive", lang);
+  if (ratio >= VERDICT_THRESHOLDS.soft)
+    return makeVerdict("soft", "positive", lang);
+  if (ratio > VERDICT_THRESHOLDS.skill)
+    return makeVerdict("skill", "neutral", lang);
+  if (ratio > VERDICT_THRESHOLDS.softLoss)
+    return makeVerdict("soft-loss", "negative", lang);
+  return makeVerdict("hard-loss", "negative", lang);
+}
+
+function matchupReasons(attacker, defender, a, b, ratio, settings, lang) {
+  const L = (de, en) => (lang === "en" ? en : de);
+  const nA = unitName(attacker, lang);
+  const nD = unitName(defender, lang);
   const reasons = [];
   if (a.weapon.bonus > 0) {
+    const bonus = Math.round(a.weapon.bonus);
     reasons.push({
-      title: `+${Math.round(a.weapon.bonus)} Bonusschaden`,
-      text: `${unitName(attacker)} trifft gezielt eine Klasse von ${unitName(defender)}.`,
+      title: L(`+${bonus} Bonusschaden`, `+${bonus} bonus damage`),
+      text: L(
+        `${nA} trifft gezielt eine Klasse von ${nD}.`,
+        `${nA} deals bonus damage to a class ${nD} belongs to.`,
+      ),
       good: true,
     });
   }
   if (b.weapon.bonus > 0) {
+    const bonus = Math.round(b.weapon.bonus);
+    const role = roleLabel(attacker, lang).toLowerCase();
     reasons.push({
-      title: `Gegner hat +${Math.round(b.weapon.bonus)}`,
-      text: `${unitName(defender)} besitzt passenden Bonusschaden gegen ${roleLabel(attacker).toLowerCase()}.`,
+      title: L(`Gegner hat +${bonus}`, `Enemy has +${bonus}`),
+      text: L(
+        `${nD} besitzt passenden Bonusschaden gegen ${role}.`,
+        `${nD} has matching bonus damage against ${role}.`,
+      ),
       good: false,
     });
   }
-  if (a.weapon.range - b.weapon.range >= 2) {
+  const rangeDiff = a.weapon.range - b.weapon.range;
+  if (rangeDiff >= 2) {
     reasons.push({
-      title: "Sicherer Abstand",
-      text: `+${(a.weapon.range - b.weapon.range).toFixed(1)} Felder Reichweite – nur wertvoll, wenn du den Abstand hältst.`,
+      title: L("Sicherer Abstand", "Safe distance"),
+      text: L(
+        `+${rangeDiff.toFixed(1)} Felder Reichweite – nur wertvoll, wenn du den Abstand hältst.`,
+        `+${rangeDiff.toFixed(1)} tiles of range – only worth it if you keep the distance.`,
+      ),
       good: true,
     });
-  } else if (b.weapon.range - a.weapon.range >= 2) {
+  } else if (-rangeDiff >= 2) {
     reasons.push({
-      title: "Reichweitenproblem",
-      text: `${unitName(attacker)} muss erst ${(
-        b.weapon.range - a.weapon.range
-      ).toFixed(1)} Felder überbrücken.`,
+      title: L("Reichweitenproblem", "Range problem"),
+      text: L(
+        `${nA} muss erst ${(-rangeDiff).toFixed(1)} Felder überbrücken.`,
+        `${nA} first has to close ${(-rangeDiff).toFixed(1)} tiles.`,
+      ),
       good: false,
     });
   }
   const costGap = unitCost(defender) - unitCost(attacker);
   if (settings.mode === "resources" && Math.abs(costGap) >= 45) {
     reasons.push({
-      title: costGap > 0 ? "Mehr Körper fürs Budget" : "Teure Antwort",
+      title:
+        costGap > 0
+          ? L("Mehr Körper fürs Budget", "More bodies per budget")
+          : L("Teure Antwort", "Expensive answer"),
       text:
         costGap > 0
-          ? `Bei ${settings.budget} Ressourcen stehen ungefähr ${a.count.toFixed(1)} gegen ${b.count.toFixed(1)} Einheiten.`
-          : `${unitName(attacker)} kostet deutlich mehr; jeder Verlust tut weh.`,
+          ? L(
+              `Bei ${settings.budget} Ressourcen stehen ungefähr ${a.count.toFixed(1)} gegen ${b.count.toFixed(1)} Einheiten.`,
+              `At ${settings.budget} resources that is roughly ${a.count.toFixed(1)} vs ${b.count.toFixed(1)} units.`,
+            )
+          : L(
+              `${nA} kostet deutlich mehr; jeder Verlust tut weh.`,
+              `${nA} costs noticeably more; every loss hurts.`,
+            ),
       good: costGap > 0,
     });
   }
@@ -310,29 +335,50 @@ function matchupReasons(attacker, defender, a, b, ratio, settings) {
     defender.armor.melee + defender.armor.ranged + 5
   ) {
     reasons.push({
-      title: "Rüstungsvorteil",
-      text: `${unitName(attacker)} kann Grundschaden besser abfangen.`,
+      title: L("Rüstungsvorteil", "Armour advantage"),
+      text: L(
+        `${nA} kann Grundschaden besser abfangen.`,
+        `${nA} absorbs base damage better.`,
+      ),
       good: true,
     });
   }
   if (reasons.length < 2) {
     reasons.push({
-      title: ratio > 1 ? "Besseres Gesamtpaket" : "Kein natürlicher Counter",
+      title:
+        ratio > 1
+          ? L("Besseres Gesamtpaket", "Better overall package")
+          : L("Kein natürlicher Counter", "No natural counter"),
       text:
         ratio > 1
-          ? "Schaden, Haltbarkeit und Kosten greifen in diesem Szenario besser ineinander."
-          : "Ohne Klassenbonus entscheiden Support, Zahl, Position und Fokusfeuer.",
+          ? L(
+              "Schaden, Haltbarkeit und Kosten greifen in diesem Szenario besser ineinander.",
+              "Damage, durability and cost mesh better in this scenario.",
+            )
+          : L(
+              "Ohne Klassenbonus entscheiden Support, Zahl, Position und Fokusfeuer.",
+              "Without a class bonus, support, numbers, position and focus fire decide.",
+            ),
       good: ratio > 1,
     });
   }
   if (reasons.length < 3) {
     const terrainText = {
-      offen: "Offenes Feld gibt mobilen Einheiten und Kiting mehr Raum.",
-      engpass: "Im Engpass zählen Frontbreite und Flächenschaden stärker.",
-      wald: "Waldwege verkürzen Sichtlinien und bremsen breite Formationen.",
+      offen: L(
+        "Offenes Feld gibt mobilen Einheiten und Kiting mehr Raum.",
+        "Open field gives mobile units and kiting more room.",
+      ),
+      engpass: L(
+        "Im Engpass zählen Frontbreite und Flächenschaden stärker.",
+        "In a choke, frontage and area damage matter more.",
+      ),
+      wald: L(
+        "Waldwege verkürzen Sichtlinien und bremsen breite Formationen.",
+        "Forest paths shorten sightlines and slow wide formations.",
+      ),
     };
     reasons.push({
-      title: "Gelände & Ausführung",
+      title: L("Gelände & Ausführung", "Terrain & execution"),
       text: terrainText[settings.terrain],
       good: settings.terrain !== "wald" || attacker.category === "infanterie",
     });
@@ -354,12 +400,14 @@ export const DEFAULT_SETTINGS = {
  * @param {Unit} attacker
  * @param {Unit} defender
  * @param {Partial<MatchupSettings>} [settings]
+ * @param {"de"|"en"} [lang]
  * @returns {MatchupResult | null}
  */
 export function calculateMatchup(
   attacker,
   defender,
   settings = DEFAULT_SETTINGS,
+  lang = "de",
 ) {
   if (!attacker || !defender) return null;
   // Fehlende Felder gegen die Defaults auffüllen, damit einzelne undefinierte
@@ -368,18 +416,19 @@ export function calculateMatchup(
   if (domain(attacker) !== domain(defender)) {
     return {
       comparable: false,
-      verdict: {
-        key: "invalid",
-        label: "Nicht vergleichbar",
-        short: "Andere Domäne",
-        tone: "neutral",
-      },
+      verdict: makeVerdict("invalid", "neutral", lang),
       ratio: 1,
       confidence: 0,
       reasons: [
         {
-          title: "Land und Wasser getrennt",
-          text: "Marineeinheiten werden nur mit Marineeinheiten bewertet.",
+          title:
+            lang === "en"
+              ? "Land and water separated"
+              : "Land und Wasser getrennt",
+          text:
+            lang === "en"
+              ? "Naval units are only rated against other naval units."
+              : "Marineeinheiten werden nur mit Marineeinheiten bewertet.",
           good: false,
         },
       ],
@@ -394,7 +443,7 @@ export function calculateMatchup(
   );
   const b = sideStrength(defender, attacker, settings, 0);
   const ratio = a.value / Math.max(TUNING.ratioFloor, b.value);
-  const resultVerdict = verdict(ratio, attacker.id === defender.id);
+  const resultVerdict = verdict(ratio, attacker.id === defender.id, lang);
   return {
     comparable: true,
     verdict: resultVerdict,
@@ -408,7 +457,7 @@ export function calculateMatchup(
     ),
     attacker: a,
     defender: b,
-    reasons: matchupReasons(attacker, defender, a, b, ratio, settings),
+    reasons: matchupReasons(attacker, defender, a, b, ratio, settings, lang),
   };
 }
 
@@ -418,6 +467,7 @@ export function calculateMatchup(
  * @param {Unit} target
  * @param {Partial<MatchupSettings>} [settings]
  * @param {number} [limit]
+ * @param {"de"|"en"} [lang]
  * @returns {CounterCandidate[]}
  */
 export function getCounterCandidates(
@@ -425,6 +475,7 @@ export function getCounterCandidates(
   target,
   settings = DEFAULT_SETTINGS,
   limit = 5,
+  lang = "de",
 ) {
   return allUnits
     .filter(
@@ -439,7 +490,7 @@ export function getCounterCandidates(
     )
     .map((unit) => ({
       unit,
-      result: calculateMatchup(unit, target, settings),
+      result: calculateMatchup(unit, target, settings, lang),
     }))
     .filter((entry) => entry.result.comparable)
     .sort((a, b) => b.result.ratio - a.result.ratio)
@@ -452,6 +503,7 @@ export function getCounterCandidates(
  * @param {Unit} unit
  * @param {Partial<MatchupSettings>} [settings]
  * @param {number} [limit]
+ * @param {"de"|"en"} [lang]
  * @returns {CounterCandidate[]}
  */
 export function getThreats(
@@ -459,8 +511,9 @@ export function getThreats(
   unit,
   settings = DEFAULT_SETTINGS,
   limit = 4,
+  lang = "de",
 ) {
-  return getCounterCandidates(allUnits, unit, settings, limit);
+  return getCounterCandidates(allUnits, unit, settings, limit, lang);
 }
 
 /**
@@ -469,6 +522,7 @@ export function getThreats(
  * @param {Unit} unit
  * @param {Partial<MatchupSettings>} [settings]
  * @param {number} [limit]
+ * @param {"de"|"en"} [lang]
  * @returns {CounterCandidate[]}
  */
 export function getFavoredTargets(
@@ -476,6 +530,7 @@ export function getFavoredTargets(
   unit,
   settings = DEFAULT_SETTINGS,
   limit = 4,
+  lang = "de",
 ) {
   return allUnits
     .filter(
@@ -494,7 +549,7 @@ export function getFavoredTargets(
     )
     .map((target) => ({
       unit: target,
-      result: calculateMatchup(unit, target, settings),
+      result: calculateMatchup(unit, target, settings, lang),
     }))
     .filter((entry) => entry.result.comparable)
     .sort((a, b) => b.result.ratio - a.result.ratio)

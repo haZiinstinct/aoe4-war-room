@@ -20,13 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import { memo, useMemo, useState } from "react";
-import {
-  ageLabel,
-  civName,
-  roleLabel,
-  shortDescription,
-  unitName,
-} from "../data/localization";
+import { useI18n } from "../i18n/LanguageProvider.jsx";
 import {
   calculateMatchup,
   DEFAULT_SETTINGS,
@@ -56,15 +50,16 @@ const SettingButton = memo(
 );
 
 function MatchupUnit({ unit, side, onChoose }) {
+  const { t, unitName, roleLabel, civName, ageLabel } = useI18n();
   return (
     <button
       type="button"
       className={`matchup-unit matchup-unit--${side}`}
       onClick={onChoose}
-      aria-label={`${unitName(unit)} ändern`}
+      aria-label={t("lab.change", { name: unitName(unit) })}
     >
       <span className="matchup-unit__label">
-        {side === "mine" ? "Meine Einheit" : "Gegner wählen"}
+        {side === "mine" ? t("lab.mine") : t("lab.enemy")}
       </span>
       <UnitAvatar unit={unit} size="hero" decorative />
       <span className="matchup-unit__copy">
@@ -77,13 +72,13 @@ function MatchupUnit({ unit, side, onChoose }) {
       </span>
       <span className="matchup-unit__stats">
         <b>
-          <Shield size={13} /> {unit.hp || "–"} LP
+          <Shield size={13} /> {unit.hp || "–"} {t("lab.hp")}
         </b>
         <b>
           <Footprints size={13} /> {unit.movement?.toFixed(2) || "–"}
         </b>
         <b>
-          <Coins size={13} /> {unit.costs.total || "Spezial"}
+          <Coins size={13} /> {unit.costs.total || t("lab.special")}
         </b>
       </span>
     </button>
@@ -95,11 +90,12 @@ const Alternatives = memo(
    * @param {{ candidates: import("../types.js").CounterCandidate[], target: import("../types.js").Unit, onSelect: (unit: import("../types.js").Unit) => void }} props
    */
   function Alternatives({ candidates, target, onSelect }) {
+    const { t, unitName, roleLabel } = useI18n();
     return (
       <aside className="alternative-rail">
         <div className="rail-heading">
           <div>
-            <span>Antworten auf</span>
+            <span>{t("lab.answersTo")}</span>
             <strong>{unitName(target)}</strong>
           </div>
           <Crosshair size={19} />
@@ -127,8 +123,7 @@ const Alternatives = memo(
         </div>
         <p className="rail-note">
           <Info size={14} />
-          Sortiert nach gleichem Ressourcenwert, aktuellem Zeitalter und deinen
-          Kampfvariablen.
+          {t("lab.railNote")}
         </p>
       </aside>
     );
@@ -136,6 +131,8 @@ const Alternatives = memo(
 );
 
 function Variables({ settings, onChange }) {
+  const { t } = useI18n();
+
   function patch(values) {
     onChange({ ...settings, ...values });
   }
@@ -145,34 +142,34 @@ function Variables({ settings, onChange }) {
       <div className="variables-band__title">
         <Sparkles size={17} />
         <div>
-          <strong>Kampf-Variablen</strong>
-          <span>Das dreht enge Matchups</span>
+          <strong>{t("lab.variables")}</strong>
+          <span>{t("lab.variablesSub")}</span>
         </div>
       </div>
 
       <div className="variable-group">
-        <span>
-          <Coins size={15} /> Vergleich
+        <span title={t("lab.compareHelp")}>
+          <Coins size={15} /> {t("lab.compare")}
         </span>
         <div className="segmented">
           <SettingButton
             active={settings.mode === "resources"}
             onClick={() => patch({ mode: "resources" })}
           >
-            <Coins size={13} /> Ressourcen
+            <Coins size={13} /> {t("lab.resources")}
           </SettingButton>
           <SettingButton
             active={settings.mode === "count"}
             onClick={() => patch({ mode: "count" })}
           >
-            <Users size={13} /> 1 : 1
+            <Users size={13} /> {t("lab.oneVsOne")}
           </SettingButton>
         </div>
       </div>
 
       <div className="variable-group variable-group--stepper">
-        <span>
-          <Zap size={15} /> Mein Upgrade
+        <span title={t("lab.upgradeHelp")}>
+          <Zap size={15} /> {t("lab.myUpgrade")}
         </span>
         <div>
           <button
@@ -180,7 +177,7 @@ function Variables({ settings, onChange }) {
             onClick={() =>
               patch({ upgrades: Math.max(-2, settings.upgrades - 1) })
             }
-            aria-label="Upgrade-Nachteil erhöhen"
+            aria-label={t("lab.upgradeDown")}
           >
             <Minus size={13} />
           </button>
@@ -193,7 +190,7 @@ function Variables({ settings, onChange }) {
             onClick={() =>
               patch({ upgrades: Math.min(2, settings.upgrades + 1) })
             }
-            aria-label="Upgrade-Vorteil erhöhen"
+            aria-label={t("lab.upgradeUp")}
           >
             <Plus size={13} />
           </button>
@@ -202,39 +199,39 @@ function Variables({ settings, onChange }) {
 
       <div className="variable-group">
         <span>
-          <Map size={15} /> Gelände
+          <Map size={15} /> {t("lab.terrain")}
         </span>
         <div className="icon-segments">
           <SettingButton
             active={settings.terrain === "offen"}
             onClick={() => patch({ terrain: "offen" })}
           >
-            <Mountain size={14} /> Offen
+            <Mountain size={14} /> {t("lab.terrainOpen")}
           </SettingButton>
           <SettingButton
             active={settings.terrain === "engpass"}
             onClick={() => patch({ terrain: "engpass" })}
           >
-            <ArrowDown size={14} /> Engpass
+            <ArrowDown size={14} /> {t("lab.terrainChoke")}
           </SettingButton>
           <SettingButton
             active={settings.terrain === "wald"}
             onClick={() => patch({ terrain: "wald" })}
           >
-            <Trees size={14} /> Wald
+            <Trees size={14} /> {t("lab.terrainForest")}
           </SettingButton>
         </div>
       </div>
 
       <div className="variable-group">
-        <span>
-          <Crosshair size={15} /> Micro
+        <span title={t("lab.microHelp")}>
+          <Crosshair size={15} /> {t("lab.micro")}
         </span>
         <div className="segmented">
           {[
-            ["amove", "A-Move"],
-            ["solide", "Solide"],
-            ["stark", "Stark"],
+            ["amove", t("lab.microAmove")],
+            ["solide", t("lab.microSolid")],
+            ["stark", t("lab.microStrong")],
           ].map(([value, label]) => (
             <SettingButton
               key={value}
@@ -246,34 +243,38 @@ function Variables({ settings, onChange }) {
           ))}
         </div>
       </div>
+
+      <p className="variables-band__help">{t("lab.variablesHelp")}</p>
     </section>
   );
 }
 
 function DrillTeaser({ target, onOpenDrills }) {
+  const { t, unitName } = useI18n();
   return (
     <section className="drill-teaser">
       <div className="drill-teaser__index">
         <Swords />
-        <span>Nächster Drill</span>
+        <span>{t("lab.nextDrill")}</span>
       </div>
       <div className="drill-teaser__copy">
-        <strong>Antwort unter Zeitdruck</strong>
+        <strong>{t("lab.drillTitle")}</strong>
         <p>
-          Der Gegner zeigt <b>{unitName(target)}</b>. Wähle in 12 Sekunden die
-          beste bezahlbare Antwort.
+          {t("lab.drillBodyPre")}
+          <b>{unitName(target)}</b>
+          {t("lab.drillBodyPost")}
         </p>
       </div>
       <div className="drill-teaser__meta">
-        <span>Ziel</span>
-        <strong>3 Entscheidungen in Folge</strong>
+        <span>{t("lab.drillGoal")}</span>
+        <strong>{t("lab.drillGoalValue")}</strong>
       </div>
       <div className="drill-teaser__meta">
-        <span>Belohnung</span>
-        <strong>+25 Lernpunkte</strong>
+        <span>{t("lab.drillReward")}</span>
+        <strong>{t("lab.drillRewardValue")}</strong>
       </div>
       <button className="primary-button" type="button" onClick={onOpenDrills}>
-        Drill starten <Swords size={16} />
+        {t("lab.drillStart")} <Swords size={16} />
       </button>
     </section>
   );
@@ -287,19 +288,26 @@ export default function CounterLab({
   onOpenDrills,
   onOpenUnit,
 }) {
+  const { t, lang, unitName, shortDescription } = useI18n();
   const [mine, setMine] = useState(initialMine);
   const [enemy, setEnemy] = useState(initialEnemy);
   const [pickerSide, setPickerSide] = useState("mine");
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
 
   const result = useMemo(
-    () => calculateMatchup(mine, enemy, settings),
-    [enemy, mine, settings],
+    () => calculateMatchup(mine, enemy, settings, lang),
+    [enemy, mine, settings, lang],
   );
   const alternatives = useMemo(
     () =>
-      getCounterCandidates(units, enemy, settings, COUNTER_SUGGESTIONS_LIMIT),
-    [enemy, settings, units],
+      getCounterCandidates(
+        units,
+        enemy,
+        settings,
+        COUNTER_SUGGESTIONS_LIMIT,
+        lang,
+      ),
+    [enemy, settings, units, lang],
   );
 
   function selectFromPicker(unit) {
@@ -325,14 +333,14 @@ export default function CounterLab({
         <section className="matchup-arena">
           <div className="matchup-arena__topline">
             <div>
-              <span>Aktives Matchup</span>
+              <span>{t("lab.activeMatchup")}</span>
               <strong>
                 {settings.mode === "resources"
-                  ? `${settings.budget} Ressourcen pro Seite`
-                  : "Gleiche Anzahl"}
+                  ? t("lab.resourcesPerSide", { budget: settings.budget })
+                  : t("lab.equalCount")}
               </strong>
             </div>
-            <div className="age-switcher" aria-label="Zeitalter">
+            <div className="age-switcher" aria-label={t("lab.age")}>
               {[2, 3, 4].map((age) => (
                 <button
                   type="button"
@@ -349,7 +357,7 @@ export default function CounterLab({
               className="text-button"
               onClick={() => setSettings(DEFAULT_SETTINGS)}
             >
-              <RotateCcw size={14} /> Zurücksetzen
+              <RotateCcw size={14} /> {t("lab.reset")}
             </button>
           </div>
 
@@ -361,23 +369,21 @@ export default function CounterLab({
             />
 
             <div className={`verdict verdict--${result.verdict.tone}`}>
-              <button
-                type="button"
-                onClick={swap}
-                aria-label="Einheiten tauschen"
-              >
+              <button type="button" onClick={swap} aria-label={t("lab.swap")}>
                 <ArrowLeftRight size={18} />
               </button>
-              <span>gegen</span>
+              <span>{t("lab.versus")}</span>
               <div className="verdict__arrow" aria-hidden="true">
                 <i />
                 <b />
               </div>
               <strong>{result.verdict.label}</strong>
-              <p>
+              <p
+                title={result.comparable ? t("lab.confidenceHint") : undefined}
+              >
                 {result.comparable
-                  ? `${result.confidence}% Modell-Sicherheit`
-                  : "Keine sinnvolle Simulation"}
+                  ? t("lab.confidence", { value: result.confidence })
+                  : t("lab.noSim")}
               </p>
             </div>
 
@@ -396,7 +402,7 @@ export default function CounterLab({
             >
               <span>1</span>
               <div>
-                <small>Einheit wählen</small>
+                <small>{t("lab.step1")}</small>
                 <strong>{unitName(mine)}</strong>
               </div>
               <ChevronRight size={16} />
@@ -408,7 +414,7 @@ export default function CounterLab({
             >
               <span>2</span>
               <div>
-                <small>Ziel wählen</small>
+                <small>{t("lab.step2")}</small>
                 <strong>{unitName(enemy)}</strong>
               </div>
               <ChevronRight size={16} />
@@ -418,19 +424,19 @@ export default function CounterLab({
               type="button"
               onClick={() => onOpenUnit(mine)}
             >
-              Dossier öffnen <ChevronRight size={16} />
+              {t("lab.openDossier")} <ChevronRight size={16} />
             </button>
           </div>
         </section>
 
         <section className="why-panel">
           <div className="why-panel__intro">
-            <span>Warum dieses Matchup so kippt</span>
+            <span>{t("lab.whyTitle")}</span>
             <h2>{result.verdict.label}</h2>
             <p>
               {result.comparable
                 ? shortDescription(mine)
-                : "Wähle zwei Einheiten aus derselben Kampfumgebung."}
+                : t("lab.pickSameEnv")}
             </p>
           </div>
           <div className="reason-grid">
@@ -448,13 +454,15 @@ export default function CounterLab({
           </div>
           <div className="matchup-legend">
             <span>
-              <i className="legend-dot legend-dot--green" /> Klarer Counter
+              <i className="legend-dot legend-dot--green" />{" "}
+              {t("lab.legendCounter")}
             </span>
             <span>
-              <i className="legend-dot legend-dot--gold" /> Skill-Matchup
+              <i className="legend-dot legend-dot--gold" />{" "}
+              {t("lab.legendSkill")}
             </span>
             <span>
-              <i className="legend-dot legend-dot--red" /> Harter Nachteil
+              <i className="legend-dot legend-dot--red" /> {t("lab.legendLoss")}
             </span>
           </div>
         </section>

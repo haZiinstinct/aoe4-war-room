@@ -7,6 +7,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { useI18n } from "../i18n/LanguageProvider.jsx";
 
 export default function MethodologyDrawer({
   open,
@@ -14,6 +15,7 @@ export default function MethodologyDrawer({
   unitCount,
   civCount,
 }) {
+  const { t } = useI18n();
   const drawerRef = useRef(null);
   const closeButtonRef = useRef(null);
 
@@ -69,7 +71,7 @@ export default function MethodologyDrawer({
         className="drawer-dismiss"
         type="button"
         tabIndex={-1}
-        aria-label="Methodik schließen"
+        aria-label={t("meth.close")}
         onClick={onClose}
       />
       <aside
@@ -83,84 +85,71 @@ export default function MethodologyDrawer({
         <header>
           <div>
             <BookOpen aria-hidden="true" />
-            <span>Transparente Methodik</span>
+            <span>{t("meth.badge")}</span>
           </div>
           <button
             ref={closeButtonRef}
             type="button"
             onClick={onClose}
-            aria-label="Schließen"
+            aria-label={t("meth.close")}
           >
             <X aria-hidden="true" />
           </button>
         </header>
         <div className="methodology-drawer__body">
-          <h2 id="methodology-title">Was dieser Score kann – und was nicht.</h2>
-          <p id="methodology-description">
-            WAR ROOM ist ein Lernmodell, kein Frame-genauer Kampfsimulator. Es
-            erklärt natürliche Vorteile und zwingt die wichtigsten Variablen
-            sichtbar in die Entscheidung.
-          </p>
+          <h2 id="methodology-title">{t("meth.title")}</h2>
+          <p id="methodology-description">{t("meth.desc")}</p>
 
           <dl className="methodology-facts">
             <div>
               <dt>{unitCount}</dt>
-              <dd>militärische Einträge</dd>
+              <dd>{t("meth.entries")}</dd>
             </div>
             <div>
               <dt>{civCount}</dt>
-              <dd>Zivilisationen</dd>
+              <dd>{t("meth.civs")}</dd>
             </div>
             <div>
               <dt>{unitCount * unitCount}</dt>
-              <dd>gerichtete Paarungen</dd>
+              <dd>{t("meth.pairings")}</dd>
             </div>
           </dl>
 
           <section>
             <h3>
-              <FlaskConical aria-hidden="true" /> Was einfließt
+              <FlaskConical aria-hidden="true" /> {t("meth.whatIn")}
             </h3>
             <ul>
               <li>
-                <CheckCircle2 aria-hidden="true" /> Klassen- und Bonus-Schaden
-                aus den aktuellen Einheitendaten
+                <CheckCircle2 aria-hidden="true" /> {t("meth.in1")}
               </li>
               <li>
-                <CheckCircle2 aria-hidden="true" /> Trefferpunkte, Rüstung,
-                Angriffstempo und Reichweite
+                <CheckCircle2 aria-hidden="true" /> {t("meth.in2")}
               </li>
               <li>
-                <CheckCircle2 aria-hidden="true" /> Kostenvergleich oder gleiche
-                Einheitenzahl
+                <CheckCircle2 aria-hidden="true" /> {t("meth.in3")}
               </li>
               <li>
-                <CheckCircle2 aria-hidden="true" /> Gelände, Micro-Niveau und
-                relativer Upgrade-Vorteil
+                <CheckCircle2 aria-hidden="true" /> {t("meth.in4")}
               </li>
             </ul>
           </section>
 
           <section>
             <h3>
-              <Scale aria-hidden="true" /> Wichtige Grenzen
+              <Scale aria-hidden="true" /> {t("meth.limits")}
             </h3>
-            <p>
-              Zivilisationsboni, aktivierte Fähigkeiten, Landmark-Effekte,
-              Formationstiefe, echte Pfadfindung und Patch-Sonderfälle können
-              das Resultat drehen. Deshalb zeigt die App zusätzlich eine
-              Modell-Sicherheit und markiert enge Ergebnisse als Skill-Matchup.
-            </p>
+            <p>{t("meth.limitsBody")}</p>
           </section>
 
           <section className="source-list">
-            <h3>Quellen</h3>
+            <h3>{t("meth.sources")}</h3>
             <a
               href="https://www.ageofempires.com/civilizations/"
               target="_blank"
               rel="noreferrer"
             >
-              Offizielles Zivilisationsverzeichnis
+              {t("meth.src1")}
               <ExternalLink aria-hidden="true" />
             </a>
             <a
@@ -168,7 +157,7 @@ export default function MethodologyDrawer({
               target="_blank"
               rel="noreferrer"
             >
-              Offizielle Einführung in das Counter-Prinzip
+              {t("meth.src2")}
               <ExternalLink aria-hidden="true" />
             </a>
             <a
@@ -176,7 +165,7 @@ export default function MethodologyDrawer({
               target="_blank"
               rel="noreferrer"
             >
-              AoE4 World – aus Spieldateien extrahierte Einheitenwerte
+              {t("meth.src3")}
               <ExternalLink aria-hidden="true" />
             </a>
             <a
@@ -184,16 +173,12 @@ export default function MethodologyDrawer({
               target="_blank"
               rel="noreferrer"
             >
-              AoE4 World Explorer
+              {t("meth.src4")}
               <ExternalLink aria-hidden="true" />
             </a>
           </section>
 
-          <small>
-            Datenstand: 30. Juni 2026. Age of Empires IV und zugehörige
-            Bezeichnungen sind Eigentum ihrer jeweiligen Rechteinhaber. Dieses
-            unabhängige Lernprojekt ist nicht mit Microsoft verbunden.
-          </small>
+          <small>{t("meth.disclaimer")}</small>
         </div>
       </aside>
     </div>

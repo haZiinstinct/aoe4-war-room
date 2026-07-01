@@ -16,73 +16,28 @@ import {
   Users,
 } from "lucide-react";
 import { useState } from "react";
+import { useI18n } from "../i18n/LanguageProvider.jsx";
 
+// Reihenfolge + Icons der sechs Regeln; die Texte kommen sprachabhängig aus t().
 const PRINCIPLES = [
-  {
-    id: "scout",
-    number: "01",
-    title: "Scoute die Produktion",
-    icon: Eye,
-    lead: "Counter beginnen 60–90 Sekunden vor dem Kampf.",
-    body: "Zähle Kasernen, Schießanlagen, Ställe und Belagerungswerkstätten. Ein zweites Produktionsgebäude ist oft die ehrlichere Information als fünf sichtbare Einheiten.",
-    cue: "Frage alle 45 Sekunden: Was kann er jetzt in Masse bauen?",
-  },
-  {
-    id: "budget",
-    number: "02",
-    title: "Vergleiche Ressourcen",
-    icon: Users,
-    lead: "Zehn gegen zehn ist selten ein fairer Vergleich.",
-    body: "Ein Speerträger kostet deutlich weniger als ein Ritter. Counter funktionieren über bezahlbare Masse, nicht zwingend über den 1-gegen-1-Kampf.",
-    cue: "Vergleiche 720 Ressourcen gegen 720 Ressourcen.",
-  },
-  {
-    id: "contact",
-    number: "03",
-    title: "Kontrolliere den Kontakt",
-    icon: Footprints,
-    lead: "Eine Fernkampfeinheit ohne Abstand ist nur teure Infanterie.",
-    body: "Frontlinie, Körperblock, Fokusfeuer und Rückzug bestimmen, wie lange dein theoretischer Bonus überhaupt arbeiten darf.",
-    cue: "Nicht die ganze Armee A-Moven: Front und Schaden getrennt steuern.",
-  },
-  {
-    id: "terrain",
-    number: "04",
-    title: "Spiele den Raum",
-    icon: Map,
-    lead: "Engpässe, Wald und offenes Feld ändern den Counter.",
-    body: "Kavallerie braucht Breite für Flanken. Flächenschaden liebt Engpässe. Fernkampf braucht Sichtlinien. Wähle den Ort, bevor du die Armee auswählst.",
-    cue: "Wenn das Gelände schlecht ist: nicht kämpfen ist eine valide Aktion.",
-  },
-  {
-    id: "targets",
-    number: "05",
-    title: "Ziele nach Wert",
-    icon: Crosshair,
-    lead: "Schieße nicht auf das Nächste, sondern auf das Richtige.",
-    body: "Springalds auf Belagerung, Armbrüste auf schwere Ziele, Reiter in die Fernkampflinie. Überkill kostet Salven und damit Kämpfe.",
-    cue: "Shift-Fokus in kleinen Gruppen, dann neu bewerten.",
-  },
-  {
-    id: "switch",
-    number: "06",
-    title: "Wechsle, bevor du musst",
-    icon: Factory,
-    lead: "Die beste Komposition ist die, die der Gegner zu spät sieht.",
-    body: "Behalte deine vorhandene Armee als Anker, ergänze ihren Counter-Counter und verschiebe neue Produktion. Vollständige harte Wechsel verschwenden Zeit und Veteranen.",
-    cue: "Eine zweite Einheit behebt meist mehr als ein Upgrade auf der falschen.",
-  },
+  { id: "scout", number: "01", icon: Eye },
+  { id: "budget", number: "02", icon: Users },
+  { id: "contact", number: "03", icon: Footprints },
+  { id: "terrain", number: "04", icon: Map },
+  { id: "targets", number: "05", icon: Crosshair },
+  { id: "switch", number: "06", icon: Factory },
 ];
 
 /** @type {[string, string, import("lucide-react").LucideIcon][]} */
 const FLOW = [
-  ["Sehen", "Welche Klasse und wie viel Produktion?", Eye],
-  ["Bewerten", "Kosten, Alter, Upgrades, Gelände?", Layers3],
-  ["Antworten", "Direkt counteren oder Zeit kaufen?", Shield],
-  ["Ausführen", "Formation, Zielwahl, Rückzugsweg?", Route],
+  ["see", "seeText", Eye],
+  ["rate", "rateText", Layers3],
+  ["answer", "answerText", Shield],
+  ["execute", "executeText", Route],
 ];
 
 export default function FightIQ() {
+  const { t } = useI18n();
   const [open, setOpen] = useState("scout");
   const [checked, setChecked] = useState([]);
 
@@ -99,20 +54,16 @@ export default function FightIQ() {
       <header className="iq-hero">
         <div>
           <span>Fight IQ</span>
-          <h1>Der Counter ist nur der Anfang.</h1>
-          <p>
-            Gute Kämpfe entstehen aus Information, Timing, Raum und sauberer
-            Ausführung. Diese sechs Regeln sind der Klebstoff zwischen
-            Einheitenwissen und gewonnenen Partien.
-          </p>
+          <h1>{t("iq.heroTitle")}</h1>
+          <p>{t("iq.heroIntro")}</p>
         </div>
         <div className="iq-loop">
-          {FLOW.map(([title, text, Icon], index) => (
-            <div key={title}>
+          {FLOW.map(([titleKey, textKey, Icon], index) => (
+            <div key={titleKey}>
               <span>0{index + 1}</span>
               <Icon />
-              <strong>{title}</strong>
-              <small>{text}</small>
+              <strong>{t(`iq.flow.${titleKey}`)}</strong>
+              <small>{t(`iq.flow.${textKey}`)}</small>
               {index < FLOW.length - 1 ? <ArrowRight /> : null}
             </div>
           ))}
@@ -121,12 +72,9 @@ export default function FightIQ() {
 
       <section className="principles-section">
         <div className="principles-intro">
-          <span>Die sechs Kampfregeln</span>
-          <h2>Ein kurzer Check vor jedem Commit.</h2>
-          <p>
-            Öffne jede Regel und markiere sie, sobald du sie in einer echten
-            Partie bewusst angewendet hast.
-          </p>
+          <span>{t("iq.rulesKicker")}</span>
+          <h2>{t("iq.rulesTitle")}</h2>
+          <p>{t("iq.rulesIntro")}</p>
           <div className="iq-progress">
             <i>
               <b
@@ -136,7 +84,10 @@ export default function FightIQ() {
               />
             </i>
             <span>
-              {checked.length}/{PRINCIPLES.length} angewendet
+              {t("iq.progress", {
+                n: checked.length,
+                total: PRINCIPLES.length,
+              })}
             </span>
           </div>
         </div>
@@ -162,26 +113,24 @@ export default function FightIQ() {
                   <span>{principle.number}</span>
                   <Icon />
                   <div>
-                    <strong>{principle.title}</strong>
-                    <small>{principle.lead}</small>
+                    <strong>{t(`iq.${principle.id}.title`)}</strong>
+                    <small>{t(`iq.${principle.id}.lead`)}</small>
                   </div>
                   <ChevronDown />
                 </button>
                 {isOpen ? (
                   <div className="principle-detail">
-                    <p>{principle.body}</p>
+                    <p>{t(`iq.${principle.id}.body`)}</p>
                     <div>
                       <CircleDot />
-                      <span>{principle.cue}</span>
+                      <span>{t(`iq.${principle.id}.cue`)}</span>
                     </div>
                     <button
                       type="button"
                       onClick={() => toggleChecked(principle.id)}
                     >
                       {isChecked ? <Check /> : <TimerReset />}
-                      {isChecked
-                        ? "In Partie angewendet"
-                        : "Als Trainingsziel setzen"}
+                      {isChecked ? t("iq.applied") : t("iq.setGoal")}
                     </button>
                   </div>
                 ) : null}
@@ -194,20 +143,20 @@ export default function FightIQ() {
       <section className="preflight">
         <div>
           <Swords />
-          <span>10-Sekunden-Preflight</span>
+          <span>{t("iq.preflightTitle")}</span>
         </div>
         <ol>
           <li>
-            <b>1</b> Was countert meine Schadensquelle?
+            <b>1</b> {t("iq.preflight1")}
           </li>
           <li>
-            <b>2</b> Kommen alle Einheiten gleichzeitig an?
+            <b>2</b> {t("iq.preflight2")}
           </li>
           <li>
-            <b>3</b> Welches Ziel muss in der ersten Salve sterben?
+            <b>3</b> {t("iq.preflight3")}
           </li>
           <li>
-            <b>4</b> Wo ist mein Rückzugsweg?
+            <b>4</b> {t("iq.preflight4")}
           </li>
         </ol>
       </section>
