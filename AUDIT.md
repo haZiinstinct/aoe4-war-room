@@ -44,8 +44,8 @@ Geprüfte Kernregeln (Auszug):
 - Counter-Vorschläge schließen Support- und Formations-Einheiten aus und bleiben
   sortiert
 
-Ergebnis: alle Prüfungen bestanden (31 Tests). Build-Größe: rund 481 KB, rund
-116 KB gzip.
+Ergebnis: alle Prüfungen bestanden (31 Tests). Build-Größe: rund 519 KB, rund
+127 KB gzip.
 
 ## Wartbarkeit und Robustheit
 
@@ -63,6 +63,7 @@ Ergebnis: alle Prüfungen bestanden (31 Tests). Build-Größe: rund 481 KB, rund
 Geprüft wurde die gebaute Datei aus `outputs`, nicht nur der Entwicklungsserver.
 
 - Desktop: 1280 × 720, kein horizontaler Seiten-Overflow
+- Tablet: 1024 × 768, kein horizontaler Seiten-Overflow
 - Mobile: 390 × 844, kein horizontaler Seiten-Overflow
 - keine Konsolenfehler oder Warnungen
 - keine defekten, fertig geladenen Bilder im geprüften Zustand
@@ -85,9 +86,25 @@ Die Schriftrollen sind bewusst getrennt:
 
 Der Kontrast aus Kohle, warmem Gold, Rot und Grün erzeugt die gewünschte
 Taktikraum-Ästhetik, während klare Flächen, Linien und Statusfarben die
-Informationshierarchie tragen. Sichtbarer Fließ- und Hilfstext unterschreitet
-im geprüften Desktop-Zustand nicht 10 px. Fokusmarkierungen, größere Touch-Ziele,
-reduzierte Animationen und Safe-Area-Abstände wurden berücksichtigt.
+Informationshierarchie tragen.
+
+Der „Precision War Table“-Pass schärft die Oberfläche ohne Änderungen an
+Inhalt, Navigation oder Kampfmodell:
+
+- 96 × 96 px große Einheitenbilder bleiben in großen Portraits quadratisch und
+  werden nicht mehr auf bis zu 304 px hohe Flächen verzerrt.
+- Geätzte CSS-Rahmen, innere Bildplatten und kontrollierte Kantenlichter tragen
+  die visuelle Größe, während das eigentliche Rasterbild in nativer Größe bleibt.
+- Kohle (`#080b0a`), Messinggold (`#c99643`), helles Gold (`#e4b85f`),
+  Taktikgrün (`#8eb17b`) und Warnrot (`#cc6754`) bilden ein verbindliches
+  Oberflächensystem.
+- Bedienrelevante Mikrotypografie wurde angehoben, Kontrast und Zeilenhöhe
+  wurden erhöht; das mobile Verdict bleibt ohne Worttrennung lesbar.
+- Hover-, Fokus-, Auswahl- und aktive Navigationszustände verwenden dieselbe
+  1-px-Kanten-, Inset- und Lichtlogik.
+
+Fokusmarkierungen, größere Touch-Ziele, reduzierte Animationen und
+Safe-Area-Abstände wurden beibehalten.
 
 Screenshots:
 
