@@ -62,6 +62,18 @@ const CIV_NAMES_DE = {
   zx: "Zhu Xis Vermächtnis",
 };
 
+// Römische Zeitalter-Ziffern (sprachneutral) – an einem Ort statt mehrfach inline.
+const ROMAN_NUMERALS = ["I", "II", "III", "IV"];
+
+/**
+ * Bare römische Zeitalter-Ziffer (ohne „Zeitalter"/„Age"-Präfix).
+ * @param {number} age
+ * @returns {string}
+ */
+export function romanAge(age) {
+  return ROMAN_NUMERALS[Math.max(0, age - 1)] ?? String(age);
+}
+
 // Stabile Reihenfolge der Kategorien für Filter-Listen (sprachneutral).
 export const CATEGORY_ORDER = [
   "alle",
@@ -217,7 +229,7 @@ export function civName(code, lang = "de") {
  * @returns {string}
  */
 export function ageLabel(age, lang = "de") {
-  const roman = ["I", "II", "III", "IV"][Math.max(0, age - 1)] ?? age;
+  const roman = romanAge(age);
   return lang === "en" ? `Age ${roman}` : `Zeitalter ${roman}`;
 }
 

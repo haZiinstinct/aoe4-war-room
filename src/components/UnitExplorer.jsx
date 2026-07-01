@@ -17,7 +17,7 @@ import {
   Target,
 } from "lucide-react";
 import { memo, useDeferredValue, useMemo, useState } from "react";
-import { CATEGORY_ORDER } from "../data/localization";
+import { CATEGORY_ORDER, romanAge } from "../data/localization";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 import {
   DEFAULT_SETTINGS,
@@ -260,7 +260,7 @@ export default function UnitExplorer({
                   </small>
                 </span>
                 <span>{roleLabel(unit)}</span>
-                <span>{["I", "II", "III", "IV"][unit.minAge - 1]}</span>
+                <span>{romanAge(unit.minAge)}</span>
                 <ChevronRight size={14} />
               </button>
             ))}

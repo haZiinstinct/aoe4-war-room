@@ -27,11 +27,14 @@ function buildValue(lang, setLang) {
    * @param {Record<string, any>} [params]
    * @returns {string}
    */
+  // Aktive Sprachtabelle einmal auflösen (statt bei jedem t()-Aufruf erneut).
+  const table = STRINGS[lang] ?? STRINGS.de;
   const t = (key, params) => {
-    const entry = STRINGS[lang]?.[key] ?? STRINGS.de[key] ?? key;
+    const entry = table[key] ?? STRINGS.de[key] ?? key;
     return typeof entry === "function" ? entry(params ?? {}) : entry;
   };
-  const numberFormat = new Intl.NumberFormat(lang === "en" ? "en" : "de");
+  // "de"/"en" sind bereits gültige BCP-47-Locales – kein Mapping nötig.
+  const numberFormat = new Intl.NumberFormat(lang);
   return {
     lang,
     setLang,

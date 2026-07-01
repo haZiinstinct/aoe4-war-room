@@ -20,6 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import { memo, useMemo, useState } from "react";
+import { romanAge } from "../data/localization";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 import {
   calculateMatchup,
@@ -348,7 +349,7 @@ export default function CounterLab({
                   className={settings.age === age ? "is-active" : ""}
                   onClick={() => setSettings({ ...settings, age })}
                 >
-                  {["I", "II", "III", "IV"][age - 1]}
+                  {romanAge(age)}
                 </button>
               ))}
             </div>
