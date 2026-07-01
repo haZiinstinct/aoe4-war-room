@@ -63,8 +63,30 @@ export const CATEGORY_LABELS = {
   sonstige: "Spezial",
 };
 
+// Einmalige Dev-Warnung für fehlende Übersetzungen. Im Produktions-Build
+// (import.meta.env.DEV === false) und in Node/Tests (env undefined) still.
+const warnedKeys = new Set();
+function devWarnOnce(key, message) {
+  if (!import.meta.env?.DEV || warnedKeys.has(key)) return;
+  warnedKeys.add(key);
+  console.warn(message);
+}
+
+/**
+ * Deutscher Einheitenname mit englischem Fallback. Bewusst nicht alle Einheiten
+ * übersetzt (viele sind Eigennamen) — fehlende werden im Dev-Modus gemeldet,
+ * damit UNIT_NAMES gezielt gefüllt werden kann.
+ * @param {import("../types.js").Unit} unit
+ * @returns {string}
+ */
 export function unitName(unit) {
-  return UNIT_NAMES[unit.id] ?? unit.name;
+  const name = UNIT_NAMES[unit.id];
+  if (name) return name;
+  devWarnOnce(
+    `name:${unit.id}`,
+    `[i18n] Kein deutscher Name für "${unit.id}" – Fallback "${unit.name}".`,
+  );
+  return unit.name;
 }
 
 export function civName(code) {
@@ -91,20 +113,31 @@ export function roleLabel(unit) {
   if (classes.has("ranged")) return "Fernkampfinfanterie";
   if (classes.has("light_melee_infantry")) return "Leichte Nahkampfinfanterie";
   const fallback = unit.displayClasses[0] ?? "Spezialeinheit";
-  return (
-    {
-      "Heavy Melee Infantry": "Schwere Nahkampfinfanterie",
-      "Heavy Infantry": "Schwere Infanterie",
-      "Light Melee Infantry": "Leichte Nahkampfinfanterie",
-      "Light Infantry": "Leichte Infanterie",
-      "Melee Infantry": "Nahkampfinfanterie",
-      "Ranged Infantry": "Fernkampfinfanterie",
-      "Heavy Cavalry": "Schwere Kavallerie",
-      "Light Cavalry": "Leichte Kavallerie",
-      "Ranged Cavalry": "Berittene Fernkampfeinheit",
-    }[fallback] ?? fallback
-  );
+  const translated = ROLE_FALLBACKS[fallback];
+  if (!translated && fallback !== "Spezialeinheit") {
+    devWarnOnce(
+      `role:${fallback}`,
+      `[i18n] Keine Rollen-Übersetzung für Klasse "${fallback}" (z. B. ${unit.id}).`,
+    );
+  }
+  return translated ?? fallback;
 }
+
+// Englische displayClasses ohne passenden Klassen-Zweig oben → deutsche Rolle.
+const ROLE_FALLBACKS = {
+  "Heavy Melee Infantry": "Schwere Nahkampfinfanterie",
+  "Heavy Infantry": "Schwere Infanterie",
+  "Light Melee Infantry": "Leichte Nahkampfinfanterie",
+  "Light Infantry": "Leichte Infanterie",
+  "Melee Infantry": "Nahkampfinfanterie",
+  "Ranged Infantry": "Fernkampfinfanterie",
+  "Heavy Cavalry": "Schwere Kavallerie",
+  "Light Cavalry": "Leichte Kavallerie",
+  "Ranged Cavalry": "Berittene Fernkampfeinheit",
+  "Mixed Force Army": "Gemischte Armee",
+  Worker: "Arbeiter",
+  "Battle Monk": "Kampfmönch",
+};
 
 export function shortDescription(unit) {
   const classes = new Set(unit.classes);
