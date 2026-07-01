@@ -382,7 +382,7 @@ export const STRINGS = {
     "lab.pickSameEnv": "Pick two units from the same combat environment.",
     "lab.legendCounter": "Clear counter",
     "lab.legendSkill": "Skill matchup",
-    "lab.legendLoss": "Hard disadvantage",
+    "lab.legendLoss": "Hard loss",
 
     "res.food": "Food",
     "res.wood": "Wood",

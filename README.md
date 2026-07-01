@@ -15,6 +15,7 @@ Entscheidungs-Drills und sechs praktischen Kampfregeln.
 - Variablen für Upgrades, Gelände und Micro
 - Such- und Filteroberfläche für Standard-, Spezial- und Unterstützungseinheiten
 - interaktive Counter-Drills mit lokal gespeichertem Fortschritt
+- vollständig zweisprachige Oberfläche (Deutsch/Englisch) mit Umschalter
 - responsive Desktop- und Mobile-Oberfläche
 
 ## Sofort benutzen oder hochladen
@@ -99,7 +100,9 @@ Quellen:
 - [AoE4 World Data](https://github.com/aoe4world/data)
 - [AoE4 World Explorer](https://aoe4world.com/explorer)
 
-Datenstand: 30. Juni 2026.
+Die Einheitenwerte stammen aus den Spieldateien via
+[aoe4world/data](https://github.com/aoe4world/data); der genutzte Upstream-Commit
+steht im Kopf von `src/data/units.generated.js`.
 
 Age of Empires IV und zugehörige Bezeichnungen sind Eigentum ihrer jeweiligen
 Rechteinhaber. Dieses unabhängige Lernprojekt ist nicht mit Microsoft verbunden.
