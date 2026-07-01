@@ -1,0 +1,10 @@
+node_modules/
+dist/
+work/
+.DS_Store
+*.log
+outputs/*
+!outputs/index.html
+!outputs/AUDIT.md
+!outputs/audit-desktop.png
+!outputs/audit-mobile.png

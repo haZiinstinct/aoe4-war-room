@@ -1,0 +1,25 @@
+{
+  "name": "aoe4-war-room",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/release-standalone.mjs",
+    "preview": "vite preview",
+    "test": "node scripts/audit-matchups.mjs",
+    "audit": "npm run test && npm run build && npm run check:standalone",
+    "check:standalone": "node scripts/release-standalone.mjs --check-only",
+    "generate:data": "node scripts/generate-units.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.5",
+    "vite-plugin-singlefile": "^2.3.3"
+  }
+}
