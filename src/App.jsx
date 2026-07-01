@@ -25,6 +25,18 @@ function viewFromHash() {
   return VALID_VIEWS.has(view) ? view : "lab";
 }
 
+// Schema-Wächter für den persistierten Drill-Fortschritt. Verwirft veraltete
+// oder manipulierte localStorage-Daten, statt sie mit falscher Form zu laden.
+function isDrillStats(value) {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    typeof value.answered === "number" &&
+    typeof value.correct === "number" &&
+    typeof value.streak === "number"
+  );
+}
+
 export default function App() {
   const [activeView, setActiveView] = useState(viewFromHash);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
@@ -33,11 +45,11 @@ export default function App() {
     mine: byId("crossbowman"),
     enemy: byId("man-at-arms"),
   }));
-  const [drillStats, setDrillStats] = usePersistedState("war-room-drills-v1", {
-    answered: 0,
-    correct: 0,
-    streak: 0,
-  });
+  const [drillStats, setDrillStats] = usePersistedState(
+    "war-room-drills-v1",
+    { answered: 0, correct: 0, streak: 0 },
+    isDrillStats,
+  );
 
   const navigate = useCallback((view) => {
     if (!VALID_VIEWS.has(view)) return;
