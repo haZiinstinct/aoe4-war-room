@@ -5,22 +5,17 @@
 :root {
   color-scheme: dark;
   --bg: #0b0e0d;
-  --bg-raised: #111514;
   --surface: #151917;
-  --surface-2: #1b1f1c;
   --surface-red: #26120f;
   --ink: #f0e7d6;
   --muted: #a49d90;
-  --faint: #6d6a62;
   --gold: #c89d4f;
   --gold-bright: #e0b665;
   --gold-dark: #6d5229;
   --line: #4c3b22;
   --line-soft: #292821;
   --red: #b84f3f;
-  --red-deep: #6f241e;
   --green: #78a16e;
-  --green-deep: #29442c;
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-condensed: "Barlow Condensed", "Arial Narrow", sans-serif;
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
