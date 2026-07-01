@@ -62,7 +62,7 @@
  * @property {string} description
  * @property {string[]} displayClasses
  * @property {string[]} classes
- * @property {UnitCategory} category
+ * @property {string} category  Siehe {@link UnitCategory} für erlaubte Werte.
  * @property {number} hp
  * @property {Armor} armor
  * @property {number} movement
@@ -81,17 +81,19 @@
  */
 
 /**
- * @typedef {"resources"|"even"} MatchupMode
+ * Dokumentierte erlaubte Werte (die Felder in MatchupSettings sind als `string`
+ * typisiert, weil sie aus untypisiertem React-State stammen).
+ * @typedef {"resources"|"count"} MatchupMode
  * @typedef {"offen"|"engpass"|"wald"} Terrain
  * @typedef {"amove"|"solide"|"stark"} MicroLevel
  */
 
 /**
  * @typedef {Object} MatchupSettings
- * @property {MatchupMode} mode
+ * @property {string} mode      Siehe {@link MatchupMode}.
  * @property {number} budget
- * @property {Terrain} terrain
- * @property {MicroLevel} micro
+ * @property {string} terrain   Siehe {@link Terrain}.
+ * @property {string} micro     Siehe {@link MicroLevel}.
  * @property {number} upgrades
  * @property {number} age
  */
@@ -101,7 +103,7 @@
  * @property {string} key
  * @property {string} label
  * @property {string} short
- * @property {"positive"|"neutral"|"negative"} tone
+ * @property {string} tone  "positive" | "neutral" | "negative"
  */
 
 /**

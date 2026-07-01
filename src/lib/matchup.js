@@ -1,15 +1,22 @@
 import { roleLabel, unitName } from "../data/localization.js";
+import {
+  MICRO_BONUSES,
+  MICRO_RANGE_SCALE,
+  SPLASH,
+  TERRAIN_MULTIPLIERS,
+  TUNING,
+  VERDICT_THRESHOLDS,
+} from "./matchup.config.js";
 
-const FORMATION_IDS = new Set([
-  "earls-retinue",
-  "garrison-command",
-  "gunpowder-contingent",
-  "wynguard-army",
-  "wynguard-footmen",
-  "wynguard-raiders",
-  "wynguard-rangers",
-]);
+/** @typedef {import("../types.js").Unit} Unit */
+/** @typedef {import("../types.js").MatchupSettings} MatchupSettings */
+/** @typedef {import("../types.js").MatchupResult} MatchupResult */
+/** @typedef {import("../types.js").CounterCandidate} CounterCandidate */
 
+/**
+ * @param {Unit} unit
+ * @returns {Set<string>}
+ */
 function classSet(unit) {
   return new Set(unit.classes);
 }
@@ -37,16 +44,18 @@ function weaponProfile(attacker, defender) {
       ...weapon,
       bonus,
       armor,
-      dps: hit / Math.max(0.5, weapon.speed),
+      dps: hit / Math.max(TUNING.speedFloor, weapon.speed),
     };
   });
 
+  // Beste Waffe (höchste DPS) entscheidet. Fällt eine Einheit ohne (Nicht-Feuer-)
+  // Waffe an, liefert der Fallback einen kampflos schwachen Wert, statt zu werfen.
   return (
     profiles.sort((a, b) => b.dps - a.dps)[0] ?? {
       damage: 0,
       bonus: 0,
       armor: 0,
-      dps: 0.05,
+      dps: TUNING.emptyWeaponDps,
       range: 0,
       speed: 1,
       type: "melee",
@@ -56,60 +65,59 @@ function weaponProfile(attacker, defender) {
 }
 
 function unitCost(unit) {
-  return unit.costs.total > 0 ? unit.costs.total : 180;
+  return unit.costs.total > 0 ? unit.costs.total : TUNING.costFallback;
 }
 
 function terrainMultiplier(unit, terrain) {
+  const table = TERRAIN_MULTIPLIERS[terrain];
+  if (!table) return 1;
   const classes = classSet(unit);
   if (terrain === "engpass") {
-    if (unit.category === "belagerung") return 1.12;
-    if (classes.has("ranged")) return 1.08;
-    if (classes.has("cavalry")) return 0.88;
+    if (unit.category === "belagerung") return table.belagerung;
+    if (classes.has("ranged")) return table.ranged;
+    if (classes.has("cavalry")) return table.cavalry;
   }
   if (terrain === "offen") {
-    if (classes.has("cavalry")) return 1.08;
-    if (classes.has("ranged")) return 1.04;
+    if (classes.has("cavalry")) return table.cavalry;
+    if (classes.has("ranged")) return table.ranged;
   }
   if (terrain === "wald") {
-    if (classes.has("ranged")) return 0.93;
-    if (classes.has("infantry")) return 1.05;
+    if (classes.has("ranged")) return table.ranged;
+    if (classes.has("infantry")) return table.infantry;
   }
   return 1;
 }
 
 function microMultiplier(unit, opponent, micro) {
-  if (micro === "amove") return 1;
+  if (micro !== "stark" && micro !== "solide") return 1;
   const classes = classSet(unit);
   const opponentClasses = classSet(opponent);
   let multiplier = 1;
-  if (classes.has("ranged")) multiplier += micro === "stark" ? 0.14 : 0.07;
-  if (classes.has("cavalry")) multiplier += micro === "stark" ? 0.08 : 0.04;
+  if (classes.has("ranged")) multiplier += MICRO_BONUSES.ranged[micro];
+  if (classes.has("cavalry")) multiplier += MICRO_BONUSES.cavalry[micro];
   if (
     classes.has("ranged") &&
     unit.movement > opponent.movement &&
     !opponentClasses.has("ranged")
   ) {
-    multiplier += micro === "stark" ? 0.1 : 0.04;
+    multiplier += MICRO_BONUSES.kite[micro];
   }
   return multiplier;
 }
 
+// Flächenschaden/Spezialprofile lesen jetzt daten-getriebene Flags
+// (unit.flags), statt IDs zur Laufzeit per Regex zu erraten.
 function splashMultiplier(attacker, defender, mode) {
   if (mode !== "resources") return 1;
   const defenderClasses = classSet(defender);
-  const splashIds =
-    /mangonel|ribauldequin|nest-of-bees|great-bombard|huihui|ozutsu|cheirosiphon|eruptor/;
   if (
-    splashIds.test(attacker.id) &&
+    attacker.flags?.splash &&
     (defenderClasses.has("infantry") || defenderClasses.has("ranged"))
   ) {
-    return 1.22;
+    return SPLASH.siegeVsSoft;
   }
-  if (
-    /landsknecht|varangian|zhanma/.test(attacker.id) &&
-    defenderClasses.has("infantry")
-  ) {
-    return 1.8;
+  if (attacker.flags?.antiInfantryMelee && defenderClasses.has("infantry")) {
+    return SPLASH.antiInfantryMelee;
   }
   return 1;
 }
@@ -147,8 +155,7 @@ function isPreferredTarget(attacker, target) {
   );
 
   if (hasUnitBonus) return hasMatchingBonus(attacker, target);
-  if (/landsknecht|varangian|zhanma/.test(attacker.id))
-    return targetClasses.has("infantry");
+  if (attacker.flags?.antiInfantryMelee) return targetClasses.has("infantry");
   if (attackerClasses.has("gunpowder") && attackerClasses.has("ranged"))
     return targetClasses.has("heavy");
   if (attackerClasses.has("cavalry") && attackerClasses.has("melee"))
@@ -168,10 +175,10 @@ function sideStrength(unit, opponent, settings, upgradeDelta = 0) {
   const opponentWeapon = weaponProfile(opponent, unit);
   const count =
     settings.mode === "resources"
-      ? Math.max(0.35, settings.budget / unitCost(unit))
+      ? Math.max(TUNING.countFloor, settings.budget / unitCost(unit))
       : 1;
-  const hp = Math.max(20, unit.hp || 75);
-  const individual = Math.sqrt(Math.max(0.05, weapon.dps) * hp);
+  const hp = Math.max(TUNING.hpFloor, unit.hp || TUNING.fallbackHp);
+  const individual = Math.sqrt(Math.max(TUNING.dpsFloor, weapon.dps) * hp);
 
   let tactical = 1;
   // In AoE IV, explicit class bonuses are not merely extra raw DPS: they define
@@ -179,22 +186,23 @@ function sideStrength(unit, opponent, settings, upgradeDelta = 0) {
   // separately so natural counters remain visible beside expensive raw stats.
   if (weapon.bonus > 0) {
     tactical *=
-      1 + Math.min(1.6, (weapon.bonus / Math.max(1, weapon.damage)) * 1.4);
+      1 +
+      Math.min(
+        TUNING.bonusCap,
+        (weapon.bonus / Math.max(1, weapon.damage)) * TUNING.bonusWeight,
+      );
   }
   const rangeLead = weapon.range - opponentWeapon.range;
   if (rangeLead > 0) {
     const microScale =
-      settings.micro === "stark"
-        ? 1.25
-        : settings.micro === "solide"
-          ? 1
-          : 0.45;
-    tactical *= 1 + Math.min(0.22, rangeLead * 0.025 * microScale);
+      MICRO_RANGE_SCALE[settings.micro] ?? MICRO_RANGE_SCALE.amove;
+    tactical *=
+      1 + Math.min(TUNING.rangeCap, rangeLead * TUNING.rangeRate * microScale);
   }
   tactical *= terrainMultiplier(unit, settings.terrain);
   tactical *= microMultiplier(unit, opponent, settings.micro);
   tactical *= splashMultiplier(unit, opponent, settings.mode);
-  tactical *= 1 + upgradeDelta * 0.075;
+  tactical *= 1 + upgradeDelta * TUNING.upgradeStep;
 
   return {
     weapon,
@@ -204,6 +212,8 @@ function sideStrength(unit, opponent, settings, upgradeDelta = 0) {
   };
 }
 
+// Domänentrennung: nur "marine" gilt als Wasser; alles andere (inkl. fehlender/
+// unbekannter Kategorie) wird bewusst als Landeinheit behandelt.
 function domain(unit) {
   return unit.category === "marine" ? "water" : "land";
 }
@@ -217,28 +227,28 @@ function verdict(ratio, sameUnit) {
       tone: "neutral",
     };
   }
-  if (ratio >= 1.52)
+  if (ratio >= VERDICT_THRESHOLDS.hard)
     return {
       key: "hard",
       label: "Klarer Counter",
       short: "Stark",
       tone: "positive",
     };
-  if (ratio >= 1.16)
+  if (ratio >= VERDICT_THRESHOLDS.soft)
     return {
       key: "soft",
       label: "Leichter Vorteil",
       short: "Vorteil",
       tone: "positive",
     };
-  if (ratio > 0.86)
+  if (ratio > VERDICT_THRESHOLDS.skill)
     return {
       key: "skill",
       label: "Skill-Matchup",
       short: "Situativ",
       tone: "neutral",
     };
-  if (ratio > 0.66)
+  if (ratio > VERDICT_THRESHOLDS.softLoss)
     return {
       key: "soft-loss",
       label: "Leichter Nachteil",
@@ -339,12 +349,22 @@ export const DEFAULT_SETTINGS = {
   age: 4,
 };
 
+/**
+ * Bewertet Angreifer gegen Verteidiger im erklärbaren Lernmodell.
+ * @param {Unit} attacker
+ * @param {Unit} defender
+ * @param {Partial<MatchupSettings>} [settings]
+ * @returns {MatchupResult | null}
+ */
 export function calculateMatchup(
   attacker,
   defender,
   settings = DEFAULT_SETTINGS,
 ) {
   if (!attacker || !defender) return null;
+  // Fehlende Felder gegen die Defaults auffüllen, damit einzelne undefinierte
+  // Einstellungen nicht zu NaN-Ergebnissen führen.
+  settings = { ...DEFAULT_SETTINGS, ...settings };
   if (domain(attacker) !== domain(defender)) {
     return {
       comparable: false,
@@ -373,19 +393,33 @@ export function calculateMatchup(
     Number(settings.upgrades ?? 0),
   );
   const b = sideStrength(defender, attacker, settings, 0);
-  const ratio = a.value / Math.max(0.01, b.value);
+  const ratio = a.value / Math.max(TUNING.ratioFloor, b.value);
   const resultVerdict = verdict(ratio, attacker.id === defender.id);
   return {
     comparable: true,
     verdict: resultVerdict,
     ratio,
-    confidence: Math.min(96, Math.round(56 + Math.abs(Math.log2(ratio)) * 24)),
+    confidence: Math.min(
+      TUNING.confidenceCap,
+      Math.round(
+        TUNING.confidenceBase +
+          Math.abs(Math.log2(ratio)) * TUNING.confidenceScale,
+      ),
+    ),
     attacker: a,
     defender: b,
     reasons: matchupReasons(attacker, defender, a, b, ratio, settings),
   };
 }
 
+/**
+ * Beste direkte Antworten auf eine Zieleinheit, absteigend nach Vorteil.
+ * @param {Unit[]} allUnits
+ * @param {Unit} target
+ * @param {Partial<MatchupSettings>} [settings]
+ * @param {number} [limit]
+ * @returns {CounterCandidate[]}
+ */
 export function getCounterCandidates(
   allUnits,
   target,
@@ -401,7 +435,7 @@ export function getCounterCandidates(
         unit.weapons.length > 0 &&
         unit.costs.total > 0 &&
         unit.category !== "support" &&
-        !FORMATION_IDS.has(unit.id),
+        !unit.flags?.formation,
     )
     .map((unit) => ({
       unit,
@@ -412,6 +446,14 @@ export function getCounterCandidates(
     .slice(0, limit);
 }
 
+/**
+ * Einheiten, die diese Einheit am stärksten bedrohen.
+ * @param {Unit[]} allUnits
+ * @param {Unit} unit
+ * @param {Partial<MatchupSettings>} [settings]
+ * @param {number} [limit]
+ * @returns {CounterCandidate[]}
+ */
 export function getThreats(
   allUnits,
   unit,
@@ -421,6 +463,14 @@ export function getThreats(
   return getCounterCandidates(allUnits, unit, settings, limit);
 }
 
+/**
+ * Ziele, gegen die diese Einheit bevorzugt eingesetzt wird.
+ * @param {Unit[]} allUnits
+ * @param {Unit} unit
+ * @param {Partial<MatchupSettings>} [settings]
+ * @param {number} [limit]
+ * @returns {CounterCandidate[]}
+ */
 export function getFavoredTargets(
   allUnits,
   unit,
@@ -440,7 +490,7 @@ export function getFavoredTargets(
         (target.category !== "belagerung" ||
           unit.category === "kavallerie" ||
           hasExplicitBonusAgainst(unit, "siege")) &&
-        !FORMATION_IDS.has(target.id),
+        !target.flags?.formation,
     )
     .map((target) => ({
       unit: target,
