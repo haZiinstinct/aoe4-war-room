@@ -131,11 +131,7 @@ export default function App() {
       ) : null}
 
       {activeView === "drills" ? (
-        <DrillMode
-          units={units}
-          stats={drillStats}
-          onAnswered={answerDrill}
-        />
+        <DrillMode units={units} stats={drillStats} onAnswered={answerDrill} />
       ) : null}
 
       {activeView === "iq" ? <FightIQ /> : null}

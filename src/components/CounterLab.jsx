@@ -4,7 +4,6 @@ import {
   ChevronRight,
   Coins,
   Crosshair,
-  Equal,
   Footprints,
   Info,
   Map,
@@ -348,7 +347,11 @@ export default function CounterLab({
             />
 
             <div className={`verdict verdict--${result.verdict.tone}`}>
-              <button type="button" onClick={swap} aria-label="Einheiten tauschen">
+              <button
+                type="button"
+                onClick={swap}
+                aria-label="Einheiten tauschen"
+              >
                 <ArrowLeftRight size={18} />
               </button>
               <span>gegen</span>

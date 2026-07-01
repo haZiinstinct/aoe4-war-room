@@ -1,0 +1,5 @@
+# Konsistente LF-Zeilenenden für alle Textdateien (plattformübergreifend).
+* text=auto eol=lf
+
+# Binärdateien unangetastet lassen.
+*.png binary

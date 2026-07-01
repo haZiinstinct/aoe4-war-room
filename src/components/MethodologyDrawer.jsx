@@ -8,13 +8,20 @@ import {
 } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-export default function MethodologyDrawer({ open, onClose, unitCount, civCount }) {
+export default function MethodologyDrawer({
+  open,
+  onClose,
+  unitCount,
+  civCount,
+}) {
   const drawerRef = useRef(null);
   const closeButtonRef = useRef(null);
 
   useEffect(() => {
     if (!open) return undefined;
-    const previouslyFocused = document.activeElement;
+    const previouslyFocused = /** @type {HTMLElement | null} */ (
+      document.activeElement
+    );
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
@@ -27,8 +34,12 @@ export default function MethodologyDrawer({ open, onClose, unitCount, civCount }
       }
       if (event.key !== "Tab" || !drawerRef.current) return;
 
-      const focusable = drawerRef.current.querySelectorAll(
-        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      const focusable = /** @type {NodeListOf<HTMLElement>} */ (
+        drawerRef.current.querySelectorAll(
+          "a[href], button:not([disabled]), input:not([disabled]), " +
+            "select:not([disabled]), textarea:not([disabled]), " +
+            '[tabindex]:not([tabindex="-1"])',
+        )
       );
       if (!focusable.length) return;
       const first = focusable[0];
@@ -112,19 +123,20 @@ export default function MethodologyDrawer({ open, onClose, unitCount, civCount }
             </h3>
             <ul>
               <li>
-                <CheckCircle2 aria-hidden="true" /> Klassen- und Bonus-Schaden aus den aktuellen
-                Einheitendaten
+                <CheckCircle2 aria-hidden="true" /> Klassen- und Bonus-Schaden
+                aus den aktuellen Einheitendaten
               </li>
               <li>
-                <CheckCircle2 aria-hidden="true" /> Trefferpunkte, Rüstung, Angriffstempo und
-                Reichweite
+                <CheckCircle2 aria-hidden="true" /> Trefferpunkte, Rüstung,
+                Angriffstempo und Reichweite
               </li>
               <li>
-                <CheckCircle2 aria-hidden="true" /> Kostenvergleich oder gleiche Einheitenzahl
+                <CheckCircle2 aria-hidden="true" /> Kostenvergleich oder gleiche
+                Einheitenzahl
               </li>
               <li>
-                <CheckCircle2 aria-hidden="true" /> Gelände, Micro-Niveau und relativer
-                Upgrade-Vorteil
+                <CheckCircle2 aria-hidden="true" /> Gelände, Micro-Niveau und
+                relativer Upgrade-Vorteil
               </li>
             </ul>
           </section>
@@ -137,8 +149,7 @@ export default function MethodologyDrawer({ open, onClose, unitCount, civCount }
               Zivilisationsboni, aktivierte Fähigkeiten, Landmark-Effekte,
               Formationstiefe, echte Pfadfindung und Patch-Sonderfälle können
               das Resultat drehen. Deshalb zeigt die App zusätzlich eine
-              Modell-Sicherheit und markiert enge Ergebnisse als
-              Skill-Matchup.
+              Modell-Sicherheit und markiert enge Ergebnisse als Skill-Matchup.
             </p>
           </section>
 

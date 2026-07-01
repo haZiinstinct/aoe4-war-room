@@ -1,5 +1,4 @@
 import {
-  Anchor,
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
@@ -46,7 +45,10 @@ function Stat({ icon: Icon, label, value }) {
 function MatchupRow({ entry, type, onOpen }) {
   const isStrong = type === "strong";
   const ratio = isStrong ? entry.result.ratio : entry.result.ratio;
-  const meter = Math.min(100, Math.round((Math.abs(Math.log2(ratio)) + 0.2) * 52));
+  const meter = Math.min(
+    100,
+    Math.round((Math.abs(Math.log2(ratio)) + 0.2) * 52),
+  );
   return (
     <button
       type="button"
@@ -105,10 +107,7 @@ export default function UnitExplorer({
     });
   }, [age, category, civ, deferredQuery, uniqueOnly, units]);
 
-  const matchupSettings = useMemo(
-    () => ({ ...DEFAULT_SETTINGS, age: 4 }),
-    [],
-  );
+  const matchupSettings = useMemo(() => ({ ...DEFAULT_SETTINGS, age: 4 }), []);
   const favored = useMemo(
     () => getFavoredTargets(units, selected, matchupSettings, 5),
     [matchupSettings, selected, units],
@@ -131,7 +130,8 @@ export default function UnitExplorer({
           <div>
             <h1>Alle Einheiten</h1>
             <p>
-              {units.length} militärische Einträge · {civilizations.length} Zivilisationen
+              {units.length} militärische Einträge · {civilizations.length}{" "}
+              Zivilisationen
             </p>
           </div>
           <ListFilter size={20} />
@@ -198,7 +198,9 @@ export default function UnitExplorer({
             </label>
             <button
               type="button"
-              className={uniqueOnly ? "toggle-button is-active" : "toggle-button"}
+              className={
+                uniqueOnly ? "toggle-button is-active" : "toggle-button"
+              }
               onClick={() => setUniqueOnly((value) => !value)}
             >
               <Sparkles size={14} /> Nur einzigartig
@@ -308,22 +310,24 @@ export default function UnitExplorer({
         </div>
 
         <div className="dossier-tabs" role="tablist">
-          {[
-            ["matchups", "Matchups", Target],
-            ["stats", "Werte", BarChart3],
-            ["usage", "Einsatz", Crosshair],
-          ].map(([id, label, Icon]) => (
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === id}
-              className={tab === id ? "is-active" : ""}
-              key={id}
-              onClick={() => setTab(id)}
-            >
-              <Icon size={15} /> {label}
-            </button>
-          ))}
+          {
+            /** @type {[string, string, import("lucide-react").LucideIcon][]} */ ([
+              ["matchups", "Matchups", Target],
+              ["stats", "Werte", BarChart3],
+              ["usage", "Einsatz", Crosshair],
+            ]).map(([id, label, Icon]) => (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === id}
+                className={tab === id ? "is-active" : ""}
+                key={id}
+                onClick={() => setTab(id)}
+              >
+                <Icon size={15} /> {label}
+              </button>
+            ))
+          }
         </div>
 
         {tab === "matchups" ? (
@@ -390,20 +394,28 @@ export default function UnitExplorer({
                     <dt>Bonus-Gruppen</dt>
                     <dd>
                       {weapon.modifiers.length
-                        ? weapon.modifiers.map((modifier) => `+${modifier.value}`).join(", ")
+                        ? weapon.modifiers
+                            .map((modifier) => `+${modifier.value}`)
+                            .join(", ")
                         : "Keine"}
                     </dd>
                   </dl>
                 ))
               ) : (
-                <p>Keine direkte Angriffswaffe – diese Einheit gewinnt über Support.</p>
+                <p>
+                  Keine direkte Angriffswaffe – diese Einheit gewinnt über
+                  Support.
+                </p>
               )}
             </div>
             <div>
               <span>Ressourcen</span>
               <dl>
                 {Object.entries(selected.costs)
-                  .filter(([key, value]) => value && !["total", "popcap", "time"].includes(key))
+                  .filter(
+                    ([key, value]) =>
+                      value && !["total", "popcap", "time"].includes(key),
+                  )
                   .map(([key, value]) => (
                     <span key={key}>
                       <dt>{key}</dt>

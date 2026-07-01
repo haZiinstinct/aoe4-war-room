@@ -78,7 +78,10 @@ function pickVariation(unit) {
 }
 
 function classify(unit, variation) {
-  const classes = new Set([...(unit.classes ?? []), ...(variation.classes ?? [])]);
+  const classes = new Set([
+    ...(unit.classes ?? []),
+    ...(variation.classes ?? []),
+  ]);
   if (classes.has("ship") || classes.has("naval_unit")) return "marine";
   if (classes.has("siege")) return "belagerung";
   if (
@@ -184,4 +187,6 @@ const file = `${header}export const units = ${JSON.stringify(
 
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, file);
-console.log(`Generated ${units.length} units and ${civs.length} civilizations.`);
+console.log(
+  `Generated ${units.length} units and ${civs.length} civilizations.`,
+);

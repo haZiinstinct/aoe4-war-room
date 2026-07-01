@@ -19,7 +19,11 @@ const naturalCounters = [
   ["crossbowman", "man-at-arms"],
 ];
 
-assert.equal(units.length, 205, "Militäreinheiten-Zahl hat sich unerwartet geändert");
+assert.equal(
+  units.length,
+  205,
+  "Militäreinheiten-Zahl hat sich unerwartet geändert",
+);
 assert.equal(
   civilizations.length,
   23,
@@ -32,7 +36,11 @@ for (const [attackerId, defenderId] of naturalCounters) {
     byId(defenderId),
     DEFAULT_SETTINGS,
   );
-  assert.equal(result.comparable, true, `${attackerId}/${defenderId} muss vergleichbar sein`);
+  assert.equal(
+    result.comparable,
+    true,
+    `${attackerId}/${defenderId} muss vergleichbar sein`,
+  );
   assert(
     result.ratio > 1.15,
     `${attackerId} muss gegen ${defenderId} einen natürlichen Vorteil zeigen`,
@@ -69,7 +77,11 @@ const candidates = getCounterCandidates(
   DEFAULT_SETTINGS,
   8,
 );
-assert.equal(candidates.length, 8, "Counter-Liste muss vollständig erzeugt werden");
+assert.equal(
+  candidates.length,
+  8,
+  "Counter-Liste muss vollständig erzeugt werden",
+);
 assert(
   candidates.every(({ unit }) => unit.category !== "support"),
   "Direkte Counter-Liste darf keine reinen Supporteinheiten enthalten",

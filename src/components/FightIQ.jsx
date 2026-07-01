@@ -74,6 +74,7 @@ const PRINCIPLES = [
   },
 ];
 
+/** @type {[string, string, import("lucide-react").LucideIcon][]} */
 const FLOW = [
   ["Sehen", "Welche Klasse und wie viel Produktion?", Eye],
   ["Bewerten", "Kosten, Alter, Upgrades, Gelände?", Layers3],
@@ -128,7 +129,11 @@ export default function FightIQ() {
           </p>
           <div className="iq-progress">
             <i>
-              <b style={{ width: `${(checked.length / PRINCIPLES.length) * 100}%` }} />
+              <b
+                style={{
+                  width: `${(checked.length / PRINCIPLES.length) * 100}%`,
+                }}
+              />
             </i>
             <span>
               {checked.length}/{PRINCIPLES.length} angewendet
@@ -169,9 +174,14 @@ export default function FightIQ() {
                       <CircleDot />
                       <span>{principle.cue}</span>
                     </div>
-                    <button type="button" onClick={() => toggleChecked(principle.id)}>
+                    <button
+                      type="button"
+                      onClick={() => toggleChecked(principle.id)}
+                    >
                       {isChecked ? <Check /> : <TimerReset />}
-                      {isChecked ? "In Partie angewendet" : "Als Trainingsziel setzen"}
+                      {isChecked
+                        ? "In Partie angewendet"
+                        : "Als Trainingsziel setzen"}
                     </button>
                   </div>
                 ) : null}

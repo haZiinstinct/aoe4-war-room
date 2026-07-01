@@ -12,11 +12,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { roleLabel, unitName } from "../data/localization";
-import {
-  calculateMatchup,
-  DEFAULT_SETTINGS,
-  getCounterCandidates,
-} from "../lib/matchup";
+import { calculateMatchup, DEFAULT_SETTINGS } from "../lib/matchup";
 import UnitAvatar from "./UnitAvatar";
 
 const TARGET_POOL = [
@@ -52,9 +48,9 @@ const ANSWER_POOL = [
 function createQuestion(units, index) {
   const targetId = TARGET_POOL[index % TARGET_POOL.length];
   const target = units.find((unit) => unit.id === targetId) ?? units[0];
-  const pool = ANSWER_POOL.map((id) => units.find((unit) => unit.id === id)).filter(
-    Boolean,
-  );
+  const pool = ANSWER_POOL.map((id) =>
+    units.find((unit) => unit.id === id),
+  ).filter(Boolean);
   const ranked = pool
     .filter((unit) => unit.id !== target.id)
     .map((unit) => ({
@@ -84,7 +80,9 @@ function createQuestion(units, index) {
 }
 
 export default function DrillMode({ units, stats, onAnswered }) {
-  const [questionIndex, setQuestionIndex] = useState(stats.answered % TARGET_POOL.length);
+  const [questionIndex, setQuestionIndex] = useState(
+    stats.answered % TARGET_POOL.length,
+  );
   const [selectedId, setSelectedId] = useState(null);
   const [answered, setAnswered] = useState(false);
 
@@ -211,7 +209,9 @@ export default function DrillMode({ units, stats, onAnswered }) {
             >
               <span>{correct ? <Check /> : <X />}</span>
               <div>
-                <small>{correct ? "Saubere Entscheidung" : "Das wird teuer"}</small>
+                <small>
+                  {correct ? "Saubere Entscheidung" : "Das wird teuer"}
+                </small>
                 <h3>
                   {correct
                     ? `${unitName(selected.unit)} ist hier die beste Antwort.`

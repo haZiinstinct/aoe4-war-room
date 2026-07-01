@@ -43,7 +43,11 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 58% 0%, rgba(89, 43, 29, 0.09), transparent 34rem),
+    radial-gradient(
+      circle at 58% 0%,
+      rgba(89, 43, 29, 0.09),
+      transparent 34rem
+    ),
     var(--bg);
   color: var(--ink);
 }
@@ -373,9 +377,7 @@ p {
   overflow: hidden;
   place-items: center;
   border: 1px solid #3c3426;
-  background:
-    radial-gradient(circle at 50% 30%, #423422, #141614 68%),
-    #141614;
+  background: radial-gradient(circle at 50% 30%, #423422, #141614 68%), #141614;
 }
 
 .unit-avatar::after {
@@ -406,9 +408,7 @@ p {
   width: min(15vw, 220px);
   height: min(22vw, 304px);
   border-color: #584327;
-  background:
-    radial-gradient(circle at 50% 30%, #4f3824, #171816 68%),
-    #171816;
+  background: radial-gradient(circle at 50% 30%, #4f3824, #171816 68%), #171816;
 }
 
 .unit-avatar--hero img {
@@ -593,7 +593,11 @@ kbd {
 }
 
 .unit-row.is-selected {
-  background: linear-gradient(90deg, rgba(111, 36, 30, 0.58), rgba(51, 31, 22, 0.3));
+  background: linear-gradient(
+    90deg,
+    rgba(111, 36, 30, 0.58),
+    rgba(51, 31, 22, 0.3)
+  );
   color: var(--gold-bright);
   box-shadow: inset 2px 0 var(--gold);
 }
@@ -641,7 +645,11 @@ kbd {
 .counter-workspace {
   min-width: 0;
   background:
-    radial-gradient(circle at 50% 8%, rgba(98, 47, 28, 0.18), transparent 26rem),
+    radial-gradient(
+      circle at 50% 8%,
+      rgba(98, 47, 28, 0.18),
+      transparent 26rem
+    ),
     rgba(10, 13, 12, 0.88);
 }
 
@@ -1186,8 +1194,7 @@ kbd {
   padding: 13px 22px;
   border-bottom: 1px solid var(--line);
   background:
-    linear-gradient(90deg, rgba(74, 24, 19, 0.34), transparent 42%),
-    #0c0f0e;
+    linear-gradient(90deg, rgba(74, 24, 19, 0.34), transparent 42%), #0c0f0e;
 }
 
 .drill-teaser__index {
@@ -1454,7 +1461,10 @@ kbd {
 .unit-table__head,
 .unit-table__body > button {
   display: grid;
-  grid-template-columns: auto minmax(130px, 1.1fr) minmax(105px, 0.8fr) 38px auto;
+  grid-template-columns: auto minmax(130px, 1.1fr) minmax(
+      105px,
+      0.8fr
+    ) 38px auto;
   align-items: center;
   gap: 10px;
 }
@@ -1494,7 +1504,11 @@ kbd {
 }
 
 .unit-table__body > button.is-selected {
-  background: linear-gradient(90deg, rgba(111, 36, 30, 0.72), rgba(39, 23, 18, 0.4));
+  background: linear-gradient(
+    90deg,
+    rgba(111, 36, 30, 0.72),
+    rgba(39, 23, 18, 0.4)
+  );
   box-shadow: inset 2px 0 var(--gold);
 }
 
@@ -1557,7 +1571,11 @@ kbd {
 .unit-dossier {
   min-width: 0;
   background:
-    radial-gradient(circle at 45% 0%, rgba(99, 44, 28, 0.12), transparent 30rem),
+    radial-gradient(
+      circle at 45% 0%,
+      rgba(99, 44, 28, 0.12),
+      transparent 30rem
+    ),
     rgba(11, 14, 13, 0.88);
 }
 
@@ -2049,7 +2067,11 @@ kbd {
   overflow: hidden;
   border-right: 1px solid var(--line);
   background:
-    radial-gradient(circle at 50% 45%, rgba(108, 47, 28, 0.22), transparent 20rem),
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(108, 47, 28, 0.22),
+      transparent 20rem
+    ),
     #101311;
   text-align: center;
 }

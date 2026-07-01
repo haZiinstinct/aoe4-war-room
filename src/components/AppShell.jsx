@@ -1,7 +1,6 @@
 import {
   BookOpen,
   BrainCircuit,
-  FlaskConical,
   GraduationCap,
   Info,
   Menu,
@@ -120,11 +119,7 @@ export default function AppShell({
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((open) => !open)}
           >
-            {menuOpen ? (
-              <X aria-hidden="true" />
-            ) : (
-              <Menu aria-hidden="true" />
-            )}
+            {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
           </button>
         </div>
       </header>
@@ -151,11 +146,7 @@ export default function AppShell({
         ))}
       </nav>
 
-      <button
-        className="source-fab"
-        type="button"
-        onClick={onOpenMethodology}
-      >
+      <button className="source-fab" type="button" onClick={onOpenMethodology}>
         <Info size={15} aria-hidden="true" />
         Methodik
       </button>

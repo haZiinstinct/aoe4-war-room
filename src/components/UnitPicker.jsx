@@ -65,7 +65,10 @@ export default function UnitPicker({
   return (
     <aside className={`unit-picker ${compact ? "unit-picker--compact" : ""}`}>
       <div className="unit-picker__controls">
-        <label className="field-label" htmlFor={`civ-${compact ? "compact" : "full"}`}>
+        <label
+          className="field-label"
+          htmlFor={`civ-${compact ? "compact" : "full"}`}
+        >
           Zivilisation
         </label>
         <select
@@ -119,7 +122,9 @@ export default function UnitPicker({
       <div className="picker-results">
         <div className="picker-results__head" aria-live="polite">
           <span>{filtered.length} Einheiten</span>
-          <span>{category === "alle" ? "Alle Rollen" : CATEGORY_LABELS[category]}</span>
+          <span>
+            {category === "alle" ? "Alle Rollen" : CATEGORY_LABELS[category]}
+          </span>
         </div>
         <div className="picker-results__scroll">
           {filtered.map((unit) => (

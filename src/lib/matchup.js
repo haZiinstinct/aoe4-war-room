@@ -18,8 +18,7 @@ function matchesTargetGroup(unit, group) {
   const classes = classSet(unit);
   const tokens = group.map((token) => token.replaceAll(" ", "_"));
   return (
-    tokens.every((token) => classes.has(token)) ||
-    classes.has(tokens.join("_"))
+    tokens.every((token) => classes.has(token)) || classes.has(tokens.join("_"))
   );
 }
 
@@ -156,7 +155,8 @@ function isPreferredTarget(attacker, target) {
     return targetClasses.has("ranged") || target.category === "belagerung";
   if (attackerClasses.has("heavy") && attackerClasses.has("melee_infantry"))
     return (
-      targetClasses.has("infantry_light") || targetClasses.has("ranged_infantry")
+      targetClasses.has("infantry_light") ||
+      targetClasses.has("ranged_infantry")
     );
   if (attacker.category === "belagerung")
     return targetClasses.has("ranged") || targetClasses.has("infantry");
@@ -179,16 +179,16 @@ function sideStrength(unit, opponent, settings, upgradeDelta = 0) {
   // separately so natural counters remain visible beside expensive raw stats.
   if (weapon.bonus > 0) {
     tactical *=
-      1 +
-      Math.min(
-        1.6,
-        (weapon.bonus / Math.max(1, weapon.damage)) * 1.4,
-      );
+      1 + Math.min(1.6, (weapon.bonus / Math.max(1, weapon.damage)) * 1.4);
   }
   const rangeLead = weapon.range - opponentWeapon.range;
   if (rangeLead > 0) {
     const microScale =
-      settings.micro === "stark" ? 1.25 : settings.micro === "solide" ? 1 : 0.45;
+      settings.micro === "stark"
+        ? 1.25
+        : settings.micro === "solide"
+          ? 1
+          : 0.45;
     tactical *= 1 + Math.min(0.22, rangeLead * 0.025 * microScale);
   }
   tactical *= terrainMultiplier(unit, settings.terrain);

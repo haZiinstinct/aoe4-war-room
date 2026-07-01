@@ -101,4 +101,3 @@ WCAG-Zertifizierung.
   die App bedienbar und nutzt Fallback-Schriften, Bilder können dann fehlen.
 - Bei Balance-Patches sollten die Quelldaten aktualisiert und der Audit erneut
   ausgeführt werden.
-
