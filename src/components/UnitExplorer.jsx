@@ -16,7 +16,7 @@ import {
   Swords,
   Target,
 } from "lucide-react";
-import { useDeferredValue, useMemo, useState } from "react";
+import { memo, useDeferredValue, useMemo, useState } from "react";
 import {
   CATEGORY_LABELS,
   ageLabel,
@@ -32,51 +32,61 @@ import {
 } from "../lib/matchup";
 import UnitAvatar from "./UnitAvatar";
 
-function Stat({ icon: Icon, label, value }) {
-  return (
-    <div className="dossier-stat">
-      <Icon size={16} />
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
+const Stat = memo(
+  /**
+   * @param {{ icon: import("lucide-react").LucideIcon, label: string, value: import("react").ReactNode }} props
+   */
+  function Stat({ icon: Icon, label, value }) {
+    return (
+      <div className="dossier-stat">
+        <Icon size={16} />
+        <span>{label}</span>
+        <strong>{value}</strong>
+      </div>
+    );
+  },
+);
 
-function MatchupRow({ entry, type, onOpen }) {
-  const isStrong = type === "strong";
-  const ratio = isStrong ? entry.result.ratio : entry.result.ratio;
-  const meter = Math.min(
-    100,
-    Math.round((Math.abs(Math.log2(ratio)) + 0.2) * 52),
-  );
-  return (
-    <button
-      type="button"
-      className="dossier-matchup-row"
-      onClick={() => onOpen(entry.unit)}
-    >
-      <UnitAvatar unit={entry.unit} size="small" />
-      <span className="dossier-matchup-row__name">
-        <strong>{unitName(entry.unit)}</strong>
-        <small>{roleLabel(entry.unit)}</small>
-      </span>
-      <span
-        className={`effect-meter ${
-          isStrong ? "effect-meter--good" : "effect-meter--bad"
-        }`}
+const MatchupRow = memo(
+  /**
+   * @param {{ entry: import("../types.js").CounterCandidate, type: string, onOpen: (unit: import("../types.js").Unit) => void }} props
+   */
+  function MatchupRow({ entry, type, onOpen }) {
+    const isStrong = type === "strong";
+    const ratio = entry.result.ratio;
+    const meter = Math.min(
+      100,
+      Math.round((Math.abs(Math.log2(ratio)) + 0.2) * 52),
+    );
+    return (
+      <button
+        type="button"
+        className="dossier-matchup-row"
+        onClick={() => onOpen(entry.unit)}
       >
-        <i>
-          <b style={{ width: `${meter}%` }} />
-        </i>
-        <small>{isStrong ? "Gutes Ziel" : "Gefahr"}</small>
-      </span>
-      <span className="dossier-matchup-row__reason">
-        {entry.result.reasons[0]?.text}
-      </span>
-      <ChevronRight size={16} />
-    </button>
-  );
-}
+        <UnitAvatar unit={entry.unit} size="small" />
+        <span className="dossier-matchup-row__name">
+          <strong>{unitName(entry.unit)}</strong>
+          <small>{roleLabel(entry.unit)}</small>
+        </span>
+        <span
+          className={`effect-meter ${
+            isStrong ? "effect-meter--good" : "effect-meter--bad"
+          }`}
+        >
+          <i>
+            <b style={{ width: `${meter}%` }} />
+          </i>
+          <small>{isStrong ? "Gutes Ziel" : "Gefahr"}</small>
+        </span>
+        <span className="dossier-matchup-row__reason">
+          {entry.result.reasons[0]?.text}
+        </span>
+        <ChevronRight size={16} />
+      </button>
+    );
+  },
+);
 
 export default function UnitExplorer({
   units,

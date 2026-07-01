@@ -19,7 +19,7 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import {
   ageLabel,
   civName,
@@ -35,17 +35,25 @@ import {
 import UnitAvatar from "./UnitAvatar";
 import UnitPicker from "./UnitPicker";
 
-function SettingButton({ active, children, onClick }) {
-  return (
-    <button
-      type="button"
-      className={active ? "is-active" : ""}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-}
+// Wie viele direkte Counter-Vorschläge das Lab anzeigt.
+const COUNTER_SUGGESTIONS_LIMIT = 4;
+
+const SettingButton = memo(
+  /**
+   * @param {{ active: boolean, children: import("react").ReactNode, onClick: () => void }} props
+   */
+  function SettingButton({ active, children, onClick }) {
+    return (
+      <button
+        type="button"
+        className={active ? "is-active" : ""}
+        onClick={onClick}
+      >
+        {children}
+      </button>
+    );
+  },
+);
 
 function MatchupUnit({ unit, side, onChoose }) {
   return (
@@ -82,45 +90,50 @@ function MatchupUnit({ unit, side, onChoose }) {
   );
 }
 
-function Alternatives({ candidates, target, onSelect }) {
-  return (
-    <aside className="alternative-rail">
-      <div className="rail-heading">
-        <div>
-          <span>Antworten auf</span>
-          <strong>{unitName(target)}</strong>
+const Alternatives = memo(
+  /**
+   * @param {{ candidates: import("../types.js").CounterCandidate[], target: import("../types.js").Unit, onSelect: (unit: import("../types.js").Unit) => void }} props
+   */
+  function Alternatives({ candidates, target, onSelect }) {
+    return (
+      <aside className="alternative-rail">
+        <div className="rail-heading">
+          <div>
+            <span>Antworten auf</span>
+            <strong>{unitName(target)}</strong>
+          </div>
+          <Crosshair size={19} />
         </div>
-        <Crosshair size={19} />
-      </div>
-      <div className="alternative-list">
-        {candidates.map(({ unit, result }, index) => (
-          <button
-            type="button"
-            key={unit.id}
-            className="alternative-row"
-            onClick={() => onSelect(unit)}
-          >
-            <span className="alternative-row__rank">0{index + 1}</span>
-            <UnitAvatar unit={unit} size="medium" />
-            <span>
-              <strong>{unitName(unit)}</strong>
-              <small>{roleLabel(unit)}</small>
-              <i className={`match-tone match-tone--${result.verdict.tone}`}>
-                {result.verdict.short}
-              </i>
-            </span>
-            <ChevronRight size={15} />
-          </button>
-        ))}
-      </div>
-      <p className="rail-note">
-        <Info size={14} />
-        Sortiert nach gleichem Ressourcenwert, aktuellem Zeitalter und deinen
-        Kampfvariablen.
-      </p>
-    </aside>
-  );
-}
+        <div className="alternative-list">
+          {candidates.map(({ unit, result }, index) => (
+            <button
+              type="button"
+              key={unit.id}
+              className="alternative-row"
+              onClick={() => onSelect(unit)}
+            >
+              <span className="alternative-row__rank">0{index + 1}</span>
+              <UnitAvatar unit={unit} size="medium" />
+              <span>
+                <strong>{unitName(unit)}</strong>
+                <small>{roleLabel(unit)}</small>
+                <i className={`match-tone match-tone--${result.verdict.tone}`}>
+                  {result.verdict.short}
+                </i>
+              </span>
+              <ChevronRight size={15} />
+            </button>
+          ))}
+        </div>
+        <p className="rail-note">
+          <Info size={14} />
+          Sortiert nach gleichem Ressourcenwert, aktuellem Zeitalter und deinen
+          Kampfvariablen.
+        </p>
+      </aside>
+    );
+  },
+);
 
 function Variables({ settings, onChange }) {
   function patch(values) {
@@ -284,7 +297,8 @@ export default function CounterLab({
     [enemy, mine, settings],
   );
   const alternatives = useMemo(
-    () => getCounterCandidates(units, enemy, settings, 4),
+    () =>
+      getCounterCandidates(units, enemy, settings, COUNTER_SUGGESTIONS_LIMIT),
     [enemy, settings, units],
   );
 

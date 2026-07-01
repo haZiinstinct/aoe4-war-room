@@ -63,11 +63,14 @@ export const CATEGORY_LABELS = {
   sonstige: "Spezial",
 };
 
-// Einmalige Dev-Warnung für fehlende Übersetzungen. Im Produktions-Build
-// (import.meta.env.DEV === false) und in Node/Tests (env undefined) still.
+// Einmalige Warnung für fehlende Übersetzungen. Bewusst per Opt-in-Flag
+// (VITE_I18N_DEBUG=true) statt immer im Dev-Modus – 180+ Einheiten sind
+// absichtlich unübersetzt, ein Dauer-Spam würde echte Fehler verdecken. In
+// Prod-Build und Node/Tests ohnehin still.
+const I18N_DEBUG = import.meta.env?.VITE_I18N_DEBUG === "true";
 const warnedKeys = new Set();
 function devWarnOnce(key, message) {
-  if (!import.meta.env?.DEV || warnedKeys.has(key)) return;
+  if (!I18N_DEBUG || warnedKeys.has(key)) return;
   warnedKeys.add(key);
   console.warn(message);
 }

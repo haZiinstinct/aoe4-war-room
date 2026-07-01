@@ -1,4 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap");
+/* Webfonts werden nicht-render-blockierend via <link rel="preload"> in
+   index.html geladen (Swap zu stylesheet per onload). Kein @import hier — das
+   würde den First Paint blockieren. */
 
 :root {
   color-scheme: dark;
@@ -1461,10 +1463,9 @@ kbd {
 .unit-table__head,
 .unit-table__body > button {
   display: grid;
-  grid-template-columns: auto minmax(130px, 1.1fr) minmax(
-      105px,
-      0.8fr
-    ) 38px auto;
+  grid-template-columns:
+    auto minmax(130px, 1.1fr) minmax(105px, 0.8fr)
+    38px auto;
   align-items: center;
   gap: 10px;
 }

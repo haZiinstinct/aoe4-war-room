@@ -45,6 +45,11 @@ const ANSWER_POOL = [
   "ghulam",
 ];
 
+// Aus welchen Rang-Perzentilen die Falschantworten gezogen werden: ein guter,
+// ein mittelmäßiger und der schlechteste Vorschlag neben der besten Antwort.
+const DISTRACTOR_PERCENTILES = [0.35, 0.65];
+const MAX_CHOICES = 4;
+
 function createQuestion(units, index) {
   const targetId = TARGET_POOL[index % TARGET_POOL.length];
   const target = units.find((unit) => unit.id === targetId) ?? units[0];
@@ -60,8 +65,7 @@ function createQuestion(units, index) {
     .sort((a, b) => b.result.ratio - a.result.ratio);
   const best = ranked[0];
   const distractors = [
-    ranked[Math.floor(ranked.length * 0.35)],
-    ranked[Math.floor(ranked.length * 0.65)],
+    ...DISTRACTOR_PERCENTILES.map((p) => ranked[Math.floor(ranked.length * p)]),
     ranked[ranked.length - 1],
   ].filter(Boolean);
   const choices = [best, ...distractors]
@@ -70,7 +74,7 @@ function createQuestion(units, index) {
         array.findIndex((candidate) => candidate.unit.id === entry.unit.id) ===
         position,
     )
-    .slice(0, 4)
+    .slice(0, MAX_CHOICES)
     .sort(
       (a, b) =>
         ((a.unit.id.charCodeAt(0) + index) % 7) -
