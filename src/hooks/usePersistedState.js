@@ -1,6 +1,26 @@
 import { useEffect, useState } from "react";
 
 /**
+ * Pure Lade-Logik (ohne DOM, damit testbar): parst den Rohwert und verwirft
+ * ihn bei kaputtem JSON oder fehlgeschlagener Validierung.
+ * @template T
+ * @param {string | null} raw
+ * @param {T} initialValue
+ * @param {(value: any) => boolean} [validate]
+ * @returns {T}
+ */
+export function parseStored(raw, initialValue, validate) {
+  if (raw == null) return initialValue;
+  try {
+    const parsed = JSON.parse(raw);
+    if (validate && !validate(parsed)) return initialValue;
+    return parsed;
+  } catch {
+    return initialValue;
+  }
+}
+
+/**
  * State, der in localStorage gespiegelt wird — abgesichert gegen restriktive
  * Browser (z. B. file://) und gegen veraltete/kaputte gespeicherte Daten.
  *
@@ -15,11 +35,11 @@ import { useEffect, useState } from "react";
 export function usePersistedState(key, initialValue, validate) {
   const [value, setValue] = useState(() => {
     try {
-      const stored = window.localStorage.getItem(key);
-      if (!stored) return initialValue;
-      const parsed = JSON.parse(stored);
-      if (validate && !validate(parsed)) return initialValue;
-      return parsed;
+      return parseStored(
+        window.localStorage.getItem(key),
+        initialValue,
+        validate,
+      );
     } catch {
       return initialValue;
     }
