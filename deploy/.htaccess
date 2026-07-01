@@ -1,0 +1,22 @@
+# aoe4.hazii.org — WAR ROOM (statische Single-File-App), Apache
+#
+# Diese Datei zusammen mit der Standalone-HTML (als index.html) in den Docroot
+# der Subdomain legen. Sie setzt eine passende Content-Security-Policy für die
+# App: inline <style>/<script> sind erlaubt (Single-File-Design), externe
+# Ressourcen nur für Google Fonts und die Einheitenbilder von aoe4world.
+
+<IfModule mod_headers.c>
+  # Erlaubte externe Ressourcen basieren auf dem tatsächlichen Build:
+  #   Bilder: data.aoe4world.com · Font-CSS: fonts.googleapis.com
+  #   Font-Dateien: fonts.gstatic.com · Favicon: data:-URI
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; img-src 'self' data: https://data.aoe4world.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+</IfModule>
+
+# HTML nicht lange cachen, damit neue Releases sofort sichtbar sind.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>

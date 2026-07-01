@@ -1,8 +1,10 @@
 # WAR ROOM — AoE IV Counter Lab
 
-Interaktive, deutschsprachige Lern-App für Age of Empires IV. Sie kombiniert
-einen vollständigen Einheiten-Browser mit einem erklärbaren Matchup-Modell,
-Entscheidungs-Drills und sechs praktischen Kampfregeln.
+Interaktive, zweisprachige (Deutsch/Englisch) Lern-App für Age of Empires IV.
+Sie kombiniert einen vollständigen Einheiten-Browser mit einem erklärbaren
+Matchup-Modell, Entscheidungs-Drills und sechs praktischen Kampfregeln.
+
+**Live-Demo:** <https://aoe4.hazii.org>
 
 ![WAR ROOM Desktop](outputs/audit-desktop.png)
 
