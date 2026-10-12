@@ -15,14 +15,23 @@ import {
   Sparkles,
   Swords,
   Target,
+  Zap,
 } from "lucide-react";
 import { memo, useDeferredValue, useMemo, useState } from "react";
-import { CATEGORY_ORDER, romanAge } from "../data/localization";
+import {
+  bonusGroupLabel,
+  CATEGORY_ORDER,
+  romanAge,
+} from "../data/localization";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
+import { EDGE_DISPLAY_LIMIT } from "../lib/matchup.config";
 import {
   DEFAULT_SETTINGS,
+  formatRatio,
   getFavoredTargets,
   getThreats,
+  primaryWeapon,
+  statsAt,
 } from "../lib/matchup";
 import UnitAvatar from "./UnitAvatar";
 
@@ -33,7 +42,7 @@ const Stat = memo(
   function Stat({ icon: Icon, label, value }) {
     return (
       <div className="dossier-stat">
-        <Icon size={16} />
+        <Icon size={16} aria-hidden="true" />
         <span>{label}</span>
         <strong>{value}</strong>
       </div>
@@ -46,12 +55,13 @@ const MatchupRow = memo(
    * @param {{ entry: import("../types.js").CounterCandidate, type: string, onOpen: (unit: import("../types.js").Unit) => void }} props
    */
   function MatchupRow({ entry, type, onOpen }) {
-    const { unitName, roleLabel } = useI18n();
+    const { t, unitName, roleLabel, lang } = useI18n();
     const isStrong = type === "strong";
-    const ratio = entry.result.ratio;
     const meter = Math.min(
       100,
-      Math.round((Math.abs(Math.log2(ratio)) + 0.2) * 52),
+      Math.round(
+        (Math.abs(entry.result.edgeClamped ?? 0) / EDGE_DISPLAY_LIMIT) * 100,
+      ),
     );
     return (
       <button
@@ -68,15 +78,19 @@ const MatchupRow = memo(
           className={`effect-meter ${
             isStrong ? "effect-meter--good" : "effect-meter--bad"
           }`}
+          title={t("explorer.ratioLabel", {
+            value: formatRatio(entry.result.ratio, lang),
+          })}
         >
           <i>
             <b style={{ width: `${meter}%` }} />
           </i>
+          <small>{formatRatio(entry.result.ratio, lang)}</small>
         </span>
         <span className="dossier-matchup-row__reason">
           {entry.result.reasons[0]?.text}
         </span>
-        <ChevronRight size={16} />
+        <ChevronRight size={16} aria-hidden="true" />
       </button>
     );
   },
@@ -98,6 +112,7 @@ export default function UnitExplorer({
     ageLabel,
     shortDescription,
     categoryLabel,
+    formatNumber,
   } = useI18n();
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
@@ -106,6 +121,7 @@ export default function UnitExplorer({
   const [age, setAge] = useState("all");
   const [uniqueOnly, setUniqueOnly] = useState(false);
   const [tab, setTab] = useState("matchups");
+  const [statsAge, setStatsAge] = useState(DEFAULT_SETTINGS.age);
 
   const filtered = useMemo(() => {
     const needle = deferredQuery.toLocaleLowerCase(lang).trim();
@@ -131,7 +147,10 @@ export default function UnitExplorer({
     lang,
   ]);
 
-  const matchupSettings = useMemo(() => ({ ...DEFAULT_SETTINGS, age: 4 }), []);
+  const matchupSettings = useMemo(
+    () => ({ ...DEFAULT_SETTINGS, age: statsAge }),
+    [statsAge],
+  );
   const favored = useMemo(
     () => getFavoredTargets(units, selected, matchupSettings, 5, lang),
     [matchupSettings, selected, units, lang],
@@ -141,12 +160,16 @@ export default function UnitExplorer({
     [matchupSettings, selected, units, lang],
   );
 
-  const mainWeapon = selected.weapons[0];
+  const stats = statsAt(selected, statsAge);
+  const mainWeapon = primaryWeapon(stats);
+  const availableAges = Object.keys(selected.ages ?? {}).map(Number);
   const civsText =
     selected.civs.length > 3
       ? t("explorer.civsCount", { n: selected.civs.length })
       : selected.civs.map((code) => civName(code)).join(", ") ||
         t("explorer.specialFormation");
+  const fmt = (value, digits = 2) =>
+    formatNumber(Number(Number(value).toFixed(digits)));
 
   return (
     <div className="explorer-page">
@@ -161,17 +184,18 @@ export default function UnitExplorer({
               })}
             </p>
           </div>
-          <ListFilter size={20} />
+          <ListFilter size={20} aria-hidden="true" />
         </header>
 
         <div className="explorer-filters">
           <label className="search-field search-field--large">
-            <Search size={16} />
+            <Search size={16} aria-hidden="true" />
             <span className="sr-only">{t("picker.searchUnit")}</span>
             <input
               value={query}
               type="search"
               name="explorer-unit-search"
+              data-search-input
               autoComplete="off"
               spellCheck={false}
               placeholder={t("picker.searchPlaceholder")}
@@ -228,9 +252,11 @@ export default function UnitExplorer({
               className={
                 uniqueOnly ? "toggle-button is-active" : "toggle-button"
               }
+              aria-pressed={uniqueOnly}
               onClick={() => setUniqueOnly((value) => !value)}
             >
-              <Sparkles size={14} /> {t("explorer.uniqueOnly")}
+              <Sparkles size={14} aria-hidden="true" />{" "}
+              {t("explorer.uniqueOnly")}
             </button>
           </div>
         </div>
@@ -247,6 +273,7 @@ export default function UnitExplorer({
                 type="button"
                 key={unit.id}
                 className={selected.id === unit.id ? "is-selected" : ""}
+                aria-pressed={selected.id === unit.id}
                 onClick={() => onSelect(unit)}
               >
                 <UnitAvatar unit={unit} size="small" decorative />
@@ -262,14 +289,15 @@ export default function UnitExplorer({
                 </span>
                 <span>{roleLabel(unit)}</span>
                 <span>{romanAge(unit.minAge)}</span>
-                <ChevronRight size={14} />
+                <ChevronRight size={14} aria-hidden="true" />
               </button>
             ))}
           </div>
           <footer aria-live="polite">
             <span>{t("explorer.results", { n: filtered.length })}</span>
             <span>
-              <Filter size={13} /> {t("explorer.filtersInstant")}
+              <Filter size={13} aria-hidden="true" />{" "}
+              {t("explorer.filtersInstant")}
             </span>
           </footer>
         </div>
@@ -288,11 +316,40 @@ export default function UnitExplorer({
             <h2>{unitName(selected)}</h2>
             <strong>{roleLabel(selected)}</strong>
             <p>{shortDescription(selected)}</p>
+            <div className="dossier-age">
+              <span>{t("explorer.valuesFor")}</span>
+              <div
+                className="age-switcher"
+                role="group"
+                aria-label={t("lab.age")}
+              >
+                {[1, 2, 3, 4].map((value) => {
+                  const available = availableAges.includes(value);
+                  return (
+                    <button
+                      type="button"
+                      key={value}
+                      className={statsAge === value ? "is-active" : ""}
+                      aria-pressed={statsAge === value}
+                      disabled={!available && value < selected.minAge}
+                      onClick={() => setStatsAge(value)}
+                    >
+                      {romanAge(value)}
+                    </button>
+                  );
+                })}
+              </div>
+              <small>
+                {stats.age !== statsAge
+                  ? t("explorer.heroAge", { age: romanAge(stats.age) })
+                  : null}
+              </small>
+            </div>
             <div className="dossier-stats">
               <Stat
                 icon={Heart}
                 label={t("stat.life")}
-                value={selected.hp || "–"}
+                value={stats.hp || "–"}
               />
               <Stat
                 icon={Swords}
@@ -300,19 +357,31 @@ export default function UnitExplorer({
                 value={mainWeapon?.damage || "–"}
               />
               <Stat
+                icon={Zap}
+                label={t("explorer.dps")}
+                value={
+                  mainWeapon
+                    ? fmt(
+                        mainWeapon.damage / Math.max(0.5, mainWeapon.speed),
+                        1,
+                      )
+                    : "–"
+                }
+              />
+              <Stat
                 icon={Shield}
                 label={t("stat.armor")}
-                value={`${selected.armor.melee}/${selected.armor.ranged}`}
+                value={`${stats.armor.melee}/${stats.armor.ranged}`}
               />
               <Stat
                 icon={Footprints}
                 label={t("stat.speed")}
-                value={selected.movement?.toFixed(2) || "–"}
+                value={stats.movement ? fmt(stats.movement, 2) : "–"}
               />
               <Stat
                 icon={Coins}
                 label={t("stat.cost")}
-                value={selected.costs.total || t("lab.special")}
+                value={stats.costs.total || t("lab.special")}
               />
             </div>
             <button
@@ -320,19 +389,20 @@ export default function UnitExplorer({
               type="button"
               onClick={() => onOpenLab(selected)}
             >
-              {t("explorer.openInLab")} <ArrowRight size={16} />
+              {t("explorer.openInLab")}{" "}
+              <ArrowRight size={16} aria-hidden="true" />
             </button>
           </div>
           <div className="effect-triangle">
             <span>{t("explorer.effectLogic")}</span>
             <div>
               <i className="effect-triangle__strong">
-                <ArrowUpRight />
+                <ArrowUpRight aria-hidden="true" />
                 <b>{t("explorer.strongAgainst")}</b>
               </i>
-              <Swords />
+              <Swords aria-hidden="true" />
               <i className="effect-triangle__weak">
-                <ArrowDownRight />
+                <ArrowDownRight aria-hidden="true" />
                 <b>{t("explorer.weakAgainst")}</b>
               </i>
             </div>
@@ -355,7 +425,7 @@ export default function UnitExplorer({
                 key={id}
                 onClick={() => setTab(id)}
               >
-                <Icon size={15} /> {label}
+                <Icon size={15} aria-hidden="true" /> {label}
               </button>
             ))
           }
@@ -400,37 +470,59 @@ export default function UnitExplorer({
               <span>{t("explorer.baseStats")}</span>
               <dl>
                 <dt>{t("explorer.hp")}</dt>
-                <dd>{selected.hp || "–"}</dd>
+                <dd>{stats.hp || "–"}</dd>
                 <dt>{t("explorer.meleeArmor")}</dt>
-                <dd>{selected.armor.melee}</dd>
+                <dd>{stats.armor.melee}</dd>
                 <dt>{t("explorer.rangedArmor")}</dt>
-                <dd>{selected.armor.ranged}</dd>
+                <dd>{stats.armor.ranged}</dd>
                 <dt>{t("explorer.movement")}</dt>
                 <dd>
-                  {selected.movement?.toFixed(3) || "–"}{" "}
+                  {stats.movement ? fmt(stats.movement, 3) : "–"}{" "}
                   {t("explorer.tilesPerSec")}
                 </dd>
                 <dt>{t("explorer.population")}</dt>
-                <dd>{selected.costs.popcap || "–"}</dd>
+                <dd>{stats.costs.popcap || "–"}</dd>
               </dl>
             </div>
             <div>
               <span>{t("explorer.weapons")}</span>
-              {selected.weapons.length ? (
-                selected.weapons.map((weapon) => (
-                  <dl key={`${weapon.name}-${weapon.type}`}>
-                    <dt>{weapon.name}</dt>
+              {stats.weapons.length ? (
+                stats.weapons.map((weapon) => (
+                  <dl key={`${weapon.name}-${weapon.type}-${weapon.damage}`}>
+                    <dt className="weapon-name">
+                      {weapon.name}
+                      {weapon.burst ? (
+                        <small>{t("explorer.burstWeapon")}</small>
+                      ) : weapon.type === "siege" ? (
+                        <small>{t("explorer.siegeDamage")}</small>
+                      ) : null}
+                    </dt>
                     <dd>{t("explorer.damage", { d: weapon.damage })}</dd>
                     <dt>{t("explorer.attackSpeed")}</dt>
-                    <dd>{weapon.speed.toFixed(2)} s</dd>
+                    <dd>{fmt(weapon.speed, 2)} s</dd>
+                    {!weapon.burst ? (
+                      <>
+                        <dt>{t("explorer.dps")}</dt>
+                        <dd>
+                          {fmt(weapon.damage / Math.max(0.5, weapon.speed), 2)}
+                        </dd>
+                      </>
+                    ) : null}
                     <dt>{t("explorer.range")}</dt>
-                    <dd>{weapon.range.toFixed(1)}</dd>
+                    <dd>{fmt(weapon.range, 1)}</dd>
                     <dt>{t("explorer.bonusGroups")}</dt>
-                    <dd>
+                    <dd className="bonus-list">
                       {weapon.modifiers.length
-                        ? weapon.modifiers
-                            .map((modifier) => `+${modifier.value}`)
-                            .join(", ")
+                        ? weapon.modifiers.map((modifier, index) => (
+                            <span key={index}>
+                              {t("explorer.bonusVs", {
+                                value: modifier.value,
+                                target: modifier.groups
+                                  .map((group) => bonusGroupLabel(group, lang))
+                                  .join(" / "),
+                              })}
+                            </span>
+                          ))
                         : t("explorer.none")}
                     </dd>
                   </dl>
@@ -442,7 +534,7 @@ export default function UnitExplorer({
             <div>
               <span>{t("lab.resources")}</span>
               <dl>
-                {Object.entries(selected.costs)
+                {Object.entries(stats.costs)
                   .filter(
                     ([key, value]) =>
                       value && !["total", "popcap", "time"].includes(key),
@@ -454,9 +546,9 @@ export default function UnitExplorer({
                     </span>
                   ))}
                 <dt>{t("explorer.totalValue")}</dt>
-                <dd>{selected.costs.total || t("lab.special")}</dd>
+                <dd>{stats.costs.total || t("lab.special")}</dd>
                 <dt>{t("explorer.productionTime")}</dt>
-                <dd>{selected.costs.time || "–"} s</dd>
+                <dd>{stats.costs.time || "–"} s</dd>
               </dl>
             </div>
           </div>

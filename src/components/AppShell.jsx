@@ -2,7 +2,6 @@ import {
   BookOpen,
   BrainCircuit,
   GraduationCap,
-  Info,
   Languages,
   Menu,
   Search,
@@ -63,7 +62,10 @@ export default function AppShell({
   // real). Greift nur, wenn gerade eines im DOM ist – sonst normaler Browser-Kurzbefehl.
   useEffect(() => {
     function onKey(event) {
-      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "k") {
+      if (
+        !(event.metaKey || event.ctrlKey) ||
+        event.key.toLowerCase() !== "k"
+      ) {
         return;
       }
       const inputs = /** @type {NodeListOf<HTMLInputElement>} */ (
@@ -137,6 +139,14 @@ export default function AppShell({
               {t(`nav.${id}`)}
             </a>
           ))}
+          <div className="main-nav__progress" aria-hidden="true">
+            <span>{t("shell.progressShort")}</span>
+            <strong>{progress}%</strong>
+            <i>
+              <b style={{ width: `${progress}%` }} />
+            </i>
+            <small>{t("shell.progressHint")}</small>
+          </div>
         </nav>
 
         <div className="topbar__utility">
@@ -144,6 +154,7 @@ export default function AppShell({
             className="progress-meter"
             aria-label={t("shell.progressAria", { value: progress })}
             aria-live="polite"
+            title={t("shell.progressHint")}
           >
             <span>{t("shell.progress")}</span>
             <strong>{progress}%</strong>
@@ -194,11 +205,6 @@ export default function AppShell({
           </a>
         ))}
       </nav>
-
-      <button className="source-fab" type="button" onClick={onOpenMethodology}>
-        <Info size={15} aria-hidden="true" />
-        {t("shell.methodologyShort")}
-      </button>
     </div>
   );
 }

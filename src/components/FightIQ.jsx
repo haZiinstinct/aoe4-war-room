@@ -36,17 +36,15 @@ const FLOW = [
   ["execute", "executeText", Route],
 ];
 
-export default function FightIQ() {
+export const PRINCIPLE_IDS = PRINCIPLES.map((principle) => principle.id);
+
+export default function FightIQ({ applied, onToggleApplied }) {
   const { t } = useI18n();
   const [open, setOpen] = useState("scout");
-  const [checked, setChecked] = useState([]);
+  const checked = applied;
 
   function toggleChecked(id) {
-    setChecked((current) =>
-      current.includes(id)
-        ? current.filter((item) => item !== id)
-        : [...current, id],
-    );
+    onToggleApplied(id);
   }
 
   return (
@@ -61,10 +59,12 @@ export default function FightIQ() {
           {FLOW.map(([titleKey, textKey, Icon], index) => (
             <div key={titleKey}>
               <span>0{index + 1}</span>
-              <Icon />
+              <Icon aria-hidden="true" />
               <strong>{t(`iq.flow.${titleKey}`)}</strong>
               <small>{t(`iq.flow.${textKey}`)}</small>
-              {index < FLOW.length - 1 ? <ArrowRight /> : null}
+              {index < FLOW.length - 1 ? (
+                <ArrowRight aria-hidden="true" />
+              ) : null}
             </div>
           ))}
         </div>
@@ -113,25 +113,30 @@ export default function FightIQ() {
                   aria-controls={detailId}
                 >
                   <span>{principle.number}</span>
-                  <Icon />
+                  <Icon aria-hidden="true" />
                   <div>
                     <strong>{t(`iq.${principle.id}.title`)}</strong>
                     <small>{t(`iq.${principle.id}.lead`)}</small>
                   </div>
-                  <ChevronDown />
+                  <ChevronDown aria-hidden="true" />
                 </button>
                 {isOpen ? (
                   <div className="principle-detail" id={detailId}>
                     <p>{t(`iq.${principle.id}.body`)}</p>
                     <div>
-                      <CircleDot />
+                      <CircleDot aria-hidden="true" />
                       <span>{t(`iq.${principle.id}.cue`)}</span>
                     </div>
                     <button
                       type="button"
+                      aria-pressed={isChecked}
                       onClick={() => toggleChecked(principle.id)}
                     >
-                      {isChecked ? <Check /> : <TimerReset />}
+                      {isChecked ? (
+                        <Check aria-hidden="true" />
+                      ) : (
+                        <TimerReset aria-hidden="true" />
+                      )}
                       {isChecked ? t("iq.applied") : t("iq.setGoal")}
                     </button>
                   </div>
@@ -144,7 +149,7 @@ export default function FightIQ() {
 
       <section className="preflight">
         <div>
-          <Swords />
+          <Swords aria-hidden="true" />
           <span>{t("iq.preflightTitle")}</span>
         </div>
         <ol>

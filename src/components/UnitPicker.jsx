@@ -10,7 +10,7 @@ import {
   Target,
 } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
-import { CATEGORY_ORDER } from "../data/localization";
+import { CATEGORY_ORDER, romanAge } from "../data/localization";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 import UnitAvatar from "./UnitAvatar";
 
@@ -30,7 +30,6 @@ export default function UnitPicker({
   civilizations,
   selected,
   onSelect,
-  compact = false,
   initialCategory = "alle",
 }) {
   const { t, lang, unitName, roleLabel, civName, categoryLabel } = useI18n();
@@ -60,17 +59,14 @@ export default function UnitPicker({
   }, [category, civ, deferredQuery, units, unitName, lang]);
 
   return (
-    <aside className={`unit-picker ${compact ? "unit-picker--compact" : ""}`}>
+    <aside className="unit-picker">
       <div className="unit-picker__controls">
-        <label
-          className="field-label"
-          htmlFor={`civ-${compact ? "compact" : "full"}`}
-        >
+        <label className="field-label" htmlFor="picker-civilization">
           {t("picker.civ")}
         </label>
         <select
-          id={`civ-${compact ? "compact" : "full"}`}
-          name={`civilization-${compact ? "compact" : "full"}`}
+          id="picker-civilization"
+          name="picker-civilization"
           value={civ}
           onChange={(event) => setCiv(event.target.value)}
         >
@@ -82,11 +78,11 @@ export default function UnitPicker({
           ))}
         </select>
         <label className="search-field">
-          <Search size={15} />
+          <Search size={15} aria-hidden="true" />
           <span className="sr-only">{t("picker.searchUnit")}</span>
           <input
             type="search"
-            name={`unit-search-${compact ? "compact" : "full"}`}
+            name="picker-unit-search"
             data-search-input
             autoComplete="off"
             spellCheck={false}
@@ -94,11 +90,15 @@ export default function UnitPicker({
             placeholder={t("picker.searchPlaceholder")}
             onChange={(event) => setQuery(event.target.value)}
           />
-          <kbd>⌘&nbsp;K</kbd>
+          <kbd aria-hidden="true">⌘&nbsp;K</kbd>
         </label>
       </div>
 
-      <div className="category-list" aria-label={t("picker.categories")}>
+      <div
+        className="category-list"
+        role="group"
+        aria-label={t("picker.categories")}
+      >
         {CATEGORY_ORDER.map((id) => {
           if (!categoryCounts[id]) return null;
           const Icon = CATEGORY_ICONS[id];
@@ -107,9 +107,10 @@ export default function UnitPicker({
               type="button"
               key={id}
               className={category === id ? "is-active" : ""}
+              aria-pressed={category === id}
               onClick={() => setCategory(id)}
             >
-              <Icon size={15} />
+              <Icon size={15} aria-hidden="true" />
               <span>{categoryLabel(id)}</span>
               <small>{categoryCounts[id]}</small>
             </button>
@@ -132,6 +133,7 @@ export default function UnitPicker({
               type="button"
               key={unit.id}
               className={`unit-row ${selected?.id === unit.id ? "is-selected" : ""}`}
+              aria-pressed={selected?.id === unit.id}
               onClick={() => onSelect(unit)}
             >
               <UnitAvatar unit={unit} size="small" decorative />
@@ -139,7 +141,14 @@ export default function UnitPicker({
                 <strong>{unitName(unit)}</strong>
                 <small>{roleLabel(unit)}</small>
               </span>
-              {unit.unique ? <i>U</i> : null}
+              <i className="unit-row__age" aria-hidden="true">
+                {romanAge(unit.minAge)}
+              </i>
+              {unit.unique ? (
+                <i className="unit-row__unique" title={t("explorer.unique")}>
+                  U
+                </i>
+              ) : null}
               <ChevronRight size={14} aria-hidden="true" />
             </button>
           ))}

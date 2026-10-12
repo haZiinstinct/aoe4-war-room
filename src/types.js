@@ -16,7 +16,20 @@
  * @property {number} damage
  * @property {number} speed          Sekunden je Angriff.
  * @property {number} range          Maximale Reichweite in Feldern.
+ * @property {boolean} [burst]       Sturmangriff/Charge: einmaliger Treffer
+ *                                   beim Kontakt, keine Dauer-DPS.
  * @property {Modifier[]} modifiers
+ */
+
+/**
+ * Werte einer Einheit in einem bestimmten Zeitalter (aus aoe4world-Varianten).
+ * @typedef {Object} UnitStats
+ * @property {number} [age]
+ * @property {number} hp
+ * @property {Armor} armor
+ * @property {number} movement
+ * @property {Costs} costs
+ * @property {Weapon[]} weapons
  */
 
 /**
@@ -68,6 +81,7 @@
  * @property {number} movement
  * @property {Costs} costs
  * @property {Weapon[]} weapons
+ * @property {Record<string, UnitStats>} [ages]  Werte je verfügbarem Zeitalter.
  * @property {UnitFlags} flags
  */
 
@@ -96,6 +110,7 @@
  * @property {string} micro     Siehe {@link MicroLevel}.
  * @property {number} upgrades
  * @property {number} age
+ * @property {string} [civ]     Civ-Code für Counter-Vorschläge oder "all".
  */
 
 /**
@@ -107,11 +122,41 @@
  */
 
 /**
+ * @typedef {Weapon & {bonus:number, armor:number, hit:number, dps:number, burstHit:number}} WeaponProfile
+ */
+
+/**
+ * @typedef {Object} OpeningDamage
+ * @property {number} rangeLead
+ * @property {number} approachTime
+ * @property {number} freeDamage
+ * @property {number} burst
+ * @property {number} share
+ */
+
+/**
+ * @typedef {Object} TacticalFactors
+ * @property {number} focus
+ * @property {number} approach
+ * @property {number} terrain
+ * @property {number} micro
+ * @property {number} kite
+ * @property {number} splash
+ * @property {number} upgrade
+ */
+
+/**
  * @typedef {Object} SideStrength
- * @property {Weapon & {bonus:number, armor:number, dps:number}} weapon
+ * @property {UnitStats} stats
+ * @property {WeaponProfile} weapon
+ * @property {number} cost
  * @property {number} count
- * @property {number} value
+ * @property {number} hp
+ * @property {number} individual   √(DPS · LP) je Einheit
+ * @property {OpeningDamage} opening
+ * @property {TacticalFactors} factors
  * @property {number} tactical
+ * @property {number} value
  */
 
 /**
@@ -126,6 +171,8 @@
  * @property {boolean} comparable
  * @property {Verdict} verdict
  * @property {number} ratio
+ * @property {number} edge         log2(ratio)
+ * @property {number} [edgeClamped]
  * @property {number} confidence
  * @property {SideStrength} [attacker]
  * @property {SideStrength} [defender]

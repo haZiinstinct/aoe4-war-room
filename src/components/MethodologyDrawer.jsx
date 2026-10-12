@@ -7,8 +7,14 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { dataCommit } from "../data/units.generated.js";
+import { dataCommit, dataDate } from "../data/units.generated.js";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
+
+// Der Statistik-Hinweis erscheint nur, wenn der Build die Statistik auch
+// tatsächlich einbettet (siehe vite.config.js / VITE_GOATCOUNTER_CODE).
+const ANALYTICS_ENABLED = Boolean(
+  import.meta.env?.VITE_GOATCOUNTER_CODE?.trim(),
+);
 
 export default function MethodologyDrawer({
   open,
@@ -133,7 +139,11 @@ export default function MethodologyDrawer({
               <li>
                 <CheckCircle2 aria-hidden="true" /> {t("meth.in4")}
               </li>
+              <li>
+                <CheckCircle2 aria-hidden="true" /> {t("meth.in5")}
+              </li>
             </ul>
+            <p className="methodology-formula">{t("meth.formula")}</p>
           </section>
 
           <section>
@@ -181,9 +191,10 @@ export default function MethodologyDrawer({
 
           <p className="methodology-stamp">
             {t("meth.dataStamp", { commit: dataCommit })}
+            {dataDate ? ` · ${t("meth.dataDate", { date: dataDate })}` : ""}
           </p>
           <small>{t("meth.disclaimer")}</small>
-          <small>{t("meth.privacy")}</small>
+          {ANALYTICS_ENABLED ? <small>{t("meth.privacy")}</small> : null}
         </div>
       </aside>
     </div>

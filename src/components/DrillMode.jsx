@@ -3,6 +3,7 @@ import {
   Check,
   Clock3,
   Flame,
+  Keyboard,
   Play,
   RotateCcw,
   ShieldQuestion,
@@ -14,7 +15,11 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
-import { calculateMatchup, DEFAULT_SETTINGS } from "../lib/matchup";
+import {
+  calculateMatchup,
+  DEFAULT_SETTINGS,
+  formatRatio,
+} from "../lib/matchup";
 import UnitAvatar from "./UnitAvatar";
 
 const TARGET_POOL = [
@@ -107,8 +112,8 @@ export default function DrillMode({ units, stats, onAnswered }) {
   );
   const correct = selectedId === question.best.unit.id;
 
-  // Immer den aktuellen Stand für den Interval-Callback bereithalten, ohne den
-  // laufenden Timer bei jeder Auswahl/jedem Tick neu abonnieren zu müssen.
+  // Immer den aktuellen Stand für die Timer-/Tastatur-Callbacks bereithalten,
+  // ohne die Listener bei jeder Auswahl neu abonnieren zu müssen.
   const latest = useRef({ secondsLeft, correct, onAnswered });
   useEffect(() => {
     latest.current = { secondsLeft, correct, onAnswered };
@@ -168,6 +173,49 @@ export default function DrillMode({ units, stats, onAnswered }) {
     reset();
   }
 
+  // Tastatur: 1–4 / A–D wählen, Enter startet, bestätigt oder geht weiter.
+  const keyState = useRef({ running, answered, selected, question });
+  useEffect(() => {
+    keyState.current = { running, answered, selected, question };
+  });
+  useEffect(() => {
+    function onKey(event) {
+      const target = /** @type {HTMLElement | null} */ (event.target);
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "SELECT" ||
+          target.tagName === "TEXTAREA")
+      ) {
+        return;
+      }
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const state = keyState.current;
+      const key = event.key.toLowerCase();
+      const index =
+        "1234".indexOf(key) >= 0 ? "1234".indexOf(key) : "abcd".indexOf(key);
+      if (index >= 0 && state.running && !state.answered) {
+        const entry = state.question.choices[index];
+        if (entry) {
+          event.preventDefault();
+          setSelectedId(entry.unit.id);
+        }
+        return;
+      }
+      if (key === "enter") {
+        event.preventDefault();
+        if (state.answered) next();
+        else if (state.running) submit();
+        else start();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // Handler lesen den aktuellen Stand aus keyState; die Funktionen selbst
+    // sind stabil genug (setState-Aufrufe).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const timeLow = running && secondsLeft <= 3;
   const clock = `0:${String(Math.max(0, secondsLeft)).padStart(2, "0")}`;
 
@@ -181,13 +229,16 @@ export default function DrillMode({ units, stats, onAnswered }) {
         </div>
         <div className="drill-scoreboard">
           <span>
-            <Flame /> {t("drill.streak")} <strong>{stats.streak}</strong>
+            <Flame aria-hidden="true" /> {t("drill.streak")}{" "}
+            <strong>{stats.streak}</strong>
           </span>
           <span>
-            <Trophy /> {t("drill.correct")} <strong>{stats.correct}</strong>
+            <Trophy aria-hidden="true" /> {t("drill.correct")}{" "}
+            <strong>{stats.correct}</strong>
           </span>
           <span>
-            <Swords /> {t("drill.played")} <strong>{stats.answered}</strong>
+            <Swords aria-hidden="true" /> {t("drill.played")}{" "}
+            <strong>{stats.answered}</strong>
           </span>
         </div>
       </header>
@@ -205,7 +256,11 @@ export default function DrillMode({ units, stats, onAnswered }) {
               role="timer"
               aria-live={timeLow ? "assertive" : "off"}
             >
-              {running ? <Timer size={14} /> : <Clock3 size={14} />}{" "}
+              {running ? (
+                <Timer size={14} aria-hidden="true" />
+              ) : (
+                <Clock3 size={14} aria-hidden="true" />
+              )}{" "}
               {running || answered ? clock : t("drill.targetTime")}
             </span>
           </div>
@@ -229,7 +284,7 @@ export default function DrillMode({ units, stats, onAnswered }) {
             <span>{t("drill.condUpgrades")}</span>
           </div>
           <div className="scenario-question">
-            <ShieldQuestion />
+            <ShieldQuestion aria-hidden="true" />
             <strong>{t("drill.question")}</strong>
           </div>
         </div>
@@ -250,6 +305,7 @@ export default function DrillMode({ units, stats, onAnswered }) {
                   showCorrect ? "is-correct" : "",
                   showWrong ? "is-wrong" : "",
                 ].join(" ")}
+                aria-pressed={isSelected}
                 disabled={!running && !answered}
                 onClick={() => choose(entry)}
               >
@@ -260,29 +316,48 @@ export default function DrillMode({ units, stats, onAnswered }) {
                 <span>
                   <strong>{unitName(entry.unit)}</strong>
                   <small>{roleLabel(entry.unit)}</small>
+                  {answered ? (
+                    <em>{formatRatio(entry.result.ratio, lang)}</em>
+                  ) : null}
                 </span>
-                {showCorrect ? <Check /> : showWrong ? <X /> : <ArrowRight />}
+                {showCorrect ? (
+                  <Check aria-hidden="true" />
+                ) : showWrong ? (
+                  <X aria-hidden="true" />
+                ) : (
+                  <ArrowRight aria-hidden="true" />
+                )}
               </button>
             );
           })}
 
           {!running && !answered ? (
-            <button
-              className="primary-button drill-submit"
-              type="button"
-              onClick={start}
-            >
-              <Play size={17} /> {t("drill.start")}
-            </button>
+            <div className="drill-actions">
+              <span className="drill-keyhint">
+                <Keyboard size={14} aria-hidden="true" /> {t("drill.keyHint")}
+              </span>
+              <button
+                className="primary-button drill-submit"
+                type="button"
+                onClick={start}
+              >
+                <Play size={17} aria-hidden="true" /> {t("drill.start")}
+              </button>
+            </div>
           ) : !answered ? (
-            <button
-              className="primary-button drill-submit"
-              type="button"
-              disabled={!selected}
-              onClick={submit}
-            >
-              {t("drill.lockIn")} <Swords size={17} />
-            </button>
+            <div className="drill-actions">
+              <span className="drill-keyhint">
+                <Keyboard size={14} aria-hidden="true" /> {t("drill.keyHint")}
+              </span>
+              <button
+                className="primary-button drill-submit"
+                type="button"
+                disabled={!selected}
+                onClick={submit}
+              >
+                {t("drill.lockIn")} <Swords size={17} aria-hidden="true" />
+              </button>
+            </div>
           ) : (
             <div
               className={`drill-feedback ${
@@ -291,7 +366,13 @@ export default function DrillMode({ units, stats, onAnswered }) {
               role="status"
               aria-live="polite"
             >
-              <span>{correct ? <Check /> : <X />}</span>
+              <span>
+                {correct ? (
+                  <Check aria-hidden="true" />
+                ) : (
+                  <X aria-hidden="true" />
+                )}
+              </span>
               <div>
                 <small>
                   {timedOut
@@ -308,9 +389,24 @@ export default function DrillMode({ units, stats, onAnswered }) {
                       })}
                 </h3>
                 <p>{question.best.result.reasons[0]?.text}</p>
+                <p className="drill-feedback__ratios">
+                  {selected && !correct ? (
+                    <span>
+                      {t("drill.yourPick", {
+                        ratio: formatRatio(selected.result.ratio, lang),
+                      })}
+                    </span>
+                  ) : null}
+                  <span>
+                    {t("drill.bestPick", {
+                      ratio: formatRatio(question.best.result.ratio, lang),
+                    })}
+                  </span>
+                </p>
               </div>
               <button type="button" onClick={next}>
-                {t("drill.nextSituation")} <ArrowRight size={15} />
+                {t("drill.nextSituation")}{" "}
+                <ArrowRight size={15} aria-hidden="true" />
               </button>
             </div>
           )}
@@ -318,14 +414,14 @@ export default function DrillMode({ units, stats, onAnswered }) {
       </section>
 
       <section className="drill-principle">
-        <Sparkles />
+        <Sparkles aria-hidden="true" />
         <div>
           <span>{t("drill.keyRule")}</span>
           <strong>{t("drill.keyRuleTitle")}</strong>
           <p>{t("drill.keyRuleBody")}</p>
         </div>
         <button type="button" onClick={retry}>
-          <RotateCcw size={15} /> {t("drill.retry")}
+          <RotateCcw size={15} aria-hidden="true" /> {t("drill.retry")}
         </button>
       </section>
     </div>
