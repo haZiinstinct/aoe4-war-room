@@ -9,7 +9,7 @@ Nimm entweder
 
 - `outputs/index.html` aus dem Repo, **oder**
 - `war-room.html` aus dem GitHub-Release
-  (<https://github.com/haZiinstinct/aoe4-war-room/releases/tag/v1.1.0>)
+  (<https://github.com/haZiinstinct/aoe4-war-room/releases/latest>)
 
 und lege sie als **`index.html`** in den Docroot der Subdomain.
 
@@ -21,10 +21,12 @@ und lege sie als **`index.html`** in den Docroot der Subdomain.
    - `index.html` (die Single-File-App)
    - `og-image.png` (Social-Preview, aus `deploy/` bzw. `docs/`)
    - `apple-touch-icon.png` (Homescreen-Icon, aus `deploy/` bzw. `docs/`)
-3. **GoatCounter-Code** setzen: in der `index.html` vor dem Upload den Platzhalter
-   `DEIN-CODE` durch deinen echten GoatCounter-Code ersetzen (oder das
-   `<script data-goatcounter …>` samt Methodik-Hinweis entfernen, falls keine
-   Statistik gewünscht ist).
+3. **GoatCounter (optional)**: Die Statistik wird nur eingebettet, wenn beim
+   Build die Variable gesetzt ist – z. B. `VITE_GOATCOUNTER_CODE=meincode npm run build`
+   (Konto anlegen auf goatcounter.com → Code = Subdomain). Ohne Variable
+   enthält die Datei kein externes Script und auch keinen Statistik-Hinweis
+   im Methodik-Dialog. Das eingecheckte `outputs/index.html` ist ohne
+   Statistik gebaut.
 4. **Header/CSP** setzen:
    - Apache: `deploy/.htaccess` in den Docroot legen (mod_headers aktiv).
    - nginx: `deploy/nginx-aoe4.conf` als server-Block einbinden und neu laden.
@@ -40,7 +42,8 @@ wären pro Build unpraktisch, es gibt keinerlei Server-/Injection-Fläche). Die
 kein Google-Fonts-Request, DSGVO-konform. Extern laden nur:
 
 - **Bilder** der Einheiten von `data.aoe4world.com`,
-- **Statistik** (cookielos): Script von `gc.zgo.at`, Beacon an `*.goatcounter.com`.
+- **Statistik** (cookielos, nur wenn beim Build aktiviert): Script von
+  `gc.zgo.at`, Beacon an `*.goatcounter.com`.
 
 Ohne Netz bleibt die App voll bedienbar (Fonts sind eingebettet, nur die
 Einheitenbilder fehlen dann).

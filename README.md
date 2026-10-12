@@ -13,9 +13,10 @@ Learn which unit beats which — with an explainable matchup model, decision dri
 
 <p>
   <a href="https://github.com/haZiinstinct/aoe4-war-room/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/haZiinstinct/aoe4-war-room/actions/workflows/ci.yml/badge.svg" /></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.3.0-c89d4f" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-c89d4f" />
   <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-blue" />
   <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white" />
+  <img alt="Vite 8" src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white" />
   <img alt="Languages DE / EN" src="https://img.shields.io/badge/languages-DE%20%2F%20EN-78a16e" />
   <img alt="Standalone single file" src="https://img.shields.io/badge/standalone-single%20file-6d5229" />
 </p>
@@ -36,22 +37,24 @@ demo. No install, no account, no tracking.
 
 ## ✨ Highlights
 
-- 🗡️ **205 units** across **23 civilizations**, **42,025** directed unit-vs-unit matchups
-- 🧠 **Explainable model** — every verdict comes with its reasoning and a confidence score, close fights are flagged as _skill matchups_
-- 🎚️ **Change the fight** — resources vs. 1-on-1, age, upgrades, terrain and micro; watch tight matchups flip
+- 🗡️ **205 units** across **23 civilizations**, **42,025** directed unit-vs-unit matchups, **355 age-specific stat variants**
+- 🧠 **Explainable model** — every verdict comes with its reasoning, an advantage scale and a confidence score; close fights are flagged as _skill matchups_
+- 🧮 **Show the maths** — one click opens the full, checkable calculation for both sides (damage per hit, DPS, HP, units per budget, opening damage, tactical factors)
+- 🎚️ **Change the fight** — resources vs. 1-on-1, age (stats scale with it), upgrades, terrain and micro; watch tight matchups flip
+- 🏰 **Your civ only** — filter counter suggestions to units your civilization can actually train
 - 🌍 **German & English** — full UI toggle, your choice is remembered
 - 🎯 **Real data** — pulled from [aoe4world/data](https://github.com/aoe4world/data), no made-up numbers
-- 📦 **Standalone** — one self-contained file, works offline (images/fonts load online), deploy on any static host
-- ♿ **Accessible & responsive** — keyboard-friendly, focus-managed, mobile-ready
+- 📦 **Standalone** — one self-contained file with embedded fonts, works offline (unit artwork loads online), deploy on any static host
+- ♿ **Accessible & responsive** — keyboard-friendly (drills: `1–4` / `Enter`, search: `⌘/Ctrl K`), focus-managed, mobile-ready
 
 ## 🎮 Four ways to get better
 
-|                      |                                                                                                                                                                                                                |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ⚔️ **Counter Lab**   | Pick your unit and the enemy. Get a clear verdict (from _clear counter_ to _hard loss_), a model-confidence %, and the reasons behind it. Ranked counter suggestions update as you tweak the combat variables. |
-| 🔎 **Unit Explorer** | Browse and filter every unit. Each dossier shows stats, weapons, _strong against / weak against_ lists and concrete usage tips.                                                                                |
-| ⏱️ **Drills**        | The enemy is massing something — pick the best affordable answer in 12 seconds. Your streak and progress are saved locally.                                                                                    |
-| 🧭 **Fight IQ**      | Six practical combat rules (scout production, compare resources, control the contact, play the space, target by value, switch before you must) plus a 10-second pre-fight checklist.                           |
+|                      |                                                                                                                                                                                                                                                                            |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ⚔️ **Counter Lab**   | Pick your unit and the enemy. Get a clear verdict (from _clear counter_ to _hard loss_), the combat-power ratio on a log scale, a model-confidence %, the reasons behind it and the full calculation. Ranked counter suggestions update as you tweak the combat variables. |
+| 🔎 **Unit Explorer** | Browse and filter every unit. Each dossier shows stats, weapons, _strong against / weak against_ lists and concrete usage tips.                                                                                                                                            |
+| ⏱️ **Drills**        | The enemy is massing something — pick the best affordable answer in 12 seconds. Your streak and progress are saved locally.                                                                                                                                                |
+| 🧭 **Fight IQ**      | Six practical combat rules (scout production, compare resources, control the contact, play the space, target by value, switch before you must) plus a 10-second pre-fight checklist.                                                                                       |
 
 ## 🖼️ Screenshots
 
@@ -67,15 +70,27 @@ demo. No install, no account, no tracking.
 ## 🧠 How the model works
 
 The matchup score is a **learning model, not a frame-perfect combat simulator.**
-For each side it combines:
+It is built on Lanchester's square law in root form:
 
-- **class & bonus damage** against the opponent's classes,
-- **hit points, armour, attack speed and range**,
-- a **cost comparison** (equal resources) or a straight **1-on-1**,
-- and modifiers for **terrain, micro level and relative upgrade advantage**.
+```
+combat power = √(damage/s × hit points) × units × tactical factors
+```
 
-The two sides are compared into a ratio, mapped to a verdict, and paired with a
-**model-confidence** value so you can tell a clear result from a coin-flip.
+For each side, in the selected age, it computes
+
+- **damage per hit** = base damage + class bonus − the armour that applies
+  (melee or ranged; **siege damage ignores armour**, as in the game),
+- **DPS** from the best sustained weapon (charges/lances count as a one-off
+  **opening hit on contact**, not as DPS),
+- **units per budget** (equal resources) or a straight **1-on-1**,
+- **free damage on approach**: range lead ÷ the opponent's speed × DPS, scaled
+  by your micro level,
+- and factors for **class bonus (focus fire), terrain, micro, kiting, area
+  damage and relative upgrade advantage**.
+
+The two combat-power values form a ratio, rated on a log₂ scale (±0.3 = slight
+edge, ±0.78 = clear counter), paired with a **model-confidence** value and shown
+on an advantage scale. The _"Show the maths"_ panel lays out every number.
 
 **Deliberate limits** — civilization bonuses, activated abilities, landmark
 effects, formation depth, real pathfinding and patch special cases can flip a
@@ -91,9 +106,9 @@ than pretending to be certain. All tuning constants are named and documented in
 
 ## 🛠️ Tech & development
 
-React 19 + Vite 6, bundled into one file via `vite-plugin-singlefile`. Quality is
-guarded by ESLint, Prettier, JSDoc type-checking, a Vitest suite and GitHub
-Actions CI.
+React 19 + Vite 8, bundled into one file via `vite-plugin-singlefile`. Quality is
+guarded by ESLint, Prettier, JSDoc type-checking, a Vitest suite (55 tests) and
+GitHub Actions CI.
 
 ```bash
 npm install
@@ -109,9 +124,15 @@ git clone --depth 1 https://github.com/aoe4world/data.git work/aoe4world-data
 npm run generate:data
 ```
 
-The generator bakes data-driven combat flags into `src/data/units.generated.js`
-and **warns** when listed special units disappear or new class tokens appear, so
-balance patches surface instead of silently breaking the logic.
+The generator writes every unit with its per-age stat variants and data-driven
+combat flags into `src/data/units.generated.js`. It **warns** when listed
+special units disappear, when a bonus group no longer matches any unit, or when
+new class tokens appear — so balance patches surface instead of silently
+breaking the logic.
+
+Optional cookieless analytics (GoatCounter) are only embedded when you build
+with `VITE_GOATCOUNTER_CODE=<your-code>`; without it the file loads no external
+script at all.
 
 ## 📊 Data & sources
 
@@ -120,8 +141,8 @@ balance patches surface instead of silently breaking the logic.
 - [aoe4world/data](https://github.com/aoe4world/data) — unit values extracted from the game files
 - [aoe4world Explorer](https://aoe4world.com/explorer)
 
-The exact upstream commit is recorded in the header of
-`src/data/units.generated.js`.
+The exact upstream commit and patch date are recorded in the header of
+`src/data/units.generated.js` and shown in the methodology dialog.
 
 ## ⚖️ Disclaimer
 

@@ -80,9 +80,9 @@ export const STRINGS = {
     "lab.drillBodyPre": "Der Gegner zeigt ",
     "lab.drillBodyPost": ". Wähle in 12 Sekunden die beste bezahlbare Antwort.",
     "lab.drillGoal": "Ziel",
-    "lab.drillGoalValue": "3 Entscheidungen in Folge",
+    "lab.drillGoalValue": "3 Treffer in Folge",
     "lab.drillReward": "Belohnung",
-    "lab.drillRewardValue": "+25 Lernpunkte",
+    "lab.drillRewardValue": "+4 % Fortschritt je Treffer",
     "lab.drillStart": "Drill starten",
     "lab.activeMatchup": "Aktives Matchup",
     "lab.resourcesPerSide": ({ budget }) => `${budget} Ressourcen pro Seite`,
@@ -290,10 +290,75 @@ export const STRINGS = {
     "meth.src4": "AoE4 World Explorer",
     "meth.disclaimer":
       "Einheitenwerte stammen aus den Spieldateien via aoe4world/data. Age of Empires IV und zugehörige Bezeichnungen sind Eigentum ihrer jeweiligen Rechteinhaber. Dieses unabhängige Lernprojekt ist nicht mit Microsoft verbunden.",
-    "meth.dataStamp": ({ commit }) =>
-      `Datenstand: aoe4world/data @ ${commit}`,
+    "meth.dataStamp": ({ commit }) => `Datenstand: aoe4world/data @ ${commit}`,
     "meth.privacy":
       "Anonyme, cookielose Statistik via GoatCounter – keine Cookies, keine seitenübergreifende Verfolgung.",
+
+    // v2: Vorteilsskala, Rechnung, Zeitalter-Werte
+    "lab.gaugeTitle": "Vorteilsskala",
+    "lab.gaugeHint":
+      "Logarithmische Skala: jede Markierung verdoppelt die Kampfkraft. Der mittlere Bereich ist das Skill-Matchup.",
+    "lab.ratio": ({ value }) => `Kampfkraft ${value}`,
+    "lab.ageStats": ({ age }) => `Werte Zeitalter ${age}`,
+    "lab.notYetAvailable": ({ age }) => `Erst ab Zeitalter ${age}`,
+    "lab.calcTitle": "Die Rechnung",
+    "lab.calcSub": "So entsteht das Verhältnis – nachrechenbar",
+    "lab.calcFormula":
+      "Kampfkraft = √(Schaden/s × Trefferpunkte) × Einheiten × Taktikfaktoren (Lanchester-Quadratgesetz, Wurzelform).",
+    "lab.calc.weapon": "Waffe",
+    "lab.calc.hit": "Schaden je Treffer",
+    "lab.calc.hitDetail": ({ damage, bonus, armor }) =>
+      `${damage}${bonus ? ` + ${bonus} Bonus` : ""}${armor ? ` − ${armor} Rüstung` : ""}`,
+    "lab.calc.siegeArmor": "Belagerung ignoriert Rüstung",
+    "lab.calc.dps": "Schaden pro Sekunde",
+    "lab.calc.dpsDetail": ({ hit, speed }) => `${hit} ÷ ${speed} s`,
+    "lab.calc.hp": "Trefferpunkte",
+    "lab.calc.count": "Einheiten",
+    "lab.calc.countDetail": ({ budget, cost }) => `${budget} ÷ ${cost}`,
+    "lab.calc.countOne": "1 : 1-Vergleich",
+    "lab.calc.unitStrength": "Stärke je Einheit",
+    "lab.calc.unitStrengthDetail": "√(Schaden/s × LP)",
+    "lab.calc.opening": "Eröffnung",
+    "lab.calc.openingDetail": ({ free, burst }) =>
+      [
+        free ? `${free} frei beim Anlaufen` : null,
+        burst ? `${burst} Sturmangriff` : null,
+      ]
+        .filter(Boolean)
+        .join(" + ") || "–",
+    "lab.calc.factors": "Taktikfaktoren",
+    "lab.calc.total": "Kampfkraft",
+    "lab.factor.focus": "Klassenbonus",
+    "lab.factor.approach": "Eröffnung",
+    "lab.factor.terrain": "Gelände",
+    "lab.factor.micro": "Micro",
+    "lab.factor.kite": "Kiting",
+    "lab.factor.splash": "Fläche",
+    "lab.factor.upgrade": "Upgrade",
+    "lab.showCalc": "Rechnung anzeigen",
+    "lab.hideCalc": "Rechnung ausblenden",
+    "lab.answersFrom": "Antworten aus",
+    "lab.railEmpty":
+      "Keine baubare Antwort in dieser Zivilisation und diesem Zeitalter.",
+    "explorer.valuesFor": "Werte für",
+    "explorer.dps": "Schaden/s",
+    "explorer.burstWeapon": "Sturmangriff – einmalig beim Kontakt",
+    "explorer.siegeDamage": "Belagerungsschaden – ignoriert Rüstung",
+    "explorer.bonusVs": ({ value, target }) => `+${value} gegen ${target}`,
+    "explorer.ratioLabel": ({ value }) => `Kampfkraft ${value}`,
+    "explorer.notInAge": ({ age }) => `erst ab Zeitalter ${age}`,
+    "explorer.heroAge": ({ age }) => `Zeitalter ${age}`,
+    "drill.keyHint": "Tasten 1–4 wählen · Enter bestätigt",
+    "drill.yourPick": ({ ratio }) => `Dein Pick: ${ratio}`,
+    "drill.bestPick": ({ ratio }) => `Beste Antwort: ${ratio}`,
+    "shell.progressHint":
+      "Fortschritt: +4 % je richtiger Drill-Antwort, +6 % je angewendeter Kampfregel.",
+    "shell.progressShort": "Fortschritt",
+    "meth.in5":
+      "Zeitalter-Werte, Anlaufzeit (Reichweite ÷ Tempo), Sturmangriffe und Belagerungsschaden ohne Rüstung",
+    "meth.formula":
+      "Kampfkraft = √(Schaden/s × LP) × Einheiten × Taktikfaktoren. Das Verhältnis beider Seiten wird auf einer log₂-Skala bewertet: ab ±0,3 leichter Vorteil, ab ±0,78 klarer Counter.",
+    "meth.dataDate": ({ date }) => `Patch-Stand ${date}`,
   },
   en: {
     "lang.switch": "Switch language",
@@ -366,9 +431,9 @@ export const STRINGS = {
     "lab.drillBodyPre": "The enemy shows ",
     "lab.drillBodyPost": ". Pick the best affordable answer within 12 seconds.",
     "lab.drillGoal": "Goal",
-    "lab.drillGoalValue": "3 decisions in a row",
+    "lab.drillGoalValue": "3 hits in a row",
     "lab.drillReward": "Reward",
-    "lab.drillRewardValue": "+25 learning points",
+    "lab.drillRewardValue": "+4% progress per hit",
     "lab.drillStart": "Start drill",
     "lab.activeMatchup": "Active matchup",
     "lab.resourcesPerSide": ({ budget }) => `${budget} resources per side`,
@@ -569,8 +634,73 @@ export const STRINGS = {
     "meth.src4": "AoE4 World Explorer",
     "meth.disclaimer":
       "Unit values come from the game files via aoe4world/data. Age of Empires IV and related marks are property of their respective owners. This independent learning project is not affiliated with Microsoft.",
-    "meth.dataStamp": ({ commit }) => `Data snapshot: aoe4world/data @ ${commit}`,
+    "meth.dataStamp": ({ commit }) =>
+      `Data snapshot: aoe4world/data @ ${commit}`,
     "meth.privacy":
       "Anonymous, cookieless stats via GoatCounter – no cookies, no cross-site tracking.",
+
+    "lab.gaugeTitle": "Advantage scale",
+    "lab.gaugeHint":
+      "Logarithmic scale: every tick doubles combat power. The middle band is the skill matchup.",
+    "lab.ratio": ({ value }) => `Combat power ${value}`,
+    "lab.ageStats": ({ age }) => `Age ${age} values`,
+    "lab.notYetAvailable": ({ age }) => `Available from Age ${age}`,
+    "lab.calcTitle": "The maths",
+    "lab.calcSub": "How the ratio comes together – check it yourself",
+    "lab.calcFormula":
+      "Combat power = √(damage/s × hit points) × units × tactical factors (Lanchester square law, root form).",
+    "lab.calc.weapon": "Weapon",
+    "lab.calc.hit": "Damage per hit",
+    "lab.calc.hitDetail": ({ damage, bonus, armor }) =>
+      `${damage}${bonus ? ` + ${bonus} bonus` : ""}${armor ? ` − ${armor} armour` : ""}`,
+    "lab.calc.siegeArmor": "siege ignores armour",
+    "lab.calc.dps": "Damage per second",
+    "lab.calc.dpsDetail": ({ hit, speed }) => `${hit} ÷ ${speed} s`,
+    "lab.calc.hp": "Hit points",
+    "lab.calc.count": "Units",
+    "lab.calc.countDetail": ({ budget, cost }) => `${budget} ÷ ${cost}`,
+    "lab.calc.countOne": "1 : 1 comparison",
+    "lab.calc.unitStrength": "Strength per unit",
+    "lab.calc.unitStrengthDetail": "√(damage/s × HP)",
+    "lab.calc.opening": "Opening",
+    "lab.calc.openingDetail": ({ free, burst }) =>
+      [
+        free ? `${free} free on approach` : null,
+        burst ? `${burst} charge` : null,
+      ]
+        .filter(Boolean)
+        .join(" + ") || "–",
+    "lab.calc.factors": "Tactical factors",
+    "lab.calc.total": "Combat power",
+    "lab.factor.focus": "Class bonus",
+    "lab.factor.approach": "Opening",
+    "lab.factor.terrain": "Terrain",
+    "lab.factor.micro": "Micro",
+    "lab.factor.kite": "Kiting",
+    "lab.factor.splash": "Area",
+    "lab.factor.upgrade": "Upgrade",
+    "lab.showCalc": "Show the maths",
+    "lab.hideCalc": "Hide the maths",
+    "lab.answersFrom": "Answers from",
+    "lab.railEmpty": "No trainable answer in this civilization and age.",
+    "explorer.valuesFor": "Values for",
+    "explorer.dps": "Damage/s",
+    "explorer.burstWeapon": "Charge – once on contact",
+    "explorer.siegeDamage": "Siege damage – ignores armour",
+    "explorer.bonusVs": ({ value, target }) => `+${value} vs ${target}`,
+    "explorer.ratioLabel": ({ value }) => `Combat power ${value}`,
+    "explorer.notInAge": ({ age }) => `from Age ${age}`,
+    "explorer.heroAge": ({ age }) => `Age ${age}`,
+    "drill.keyHint": "Keys 1–4 pick · Enter confirms",
+    "drill.yourPick": ({ ratio }) => `Your pick: ${ratio}`,
+    "drill.bestPick": ({ ratio }) => `Best answer: ${ratio}`,
+    "shell.progressHint":
+      "Progress: +4% per correct drill answer, +6% per applied combat rule.",
+    "shell.progressShort": "Progress",
+    "meth.in5":
+      "Age-specific values, approach time (range ÷ speed), charges and siege damage that ignores armour",
+    "meth.formula":
+      "Combat power = √(damage/s × HP) × units × tactical factors. The ratio of both sides is rated on a log₂ scale: ±0.3 is a slight edge, ±0.78 a clear counter.",
+    "meth.dataDate": ({ date }) => `Patch snapshot ${date}`,
   },
 };

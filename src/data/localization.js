@@ -186,6 +186,85 @@ const SHORT_DESCRIPTIONS = {
   },
 };
 
+// Lesbare Namen für Bonusschaden-Zielklassen (Tokens aus aoe4world/data).
+const BONUS_TOKEN_LABELS = {
+  de: {
+    heavy: "Schwere",
+    light: "Leichte",
+    melee: "Nahkampf-",
+    ranged: "Fernkampf-",
+    infantry: "Infanterie",
+    cavalry: "Kavallerie",
+    siege: "Belagerung",
+    gunpowder: "Schießpulver-",
+    building: "Gebäude",
+    wall: "Mauern",
+    naval: "Marine-",
+    unit: "Einheiten",
+    ship: "Schiffe",
+    archer: "Bogen-",
+    fireship: "Feuerschiffe",
+    war: "Kriegs-",
+    worker: "Arbeits-",
+    elephant: "Elefanten",
+    scout: "Späher",
+    crossbowman: "Armbrustschützen",
+    spearman: "Speerträger",
+    massive: "massive Einheiten",
+    animal: "Tiere",
+    huntable: "jagdbare Tiere",
+    gaia: "neutrale Ziele",
+    camel: "Kamele",
+    knight: "Ritter",
+    horse: "Pferde",
+  },
+  en: {
+    naval: "naval",
+    unit: "units",
+    fireship: "fire ships",
+    massive: "massive units",
+    huntable: "huntable animals",
+    gaia: "neutral targets",
+  },
+};
+
+// Einzel-Tokens, die als Präfix formuliert sind, brauchen ein Grundwort.
+const BONUS_SINGLE_DE = {
+  heavy: "Schwere Einheiten",
+  light: "Leichte Einheiten",
+  melee: "Nahkampfeinheiten",
+  ranged: "Fernkampfeinheiten",
+  gunpowder: "Schießpulvereinheiten",
+  archer: "Bogenschützen",
+  naval: "Marineeinheiten",
+  worker: "Arbeiter",
+};
+
+/**
+ * Lesbare Beschriftung einer Bonus-Zielgruppe, z. B. ["light","melee","infantry"]
+ * → „Leichte Nahkampf-Infanterie“ / "light melee infantry".
+ * @param {string[]} group
+ * @param {"de"|"en"} [lang]
+ * @returns {string}
+ */
+export function bonusGroupLabel(group, lang = "de") {
+  const table = BONUS_TOKEN_LABELS[lang] ?? {};
+  if (lang === "de" && group.length === 1 && BONUS_SINGLE_DE[group[0]]) {
+    return BONUS_SINGLE_DE[group[0]];
+  }
+  const words = group.map((token) => table[token] ?? token);
+  if (lang === "en") return words.join(" ");
+  // Deutsche Komposita: Präfixe (mit Bindestrich) direkt an das folgende Wort.
+  let label = "";
+  for (const word of words) {
+    if (!label) label = word;
+    else if (label.endsWith("-")) label += word.toLowerCase();
+    else label += ` ${word}`;
+  }
+  if (label.endsWith("-")) label = label.slice(0, -1);
+  return label.replace(/-([a-zäöü])/g, (_, c) => c);
+}
+
 // Opt-in-Warnung für fehlende deutsche Generik-Namen (VITE_I18N_DEBUG=true).
 const I18N_DEBUG = import.meta.env?.VITE_I18N_DEBUG === "true";
 const warnedKeys = new Set();

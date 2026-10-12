@@ -8,7 +8,7 @@ import {
 import AppShell from "./components/AppShell";
 import CounterLab from "./components/CounterLab";
 import DrillMode from "./components/DrillMode";
-import FightIQ from "./components/FightIQ";
+import FightIQ, { PRINCIPLE_IDS } from "./components/FightIQ";
 import MethodologyDrawer from "./components/MethodologyDrawer";
 import UnitExplorer from "./components/UnitExplorer";
 import { civilizations, units } from "./data/units.generated";
@@ -37,6 +37,28 @@ function isDrillStats(value) {
   );
 }
 
+function isPrincipleList(value) {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) => typeof item === "string" && PRINCIPLE_IDS.includes(item),
+    )
+  );
+}
+
+const isCivChoice = (value) => typeof value === "string" && value.length <= 4;
+
+// Lernfortschritt (0–100 %): transparent und in der UI erklärt —
+// +4 % je richtiger Drill-Antwort, +6 % je bewusst angewendeter Kampfregel.
+export const PROGRESS_PER_CORRECT = 4;
+export const PROGRESS_PER_RULE = 6;
+export function learningProgress(correct, appliedRules) {
+  return Math.min(
+    100,
+    correct * PROGRESS_PER_CORRECT + appliedRules * PROGRESS_PER_RULE,
+  );
+}
+
 export default function App() {
   const [activeView, setActiveView] = useState(viewFromHash);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
@@ -49,6 +71,16 @@ export default function App() {
     "war-room-drills-v1",
     { answered: 0, correct: 0, streak: 0 },
     isDrillStats,
+  );
+  const [appliedRules, setAppliedRules] = usePersistedState(
+    "war-room-iq-v1",
+    /** @type {string[]} */ ([]),
+    isPrincipleList,
+  );
+  const [answerCiv, setAnswerCiv] = usePersistedState(
+    "war-room-answer-civ-v1",
+    "all",
+    isCivChoice,
   );
 
   const navigate = useCallback((view) => {
@@ -84,16 +116,21 @@ export default function App() {
     };
   }, [activeView]);
 
-  const progress = useMemo(() => {
-    if (!drillStats.answered) return 4;
-    return Math.min(
-      100,
-      Math.round(
-        drillStats.answered * 3 +
-          (drillStats.correct / drillStats.answered) * 16,
-      ),
-    );
-  }, [drillStats]);
+  const progress = useMemo(
+    () => learningProgress(drillStats.correct, appliedRules.length),
+    [drillStats, appliedRules],
+  );
+
+  const toggleRule = useCallback(
+    (id) => {
+      setAppliedRules((current) =>
+        current.includes(id)
+          ? current.filter((item) => item !== id)
+          : [...current, id],
+      );
+    },
+    [setAppliedRules],
+  );
 
   function openUnit(unit) {
     setSelectedUnit(unit);
@@ -127,6 +164,8 @@ export default function App() {
           civilizations={civilizations}
           initialMine={labPair.mine}
           initialEnemy={labPair.enemy}
+          answerCiv={answerCiv}
+          onAnswerCivChange={setAnswerCiv}
           onOpenDrills={() => navigate("drills")}
           onOpenUnit={openUnit}
         />
@@ -146,7 +185,9 @@ export default function App() {
         <DrillMode units={units} stats={drillStats} onAnswered={answerDrill} />
       ) : null}
 
-      {activeView === "iq" ? <FightIQ /> : null}
+      {activeView === "iq" ? (
+        <FightIQ applied={appliedRules} onToggleApplied={toggleRule} />
+      ) : null}
 
       <MethodologyDrawer
         open={methodologyOpen}

@@ -8,7 +8,8 @@
       name="description"
       content="WAR ROOM – ein interaktives Age of Empires IV Counter-Lab für Einheiten, Matchups und bessere Kämpfe."
     />
-    <meta name="theme-color" content="#0d100f" />
+    <meta name="theme-color" content="#070a09" />
+    <meta name="color-scheme" content="dark" />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 58'%3E%3Crect width='48' height='58' fill='%230b0e0d'/%3E%3Cg fill='none' stroke='%23e0b665' stroke-width='3' stroke-linejoin='round'%3E%3Cpath d='M4 3h40v34L24 54 4 37Z'/%3E%3Cpath d='M24 8v38M10 15l14 9 14-9M12 34l12-10 12 10'/%3E%3C/g%3E%3Ccircle cx='24' cy='24' r='3' fill='%23e0b665'/%3E%3C/svg%3E"
@@ -36,10 +37,7 @@
       name="twitter:description"
       content="Interaktives Age of Empires IV Counter-Lab: Einheiten, Matchups und bessere Kämpfe. Deutsch und Englisch."
     />
-    <meta
-      name="twitter:image"
-      content="https://aoe4.hazii.org/og-image.png"
-    />
+    <meta name="twitter:image" content="https://aoe4.hazii.org/og-image.png" />
     <!-- Webfonts werden selbst gehostet und beim Build in die Datei eingebettet
          (siehe src/fonts.js) – kein externer Google-Fonts-Request, DSGVO-konform. -->
     <link rel="preconnect" href="https://data.aoe4world.com" />
@@ -66,14 +64,16 @@
       </p>
     </noscript>
     <script type="module" src="/src/main.jsx"></script>
+    <!-- GOATCOUNTER:START -->
     <!-- Cookielose, anonyme Statistik via GoatCounter (DSGVO-freundlich, keine
-         Cookies, keine geräteübergreifende Verfolgung). Vor dem Upload den
-         Platzhalter DEIN-CODE durch deinen echten GoatCounter-Code ersetzen
-         (Konto anlegen auf goatcounter.com → Code = Subdomain). -->
+         Cookies, keine geräteübergreifende Verfolgung). Wird nur eingebettet,
+         wenn beim Build VITE_GOATCOUNTER_CODE gesetzt ist (siehe deploy/DEPLOY.md);
+         der Platzhalter DEIN-CODE wird dann durch den echten Code ersetzt. -->
     <script
       data-goatcounter="https://DEIN-CODE.goatcounter.com/count"
       async
       src="https://gc.zgo.at/count.js"
     ></script>
+    <!-- GOATCOUNTER:END -->
   </body>
 </html>

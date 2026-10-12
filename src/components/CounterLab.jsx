@@ -1,6 +1,8 @@
 import {
   ArrowDown,
   ArrowLeftRight,
+  Calculator,
+  ChevronDown,
   ChevronRight,
   Coins,
   Crosshair,
@@ -22,16 +24,28 @@ import {
 import { memo, useMemo, useState } from "react";
 import { romanAge } from "../data/localization";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
+import { EDGE_DISPLAY_LIMIT, EDGE_THRESHOLDS } from "../lib/matchup.config";
 import {
   calculateMatchup,
   DEFAULT_SETTINGS,
+  formatRatio,
   getCounterCandidates,
+  statsAt,
 } from "../lib/matchup";
 import UnitAvatar from "./UnitAvatar";
 import UnitPicker from "./UnitPicker";
 
 // Wie viele direkte Counter-Vorschläge das Lab anzeigt.
-const COUNTER_SUGGESTIONS_LIMIT = 4;
+const COUNTER_SUGGESTIONS_LIMIT = 5;
+const FACTOR_KEYS = [
+  "focus",
+  "approach",
+  "terrain",
+  "micro",
+  "kite",
+  "splash",
+  "upgrade",
+];
 
 const SettingButton = memo(
   /**
@@ -42,6 +56,7 @@ const SettingButton = memo(
       <button
         type="button"
         className={active ? "is-active" : ""}
+        aria-pressed={active}
         onClick={onClick}
       >
         {children}
@@ -50,8 +65,10 @@ const SettingButton = memo(
   },
 );
 
-function MatchupUnit({ unit, side, onChoose }) {
-  const { t, unitName, roleLabel, civName, ageLabel } = useI18n();
+function MatchupUnit({ unit, side, age, onChoose }) {
+  const { t, unitName, roleLabel, civName, ageLabel, formatNumber } = useI18n();
+  const stats = statsAt(unit, age);
+  const locked = unit.minAge > age;
   return (
     <button
       type="button"
@@ -73,25 +90,331 @@ function MatchupUnit({ unit, side, onChoose }) {
       </span>
       <span className="matchup-unit__stats">
         <b>
-          <Shield size={13} /> {unit.hp || "–"} {t("lab.hp")}
+          <Shield size={13} aria-hidden="true" /> {stats.hp || "–"}{" "}
+          {t("lab.hp")}
         </b>
         <b>
-          <Footprints size={13} /> {unit.movement?.toFixed(2) || "–"}
+          <Footprints size={13} aria-hidden="true" />{" "}
+          {stats.movement
+            ? formatNumber(Number(stats.movement.toFixed(2)))
+            : "–"}
         </b>
         <b>
-          <Coins size={13} /> {unit.costs.total || t("lab.special")}
+          <Coins size={13} aria-hidden="true" />{" "}
+          {stats.costs.total || t("lab.special")}
         </b>
+      </span>
+      <span
+        className={`matchup-unit__age ${locked ? "is-locked" : ""}`}
+        title={
+          locked
+            ? t("lab.notYetAvailable", { age: romanAge(unit.minAge) })
+            : undefined
+        }
+      >
+        {locked
+          ? t("lab.notYetAvailable", { age: romanAge(unit.minAge) })
+          : t("lab.ageStats", { age: romanAge(stats.age ?? age) })}
       </span>
     </button>
   );
 }
 
+/** Logarithmische Vorteilsskala zwischen beiden Einheiten. */
+function EdgeGauge({ result, mine, enemy }) {
+  const { t, unitName, lang } = useI18n();
+  if (!result.comparable) return null;
+  const limit = EDGE_DISPLAY_LIMIT;
+  const edge = result.edgeClamped ?? 0;
+  const position = 50 + (edge / limit) * 50; // 0 … 100 (%)
+  const tone = result.verdict.tone;
+  const skillBand = (EDGE_THRESHOLDS.soft / limit) * 50;
+  const hardBand = (EDGE_THRESHOLDS.hard / limit) * 50;
+  const ticks = [];
+  for (let value = -limit; value <= limit; value += 1) ticks.push(value);
+  return (
+    <div className={`edge-gauge edge-gauge--${tone}`}>
+      <div className="edge-gauge__heading">
+        <span>{t("lab.gaugeTitle")}</span>
+        <strong>
+          {t("lab.ratio", { value: formatRatio(result.ratio, lang) })}
+        </strong>
+      </div>
+      <div className="edge-gauge__labels" aria-hidden="true">
+        <span>{unitName(enemy)}</span>
+        <span>{unitName(mine)}</span>
+      </div>
+      <div
+        className="edge-gauge__track"
+        role="img"
+        aria-label={`${t("lab.ratio", { value: formatRatio(result.ratio, lang) })} – ${result.verdict.label}`}
+      >
+        <i
+          className="edge-gauge__band edge-gauge__band--skill"
+          style={{ left: `${50 - skillBand}%`, width: `${skillBand * 2}%` }}
+        />
+        <i
+          className="edge-gauge__band edge-gauge__band--hard"
+          style={{ left: 0, width: `${50 - hardBand}%` }}
+        />
+        <i
+          className="edge-gauge__band edge-gauge__band--hard"
+          style={{ left: `${50 + hardBand}%`, width: `${50 - hardBand}%` }}
+        />
+        {ticks.map((value) => (
+          <i
+            key={value}
+            className={`edge-gauge__tick ${value === 0 ? "is-zero" : ""}`}
+            style={{ left: `${50 + (value / limit) * 50}%` }}
+          />
+        ))}
+        <b
+          className="edge-gauge__fill"
+          style={{
+            left: `${Math.min(50, position)}%`,
+            width: `${Math.abs(position - 50)}%`,
+          }}
+        />
+        <em className="edge-gauge__marker" style={{ left: `${position}%` }} />
+      </div>
+      <p className="edge-gauge__hint">
+        <Info size={13} aria-hidden="true" /> {t("lab.gaugeHint")}
+      </p>
+    </div>
+  );
+}
+
+function factorList(side, t) {
+  return FACTOR_KEYS.map((key) => ({ key, value: side.factors[key] }))
+    .filter((entry) => Math.abs(entry.value - 1) >= 0.005)
+    .map((entry) => ({
+      ...entry,
+      label: t(`lab.factor.${entry.key}`),
+    }));
+}
+
+function CalculationPanel({ result, mine, enemy, settings }) {
+  const { t, unitName, formatNumber, lang } = useI18n();
+  const [open, setOpen] = useState(false);
+  if (!result.comparable) return null;
+  const sides = [
+    { unit: mine, side: result.attacker, key: "mine" },
+    { unit: enemy, side: result.defender, key: "enemy" },
+  ];
+  const fmt = (value, digits = 1) =>
+    formatNumber(Number(Number(value).toFixed(digits)));
+  const rows = [
+    {
+      key: "weapon",
+      label: t("lab.calc.weapon"),
+      render: ({ side }) => (
+        <>
+          <strong>{side.weapon.name || "–"}</strong>
+          <small>
+            {side.weapon.type === "siege"
+              ? t("lab.calc.siegeArmor")
+              : `${side.weapon.type} · ${t("explorer.range").toLowerCase()} ${fmt(side.weapon.range, 1)}`}
+          </small>
+        </>
+      ),
+    },
+    {
+      key: "hit",
+      label: t("lab.calc.hit"),
+      render: ({ side }) => (
+        <>
+          <strong>{fmt(side.weapon.hit, 0)}</strong>
+          <small>
+            {t("lab.calc.hitDetail", {
+              damage: side.weapon.damage,
+              bonus: side.weapon.bonus ? Math.round(side.weapon.bonus) : 0,
+              armor: side.weapon.armor,
+            })}
+          </small>
+        </>
+      ),
+    },
+    {
+      key: "dps",
+      label: t("lab.calc.dps"),
+      render: ({ side }) => (
+        <>
+          <strong>{fmt(side.weapon.dps, 2)}</strong>
+          <small>
+            {t("lab.calc.dpsDetail", {
+              hit: fmt(side.weapon.hit, 0),
+              speed: fmt(side.weapon.speed, 2),
+            })}
+          </small>
+        </>
+      ),
+    },
+    {
+      key: "hp",
+      label: t("lab.calc.hp"),
+      render: ({ side }) => (
+        <>
+          <strong>{fmt(side.hp, 0)}</strong>
+          <small>
+            {side.stats.armor.melee}/{side.stats.armor.ranged}{" "}
+            {t("stat.armor").toLowerCase()}
+          </small>
+        </>
+      ),
+    },
+    {
+      key: "count",
+      label: t("lab.calc.count"),
+      render: ({ side }) => (
+        <>
+          <strong>{fmt(side.count, 1)}</strong>
+          <small>
+            {settings.mode === "resources"
+              ? t("lab.calc.countDetail", {
+                  budget: settings.budget,
+                  cost: side.cost,
+                })
+              : t("lab.calc.countOne")}
+          </small>
+        </>
+      ),
+    },
+    {
+      key: "strength",
+      label: t("lab.calc.unitStrength"),
+      render: ({ side }) => (
+        <>
+          <strong>{fmt(side.individual, 1)}</strong>
+          <small>{t("lab.calc.unitStrengthDetail")}</small>
+        </>
+      ),
+    },
+    {
+      key: "opening",
+      label: t("lab.calc.opening"),
+      render: ({ side }) => (
+        <>
+          <strong>
+            {side.opening.freeDamage + side.opening.burst > 0
+              ? `+${Math.round(side.opening.share * 100)} %`
+              : "–"}
+          </strong>
+          <small>
+            {t("lab.calc.openingDetail", {
+              free: Math.round(side.opening.freeDamage),
+              burst: Math.round(side.weapon.burstHit),
+            })}
+          </small>
+        </>
+      ),
+    },
+    {
+      key: "factors",
+      label: t("lab.calc.factors"),
+      render: ({ side }) => {
+        const factors = factorList(side, t);
+        return (
+          <>
+            <strong>× {fmt(side.tactical, 2)}</strong>
+            <small className="calc-factors">
+              {factors.length
+                ? factors.map((factor) => (
+                    <span
+                      key={factor.key}
+                      className={factor.value >= 1 ? "is-good" : "is-bad"}
+                    >
+                      {factor.label} ×{fmt(factor.value, 2)}
+                    </span>
+                  ))
+                : "–"}
+            </small>
+          </>
+        );
+      },
+    },
+    {
+      key: "total",
+      label: t("lab.calc.total"),
+      render: ({ side }) => (
+        <>
+          <strong className="calc-total">{fmt(side.value, 0)}</strong>
+          <small>
+            {t("lab.calc.unitStrength").toLowerCase()} ×{" "}
+            {t("lab.calc.count").toLowerCase()} ×{" "}
+            {t("lab.calc.factors").toLowerCase()}
+          </small>
+        </>
+      ),
+    },
+  ];
+  return (
+    <section className={`calc-panel ${open ? "is-open" : ""}`}>
+      <button
+        type="button"
+        className="calc-panel__toggle"
+        aria-expanded={open}
+        aria-controls="calc-panel-body"
+        onClick={() => setOpen((value) => !value)}
+      >
+        <Calculator size={17} aria-hidden="true" />
+        <span>
+          <strong>{t("lab.calcTitle")}</strong>
+          <small>{t("lab.calcSub")}</small>
+        </span>
+        <em>{formatRatio(result.ratio, lang)}</em>
+        <ChevronDown size={16} aria-hidden="true" />
+      </button>
+      {open ? (
+        <div className="calc-panel__body" id="calc-panel-body">
+          <table className="calc-table">
+            <thead>
+              <tr>
+                <th scope="col">
+                  <span className="sr-only">{t("lab.calcTitle")}</span>
+                </th>
+                {sides.map(({ unit, key }) => (
+                  <th scope="col" key={key} className={`is-${key}`}>
+                    <UnitAvatar unit={unit} size="small" decorative />
+                    <span>{unitName(unit)}</span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.key} className={`calc-row calc-row--${row.key}`}>
+                  <th scope="row">{row.label}</th>
+                  {sides.map((entry) => (
+                    <td key={entry.key} className={`is-${entry.key}`}>
+                      {row.render(entry)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="calc-panel__formula">
+            <Info size={13} aria-hidden="true" /> {t("lab.calcFormula")}
+          </p>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 const Alternatives = memo(
   /**
-   * @param {{ candidates: import("../types.js").CounterCandidate[], target: import("../types.js").Unit, onSelect: (unit: import("../types.js").Unit) => void }} props
+   * @param {{ candidates: import("../types.js").CounterCandidate[], target: import("../types.js").Unit, civilizations: import("../types.js").Civilization[], civ: string, onCivChange: (civ: string) => void, onSelect: (unit: import("../types.js").Unit) => void }} props
    */
-  function Alternatives({ candidates, target, onSelect }) {
-    const { t, unitName, roleLabel } = useI18n();
+  function Alternatives({
+    candidates,
+    target,
+    civilizations,
+    civ,
+    onCivChange,
+    onSelect,
+  }) {
+    const { t, unitName, roleLabel, civName, lang } = useI18n();
     return (
       <aside className="alternative-rail">
         <div className="rail-heading">
@@ -99,31 +422,66 @@ const Alternatives = memo(
             <span>{t("lab.answersTo")}</span>
             <strong>{unitName(target)}</strong>
           </div>
-          <Crosshair size={19} />
+          <Crosshair size={19} aria-hidden="true" />
         </div>
+        <label className="rail-filter">
+          <span>{t("lab.answersFrom")}</span>
+          <select
+            name="answer-civilization"
+            value={civ}
+            onChange={(event) => onCivChange(event.target.value)}
+          >
+            <option value="all">{t("picker.allCivs")}</option>
+            {civilizations.map((civilization) => (
+              <option key={civilization.code} value={civilization.code}>
+                {civName(civilization.code)}
+              </option>
+            ))}
+          </select>
+        </label>
         <div className="alternative-list">
-          {candidates.map(({ unit, result }, index) => (
-            <button
-              type="button"
-              key={unit.id}
-              className="alternative-row"
-              onClick={() => onSelect(unit)}
-            >
-              <span className="alternative-row__rank">0{index + 1}</span>
-              <UnitAvatar unit={unit} size="medium" decorative />
-              <span>
-                <strong>{unitName(unit)}</strong>
-                <small>{roleLabel(unit)}</small>
-                <i className={`match-tone match-tone--${result.verdict.tone}`}>
-                  {result.verdict.short}
-                </i>
-              </span>
-              <ChevronRight size={15} />
-            </button>
-          ))}
+          {candidates.map(({ unit, result }, index) => {
+            const share = Math.min(
+              100,
+              Math.round(
+                (Math.max(0, result.edgeClamped ?? 0) / EDGE_DISPLAY_LIMIT) *
+                  100,
+              ),
+            );
+            return (
+              <button
+                type="button"
+                key={unit.id}
+                className="alternative-row"
+                onClick={() => onSelect(unit)}
+              >
+                <span className="alternative-row__rank">0{index + 1}</span>
+                <UnitAvatar unit={unit} size="medium" decorative />
+                <span className="alternative-row__copy">
+                  <strong>{unitName(unit)}</strong>
+                  <small>{roleLabel(unit)}</small>
+                  <span className="alternative-row__meter">
+                    <i
+                      className={`match-tone match-tone--${result.verdict.tone}`}
+                    >
+                      {result.verdict.short}
+                    </i>
+                    <em>{formatRatio(result.ratio, lang)}</em>
+                  </span>
+                  <span className="alternative-row__bar" aria-hidden="true">
+                    <b style={{ width: `${share}%` }} />
+                  </span>
+                </span>
+                <ChevronRight size={15} aria-hidden="true" />
+              </button>
+            );
+          })}
+          {!candidates.length ? (
+            <p className="empty-list">{t("lab.railEmpty")}</p>
+          ) : null}
         </div>
         <p className="rail-note">
-          <Info size={14} />
+          <Info size={14} aria-hidden="true" />
           {t("lab.railNote")}
         </p>
       </aside>
@@ -141,7 +499,7 @@ function Variables({ settings, onChange }) {
   return (
     <section className="variables-band">
       <div className="variables-band__title">
-        <Sparkles size={17} />
+        <Sparkles size={17} aria-hidden="true" />
         <div>
           <strong>{t("lab.variables")}</strong>
           <span>{t("lab.variablesSub")}</span>
@@ -150,27 +508,27 @@ function Variables({ settings, onChange }) {
 
       <div className="variable-group">
         <span title={t("lab.compareHelp")}>
-          <Coins size={15} /> {t("lab.compare")}
+          <Coins size={15} aria-hidden="true" /> {t("lab.compare")}
         </span>
         <div className="segmented">
           <SettingButton
             active={settings.mode === "resources"}
             onClick={() => patch({ mode: "resources" })}
           >
-            <Coins size={13} /> {t("lab.resources")}
+            <Coins size={13} aria-hidden="true" /> {t("lab.resources")}
           </SettingButton>
           <SettingButton
             active={settings.mode === "count"}
             onClick={() => patch({ mode: "count" })}
           >
-            <Users size={13} /> {t("lab.oneVsOne")}
+            <Users size={13} aria-hidden="true" /> {t("lab.oneVsOne")}
           </SettingButton>
         </div>
       </div>
 
       <div className="variable-group variable-group--stepper">
         <span title={t("lab.upgradeHelp")}>
-          <Zap size={15} /> {t("lab.myUpgrade")}
+          <Zap size={15} aria-hidden="true" /> {t("lab.myUpgrade")}
         </span>
         <div>
           <button
@@ -180,9 +538,9 @@ function Variables({ settings, onChange }) {
             }
             aria-label={t("lab.upgradeDown")}
           >
-            <Minus size={13} />
+            <Minus size={13} aria-hidden="true" />
           </button>
-          <strong>
+          <strong aria-live="polite">
             {settings.upgrades > 0 ? "+" : ""}
             {settings.upgrades}
           </strong>
@@ -193,40 +551,40 @@ function Variables({ settings, onChange }) {
             }
             aria-label={t("lab.upgradeUp")}
           >
-            <Plus size={13} />
+            <Plus size={13} aria-hidden="true" />
           </button>
         </div>
       </div>
 
       <div className="variable-group">
         <span>
-          <Map size={15} /> {t("lab.terrain")}
+          <Map size={15} aria-hidden="true" /> {t("lab.terrain")}
         </span>
-        <div className="icon-segments">
+        <div className="segmented">
           <SettingButton
             active={settings.terrain === "offen"}
             onClick={() => patch({ terrain: "offen" })}
           >
-            <Mountain size={14} /> {t("lab.terrainOpen")}
+            <Mountain size={14} aria-hidden="true" /> {t("lab.terrainOpen")}
           </SettingButton>
           <SettingButton
             active={settings.terrain === "engpass"}
             onClick={() => patch({ terrain: "engpass" })}
           >
-            <ArrowDown size={14} /> {t("lab.terrainChoke")}
+            <ArrowDown size={14} aria-hidden="true" /> {t("lab.terrainChoke")}
           </SettingButton>
           <SettingButton
             active={settings.terrain === "wald"}
             onClick={() => patch({ terrain: "wald" })}
           >
-            <Trees size={14} /> {t("lab.terrainForest")}
+            <Trees size={14} aria-hidden="true" /> {t("lab.terrainForest")}
           </SettingButton>
         </div>
       </div>
 
       <div className="variable-group">
         <span title={t("lab.microHelp")}>
-          <Crosshair size={15} /> {t("lab.micro")}
+          <Crosshair size={15} aria-hidden="true" /> {t("lab.micro")}
         </span>
         <div className="segmented">
           {[
@@ -255,7 +613,7 @@ function DrillTeaser({ target, onOpenDrills }) {
   return (
     <section className="drill-teaser">
       <div className="drill-teaser__index">
-        <Swords />
+        <Swords aria-hidden="true" />
         <span>{t("lab.nextDrill")}</span>
       </div>
       <div className="drill-teaser__copy">
@@ -275,7 +633,7 @@ function DrillTeaser({ target, onOpenDrills }) {
         <strong>{t("lab.drillRewardValue")}</strong>
       </div>
       <button className="primary-button" type="button" onClick={onOpenDrills}>
-        {t("lab.drillStart")} <Swords size={16} />
+        {t("lab.drillStart")} <Swords size={16} aria-hidden="true" />
       </button>
     </section>
   );
@@ -286,6 +644,8 @@ export default function CounterLab({
   civilizations,
   initialMine,
   initialEnemy,
+  answerCiv,
+  onAnswerCivChange,
   onOpenDrills,
   onOpenUnit,
 }) {
@@ -304,11 +664,11 @@ export default function CounterLab({
       getCounterCandidates(
         units,
         enemy,
-        settings,
+        { ...settings, civ: answerCiv },
         COUNTER_SUGGESTIONS_LIMIT,
         lang,
       ),
-    [enemy, settings, units, lang],
+    [enemy, settings, units, lang, answerCiv],
   );
 
   function selectFromPicker(unit) {
@@ -341,12 +701,17 @@ export default function CounterLab({
                   : t("lab.equalCount")}
               </strong>
             </div>
-            <div className="age-switcher" aria-label={t("lab.age")}>
+            <div
+              className="age-switcher"
+              role="group"
+              aria-label={t("lab.age")}
+            >
               {[2, 3, 4].map((age) => (
                 <button
                   type="button"
                   key={age}
                   className={settings.age === age ? "is-active" : ""}
+                  aria-pressed={settings.age === age}
                   onClick={() => setSettings({ ...settings, age })}
                 >
                   {romanAge(age)}
@@ -358,7 +723,7 @@ export default function CounterLab({
               className="text-button"
               onClick={() => setSettings(DEFAULT_SETTINGS)}
             >
-              <RotateCcw size={14} /> {t("lab.reset")}
+              <RotateCcw size={14} aria-hidden="true" /> {t("lab.reset")}
             </button>
           </div>
 
@@ -366,12 +731,13 @@ export default function CounterLab({
             <MatchupUnit
               unit={mine}
               side="mine"
+              age={settings.age}
               onChoose={() => setPickerSide("mine")}
             />
 
             <div className={`verdict verdict--${result.verdict.tone}`}>
               <button type="button" onClick={swap} aria-label={t("lab.swap")}>
-                <ArrowLeftRight size={18} />
+                <ArrowLeftRight size={18} aria-hidden="true" />
               </button>
               <span>{t("lab.versus")}</span>
               <div className="verdict__arrow" aria-hidden="true">
@@ -379,6 +745,9 @@ export default function CounterLab({
                 <b />
               </div>
               <strong>{result.verdict.label}</strong>
+              {result.comparable ? (
+                <em>{formatRatio(result.ratio, lang)}</em>
+              ) : null}
               <p
                 title={result.comparable ? t("lab.confidenceHint") : undefined}
               >
@@ -391,14 +760,18 @@ export default function CounterLab({
             <MatchupUnit
               unit={enemy}
               side="enemy"
+              age={settings.age}
               onChoose={() => setPickerSide("enemy")}
             />
           </div>
+
+          <EdgeGauge result={result} mine={mine} enemy={enemy} />
 
           <div className="selection-steps">
             <button
               type="button"
               className={pickerSide === "mine" ? "is-active" : ""}
+              aria-pressed={pickerSide === "mine"}
               onClick={() => setPickerSide("mine")}
             >
               <span>1</span>
@@ -406,11 +779,12 @@ export default function CounterLab({
                 <small>{t("lab.step1")}</small>
                 <strong>{unitName(mine)}</strong>
               </div>
-              <ChevronRight size={16} />
+              <ChevronRight size={16} aria-hidden="true" />
             </button>
             <button
               type="button"
               className={pickerSide === "enemy" ? "is-active" : ""}
+              aria-pressed={pickerSide === "enemy"}
               onClick={() => setPickerSide("enemy")}
             >
               <span>2</span>
@@ -418,14 +792,15 @@ export default function CounterLab({
                 <small>{t("lab.step2")}</small>
                 <strong>{unitName(enemy)}</strong>
               </div>
-              <ChevronRight size={16} />
+              <ChevronRight size={16} aria-hidden="true" />
             </button>
             <button
               className="primary-button"
               type="button"
               onClick={() => onOpenUnit(mine)}
             >
-              {t("lab.openDossier")} <ChevronRight size={16} />
+              {t("lab.openDossier")}{" "}
+              <ChevronRight size={16} aria-hidden="true" />
             </button>
           </div>
         </section>
@@ -444,7 +819,11 @@ export default function CounterLab({
             {result.reasons.map((reason) => (
               <article key={reason.title}>
                 <span className={reason.good ? "is-good" : "is-bad"}>
-                  {reason.good ? <Trophy size={17} /> : <Zap size={17} />}
+                  {reason.good ? (
+                    <Trophy size={17} aria-hidden="true" />
+                  ) : (
+                    <Zap size={17} aria-hidden="true" />
+                  )}
                 </span>
                 <div>
                   <strong>{reason.title}</strong>
@@ -468,6 +847,13 @@ export default function CounterLab({
           </div>
         </section>
 
+        <CalculationPanel
+          result={result}
+          mine={mine}
+          enemy={enemy}
+          settings={settings}
+        />
+
         <Variables settings={settings} onChange={setSettings} />
         <DrillTeaser target={enemy} onOpenDrills={onOpenDrills} />
       </div>
@@ -475,6 +861,9 @@ export default function CounterLab({
       <Alternatives
         candidates={alternatives}
         target={enemy}
+        civilizations={civilizations}
+        civ={answerCiv}
+        onCivChange={onAnswerCivChange}
         onSelect={(unit) => {
           setMine(unit);
           setPickerSide("mine");
