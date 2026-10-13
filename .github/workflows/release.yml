@@ -1,12 +1,20 @@
 name: Release
 
-# Erstellt beim Push eines Versions-Tags (z. B. v2.0.0) ein GitHub-Release mit
-# der Standalone-Datei als `war-room.html`. Die Notizen stammen aus
+# Erstellt ein GitHub-Release mit der Standalone-Datei als `war-room.html`.
+# Auslöser: Push eines Versions-Tags (z. B. v2.0.0) oder manueller Start
+# (Actions → Release → Run workflow); beim manuellen Start legt der Workflow
+# den Tag selbst auf dem gebauten Commit an. Die Notizen stammen aus
 # .github/release-notes/<tag>.md, sonst erzeugt GitHub sie automatisch.
 
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Versions-Tag, z. B. v2.0.0 (leer = Version aus package.json)"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -14,6 +22,8 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      INPUT_TAG: ${{ inputs.tag }}
     steps:
       - uses: actions/checkout@v4
 
@@ -28,14 +38,20 @@ jobs:
       - name: Audit (Lint · Typecheck · Test · Build · Standalone)
         run: npm run audit
 
-      # Version aus package.json muss zum Tag passen.
+      # Tag bestimmen und gegen die package.json-Version prüfen.
       - name: Tag passt zur package.json-Version
         run: |
           version="v$(node -p "require('./package.json').version")"
-          if [ "$version" != "$GITHUB_REF_NAME" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME passt nicht zu package.json ($version)."
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            tag="$GITHUB_REF_NAME"
+          else
+            tag="${INPUT_TAG:-$version}"
+          fi
+          if [ "$version" != "$tag" ]; then
+            echo "::error::Tag $tag passt nicht zu package.json ($version)."
             exit 1
           fi
+          echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
 
       - name: Standalone-Artefakt ist aktuell
         run: git diff --exit-code -- outputs/index.html
@@ -45,11 +61,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp outputs/index.html war-room.html
-          notes=".github/release-notes/${GITHUB_REF_NAME}.md"
+          notes=".github/release-notes/${RELEASE_TAG}.md"
+          # --target greift nur, wenn der Tag noch nicht existiert (manueller
+          # Start); bei einem gepushten Tag bleibt dessen Commit maßgeblich.
           if [ -f "$notes" ]; then
-            gh release create "$GITHUB_REF_NAME" war-room.html \
-              --title "WAR ROOM ${GITHUB_REF_NAME}" --notes-file "$notes"
+            gh release create "$RELEASE_TAG" war-room.html --target "$GITHUB_SHA" \
+              --title "WAR ROOM ${RELEASE_TAG}" --notes-file "$notes"
           else
-            gh release create "$GITHUB_REF_NAME" war-room.html \
-              --title "WAR ROOM ${GITHUB_REF_NAME}" --generate-notes
+            gh release create "$RELEASE_TAG" war-room.html --target "$GITHUB_SHA" \
+              --title "WAR ROOM ${RELEASE_TAG}" --generate-notes
           fi
