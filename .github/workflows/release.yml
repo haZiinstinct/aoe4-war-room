@@ -1,0 +1,55 @@
+name: Release
+
+# Erstellt beim Push eines Versions-Tags (z. B. v2.0.0) ein GitHub-Release mit
+# der Standalone-Datei als `war-room.html`. Die Notizen stammen aus
+# .github/release-notes/<tag>.md, sonst erzeugt GitHub sie automatisch.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Audit (Lint · Typecheck · Test · Build · Standalone)
+        run: npm run audit
+
+      # Version aus package.json muss zum Tag passen.
+      - name: Tag passt zur package.json-Version
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if [ "$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME passt nicht zu package.json ($version)."
+            exit 1
+          fi
+
+      - name: Standalone-Artefakt ist aktuell
+        run: git diff --exit-code -- outputs/index.html
+
+      - name: Release erstellen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp outputs/index.html war-room.html
+          notes=".github/release-notes/${GITHUB_REF_NAME}.md"
+          if [ -f "$notes" ]; then
+            gh release create "$GITHUB_REF_NAME" war-room.html \
+              --title "WAR ROOM ${GITHUB_REF_NAME}" --notes-file "$notes"
+          else
+            gh release create "$GITHUB_REF_NAME" war-room.html \
+              --title "WAR ROOM ${GITHUB_REF_NAME}" --generate-notes
+          fi
